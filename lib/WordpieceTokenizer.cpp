@@ -2,12 +2,12 @@
 
 napi_ref JSWordpieceTokenizer::constructor;
 
-JSWordpieceTokenizer::JSWordpieceTokenizer(napi_env env, napi_callback_info info, napi_value& _this)
+JSWordpieceTokenizer::JSWordpieceTokenizer(napi_env env, napi_callback_info info)
     : env_(env)
 {
     size_t argc = 2;
     napi_value args[2];
-    NODE_API_CALL_RETURN_VOID(env, napi_get_cb_info(env, info, &argc, args, &_this, nullptr));
+    NODE_API_CALL_RETURN_VOID(env, napi_get_cb_info(env, info, &argc, args, nullptr, nullptr));
 
     vocab_array = NodeValue(env, args[0]);
     for (int i = 0; i < vocab_array.size(); i++)

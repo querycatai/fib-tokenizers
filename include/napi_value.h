@@ -70,8 +70,8 @@ public:
         NODE_API_CALL_RETURN_VOID(env_, napi_create_string_utf8(env_, string.c_str(), string.size(), &value_));
     }
 
-    template <typename STRING>
-    NodeValue(napi_env env, const std::vector<STRING>& value)
+    template <typename VALUE_TYPE>
+    NodeValue(napi_env env, const std::vector<VALUE_TYPE>& value)
         : env_(env)
     {
         napi_value array;
@@ -85,8 +85,8 @@ public:
         value_ = array;
     }
 
-    template <typename KEY_TYPE, typename VALUE_TYPE>
-    NodeValue(napi_env env, const std::unordered_map<KEY_TYPE, VALUE_TYPE>& value)
+    template <typename CHAR_TYPE, typename VALUE_TYPE>
+    NodeValue(napi_env env, const std::unordered_map<std::basic_string<CHAR_TYPE>, VALUE_TYPE>& value)
         : env_(env)
     {
         napi_value object;
@@ -170,10 +170,10 @@ public:
         return result;
     }
 
-    template <typename STRING>
-    operator std::vector<STRING>() const
+    template <typename VALUE_TYPE>
+    operator std::vector<VALUE_TYPE>() const
     {
-        std::vector<STRING> result;
+        std::vector<VALUE_TYPE> result;
         napi_value array;
         NODE_API_CALL_BASE(env_, napi_coerce_to_object(env_, value_, &array), result);
         uint32_t length;
@@ -183,17 +183,17 @@ public:
         for (uint32_t i = 0; i < length; ++i) {
             napi_value element;
             NODE_API_CALL_BASE(env_, napi_get_element(env_, array, i, &element), result);
-            STRING value = NodeValue(env_, element);
+            VALUE_TYPE value = NodeValue(env_, element);
             result[i] = value;
         }
 
         return result;
     }
 
-    template <typename KEY_TYPE, typename VALUE_TYPE>
-    operator std::unordered_map<KEY_TYPE, VALUE_TYPE>() const
+    template <typename CHAR_TYPE, typename VALUE_TYPE>
+    operator std::unordered_map<std::basic_string<CHAR_TYPE>, VALUE_TYPE>() const
     {
-        std::unordered_map<KEY_TYPE, VALUE_TYPE> result;
+        std::unordered_map<std::basic_string<CHAR_TYPE>, VALUE_TYPE> result;
         napi_value object;
         NODE_API_CALL_BASE(env_, napi_coerce_to_object(env_, value_, &object), result);
         napi_value keys;
@@ -204,7 +204,7 @@ public:
         for (uint32_t i = 0; i < length; ++i) {
             napi_value key;
             NODE_API_CALL_BASE(env_, napi_get_element(env_, keys, i, &key), result);
-            KEY_TYPE name = NodeValue(env_, key);
+            std::basic_string<CHAR_TYPE> name = NodeValue(env_, key);
             napi_value value;
             NODE_API_CALL_BASE(env_, napi_get_property(env_, object, key, &value), result);
             VALUE_TYPE index = NodeValue(env_, value);

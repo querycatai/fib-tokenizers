@@ -13,3 +13,6 @@
 [submodule "vender/json"]
 	path = vender/json
 	url = https://github.com/nlohmann/json.git
+[submodule "vender/cpp-tiktoken"]
+	path = vender/cpp-tiktoken
+	url = https://github.com/gh-markt/cpp-tiktoken.git

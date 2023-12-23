@@ -9,7 +9,7 @@
 
 class JSBasicTokenizer : public NodeClass<JSBasicTokenizer> {
 public:
-    JSBasicTokenizer(napi_env env, napi_callback_info info, napi_value& _this);
+    JSBasicTokenizer(napi_env env, napi_callback_info info);
 
 public:
     static napi_value Init(napi_env env);

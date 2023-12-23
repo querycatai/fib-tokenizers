@@ -14,6 +14,10 @@ file(GLOB src_list
     "${PROJECT_SOURCE_DIR}/vender/sentencepiece/third_party/protobuf-lite/*.c*"
     "${PROJECT_SOURCE_DIR}/vender/sentencepiece/third_party/absl/flags/flag.cc"
 
+    "${PROJECT_SOURCE_DIR}/vender/cpp-tiktoken/modelparams.cc"
+    "${PROJECT_SOURCE_DIR}/vender/cpp-tiktoken/encoding.cc"
+    "${PROJECT_SOURCE_DIR}/vender/cpp-tiktoken/encoding_utils.cc"
+
     "${PROJECT_SOURCE_DIR}/vender/pcre/*.c*"
 )
 
@@ -32,6 +36,8 @@ include_directories(
     "${PROJECT_SOURCE_DIR}/vender/sentencepiece/src/builtin_pb"
     "${PROJECT_SOURCE_DIR}/vender/sentencepiece/third_party/protobuf-lite"
     "${PROJECT_SOURCE_DIR}/vender/sentencepiece"
+    "${PROJECT_SOURCE_DIR}/vender/cpp-tiktoken"
+    "${PROJECT_SOURCE_DIR}/vender/pcre"
 )
 
 include(fib-addon/common.cmake)
