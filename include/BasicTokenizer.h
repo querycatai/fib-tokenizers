@@ -5,7 +5,6 @@
 #include <node_api.h>
 #include <memory>
 #include "common.h"
-#include "basic_tokenizer.hpp"
 
 class JSBasicTokenizer : public NodeClass<JSBasicTokenizer> {
 public:
@@ -18,7 +17,11 @@ private:
     static napi_value tokenize(napi_env env, napi_callback_info info);
 
 private:
-    std::shared_ptr<BasicTokenizer> tokenizer_;
+    bool do_lower_case_ = true;
+    bool strip_accents_ = true;
+    bool tokenize_chinese_chars_ = true;
+    bool tokenize_punctuation_ = true;
+    bool remove_control_chars_ = true;
 
 public:
     static napi_ref constructor;
