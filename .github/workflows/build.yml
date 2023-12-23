@@ -1,0 +1,108 @@
+name: Build/release
+
+on:
+  push:
+    # Sequence of patterns matched against refs/heads
+    branches:
+      - "dev"
+      - "main"
+    tags:
+      - "*"
+  pull_request:
+    branches:
+      - "dev"
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    continue-on-error: true
+
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-20.04
+            arch: x64
+          - os: ubuntu-20.04
+            arch: ia32
+          - os: ubuntu-20.04
+            arch: arm64
+          - os: ubuntu-20.04
+            arch: arm
+          - os: ubuntu-20.04
+            arch: mips64
+          - os: ubuntu-20.04
+            arch: ppc64
+          - os: ubuntu-20.04
+            arch: riscv64
+          - os: ubuntu-20.04
+            arch: loong64
+          - os: ubuntu-20.04
+            target: alpine
+            arch: x64
+          - os: ubuntu-20.04
+            target: alpine
+            arch: ia32
+          - os: ubuntu-20.04
+            target: alpine
+            arch: arm64
+          - os: ubuntu-20.04
+            target: android
+            arch: x64
+          - os: ubuntu-20.04
+            target: android
+            arch: ia32
+          - os: ubuntu-20.04
+            target: android
+            arch: arm64
+          - os: ubuntu-20.04
+            target: android
+            arch: arm
+          - os: windows-2022
+            arch: x64
+          - os: windows-2022
+            arch: ia32
+          - os: windows-2022
+            arch: arm64
+          - os: macos-13
+            arch: x64
+          - os: macos-13
+            arch: arm64
+          - os: macos-13
+            target: iphone
+            arch: arm64
+          - os: macos-13
+            target: iphone
+            arch: x64
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v3
+        with:
+          submodules: "recursive"
+
+      - name: Setup the environment
+        shell: bash
+        run: . ./fib-addon/build_tools/scripts/actions-env.sh
+        env:
+          BUILD_TARGET: ${{ matrix.target }}
+          BUILD_ARCH: ${{ matrix.arch }}
+
+      - name: Build the project
+        shell: bash
+        run: |
+          set -ev
+          bash build -j2 ${BUILD_ARCH} ${BUILD_TARGET} ${BUILD_TYPE}
+          if [[ "$BUILD_TAG" != "" ]]; then
+            mkdir addon
+            cp bin/${BUILD_OS}_${BUILD_ARCH}_${BUILD_TYPE}/${BUILD_NAME}.node addon/
+            tar -zcf ${BUILD_NAME}-${BUILD_TARGET}-${BUILD_ARCH}-${BUILD_TYPE}.tar.gz addon/${BUILD_NAME}.node
+          fi
+
+      - name: Release the project
+        if: env.BUILD_TAG != ''
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ${{ env.BUILD_NAME }}-${{ env.BUILD_TARGET }}-${{ env.BUILD_ARCH }}-${{ env.BUILD_TYPE }}.tar.gz
+          tag: ${{ env.BUILD_TAG }}
+          overwrite: true

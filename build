@@ -1,0 +1,4 @@
+#!/bin/bash
+
+. fib-addon/build_tools/scripts/build_env.sh
+. fib-addon/build_tools/scripts/build

@@ -1,0 +1,15 @@
+[submodule "fib-addon"]
+	path = fib-addon
+	url = https://github.com/fibjs/fib-addon.git
+[submodule "vender/sentencepiece"]
+	path = vender/sentencepiece
+	url = https://github.com/google/sentencepiece.git
+[submodule "vender/onnxruntime-extensions"]
+	path = vender/onnxruntime-extensions
+	url = https://github.com/microsoft/onnxruntime-extensions.git
+[submodule "vender/GSL"]
+	path = vender/GSL
+	url = https://github.com/microsoft/GSL.git
+[submodule "vender/json"]
+	path = vender/json
+	url = https://github.com/nlohmann/json.git
