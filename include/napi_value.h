@@ -3,6 +3,7 @@
 #include <node_api.h>
 #include "common.h"
 #include <string>
+#include <string_view>
 #include <vector>
 #include <unordered_map>
 #include "ustring.h"
@@ -168,6 +169,22 @@ public:
     {
         ustring result(operator std::string());
         return result;
+    }
+
+    operator std::string_view() const
+    {
+        napi_typedarray_type type;
+        napi_value input_buffer;
+        size_t byte_offset;
+        size_t i, length;
+        NODE_API_CALL(env_, napi_get_typedarray_info(env_, value_, &type, &length, NULL, &input_buffer, &byte_offset));
+        NODE_API_ASSERT(env_, type == napi_uint8_array, "Wrong argument type, must be Uint8Array");
+
+        void* data;
+        size_t byte_length;
+        NODE_API_CALL(env_, napi_get_arraybuffer_info(env_, input_buffer, &data, &byte_length));
+
+        return std::string_view((char*)data + byte_offset, length);
     }
 
     template <typename VALUE_TYPE>

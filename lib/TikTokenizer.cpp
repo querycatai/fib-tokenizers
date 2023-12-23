@@ -3,6 +3,20 @@
 
 napi_ref JSTikTokenizer::constructor;
 
+napi_value JSTikTokenizer::Init(napi_env env)
+{
+    napi_property_descriptor properties[] = {
+        { "encode", nullptr, encode, nullptr, nullptr, nullptr, napi_enumerable, nullptr },
+        { "decode", nullptr, decode, nullptr, nullptr, nullptr, napi_enumerable, nullptr }
+    };
+
+    napi_value cons;
+    NODE_API_CALL(env, napi_define_class(env, "TikTokenizer", -1, New, nullptr, sizeof(properties) / sizeof(napi_property_descriptor), properties, &cons));
+    NODE_API_CALL(env, napi_create_reference(env, cons, 1, &constructor));
+
+    return cons;
+}
+
 class LinesReader : public IResourceReader {
 public:
     LinesReader(std::vector<std::string>& lines_)
@@ -43,20 +57,6 @@ JSTikTokenizer::JSTikTokenizer(napi_env env, napi_callback_info info)
     std::vector<std::string> lines = NodeValue(env, args[0]);
     LinesReader lines_reader(lines);
     encoder_ = GptEncoding::get_encoding(base_model, &lines_reader);
-}
-
-napi_value JSTikTokenizer::Init(napi_env env)
-{
-    napi_property_descriptor properties[] = {
-        { "encode", nullptr, encode, nullptr, nullptr, nullptr, napi_enumerable, nullptr },
-        { "decode", nullptr, decode, nullptr, nullptr, nullptr, napi_enumerable, nullptr }
-    };
-
-    napi_value cons;
-    NODE_API_CALL(env, napi_define_class(env, "TikTokenizer", -1, New, nullptr, sizeof(properties) / sizeof(napi_property_descriptor), properties, &cons));
-    NODE_API_CALL(env, napi_create_reference(env, cons, 1, &constructor));
-
-    return cons;
 }
 
 napi_value JSTikTokenizer::encode(napi_env env, napi_callback_info info)

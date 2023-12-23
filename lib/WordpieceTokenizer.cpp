@@ -2,6 +2,19 @@
 
 napi_ref JSWordpieceTokenizer::constructor;
 
+napi_value JSWordpieceTokenizer::Init(napi_env env)
+{
+    napi_property_descriptor properties[] = {
+        { "tokenize", nullptr, tokenize, nullptr, nullptr, nullptr, napi_enumerable, nullptr }
+    };
+
+    napi_value cons;
+    NODE_API_CALL(env, napi_define_class(env, "WordpieceTokenizer", -1, New, nullptr, sizeof(properties) / sizeof(napi_property_descriptor), properties, &cons));
+    NODE_API_CALL(env, napi_create_reference(env, cons, 1, &constructor));
+
+    return cons;
+}
+
 JSWordpieceTokenizer::JSWordpieceTokenizer(napi_env env, napi_callback_info info)
     : env_(env)
 {
@@ -16,19 +29,6 @@ JSWordpieceTokenizer::JSWordpieceTokenizer(napi_env env, napi_callback_info info
     NodeOpt opt(env, args[1]);
     unk_token_ = opt.Get("unk_token", std::u16string(u"UNK"));
     max_input_chars_per_word_ = opt.Get("max_input_chars_per_word", max_input_chars_per_word_);
-}
-
-napi_value JSWordpieceTokenizer::Init(napi_env env)
-{
-    napi_property_descriptor properties[] = {
-        { "tokenize", nullptr, tokenize, nullptr, nullptr, nullptr, napi_enumerable, nullptr }
-    };
-
-    napi_value cons;
-    NODE_API_CALL(env, napi_define_class(env, "WordpieceTokenizer", -1, New, nullptr, sizeof(properties) / sizeof(napi_property_descriptor), properties, &cons));
-    NODE_API_CALL(env, napi_create_reference(env, cons, 1, &constructor));
-
-    return cons;
 }
 
 std::vector<std::u16string> whitespace_tokenize(std::u16string text)
