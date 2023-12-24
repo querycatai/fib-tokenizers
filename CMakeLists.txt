@@ -3,8 +3,8 @@ cmake_minimum_required(VERSION 2.6)
 set(CMAKE_CXX_STANDARD 17)
 
 file(GLOB src_list
-    "${PROJECT_SOURCE_DIR}/lib/*.c*"
-    "${PROJECT_SOURCE_DIR}/patch/*.c*"
+    "${PROJECT_SOURCE_DIR}/src/*.c*"
+    "${PROJECT_SOURCE_DIR}/src/patch/*.c*"
 
     "${PROJECT_SOURCE_DIR}/vender/onnxruntime-extensions/operators/tokenizer/*.c*"
     "${PROJECT_SOURCE_DIR}/vender/onnxruntime-extensions/base/*.c*"

@@ -6,8 +6,7 @@
 
 .vscode
 fib-addon
-lib
-patch
+src
 build*
 CMakeLists.txt
 tools
