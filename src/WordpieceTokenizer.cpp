@@ -53,15 +53,9 @@ std::vector<std::u16string> whitespace_tokenize(std::u16string text)
 
 napi_value JSWordpieceTokenizer::tokenize(napi_env env, napi_callback_info info)
 {
-    napi_value _this;
-    size_t argc = 1;
-    napi_value args[1];
-    NODE_API_CALL(env, napi_get_cb_info(env, info, &argc, args, &_this, nullptr));
+    NodeArg<JSWordpieceTokenizer> obj(env, info);
 
-    JSWordpieceTokenizer* obj;
-    NODE_API_CALL(env, napi_unwrap(env, _this, reinterpret_cast<void**>(&obj)));
-
-    std::vector<std::u16string> words = whitespace_tokenize(NodeValue(env, args[0]));
+    std::vector<std::u16string> words = whitespace_tokenize(obj.Get(0));
     std::vector<std::u16string> tokens;
 
     for (auto itk = words.begin(); itk != words.end(); ++itk) {

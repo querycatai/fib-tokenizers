@@ -1,7 +1,6 @@
 #pragma once
 
 #include "napi_value.h"
-#include "napi_class.h"
 #include "sentencepiece_processor.h"
 
 class JSSentencepieceTokenizer : public NodeClass<JSSentencepieceTokenizer> {

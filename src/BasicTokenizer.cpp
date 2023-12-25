@@ -33,15 +33,9 @@ JSBasicTokenizer::JSBasicTokenizer(napi_env env, napi_callback_info info)
 
 napi_value JSBasicTokenizer::tokenize(napi_env env, napi_callback_info info)
 {
-    napi_value _this;
-    size_t argc = 1;
-    napi_value args[1];
-    NODE_API_CALL(env, napi_get_cb_info(env, info, &argc, args, &_this, nullptr));
+    NodeArg<JSBasicTokenizer> obj(env, info);
 
-    JSBasicTokenizer* obj;
-    NODE_API_CALL(env, napi_unwrap(env, _this, reinterpret_cast<void**>(&obj)));
-
-    ustring text = NodeValue(env, args[0]);
+    ustring text = obj.Get(0);
 
     std::vector<ustring> result;
     ustring token;

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "napi_value.h"
-#include "napi_class.h"
 #include <node_api.h>
 #include <memory>
 #include "common.h"

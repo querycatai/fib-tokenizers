@@ -1,7 +1,6 @@
 #pragma once
 
 #include "napi_value.h"
-#include "napi_class.h"
 #include "encoding.h"
 
 class JSTikTokenizer : public NodeClass<JSTikTokenizer> {

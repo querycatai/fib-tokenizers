@@ -271,3 +271,59 @@ private:
     napi_env env_;
     napi_value opt_ = nullptr;
 };
+
+template <typename T>
+class NodeArg {
+public:
+    NodeArg(napi_env env, napi_callback_info info)
+        : env_(env)
+    {
+        napi_value _this;
+        size_t argc = 0;
+        NODE_API_CALL_RETURN_VOID(env, napi_get_cb_info(env, info, &argc, nullptr, &_this, nullptr));
+        NODE_API_CALL_RETURN_VOID(env, napi_unwrap(env, _this, reinterpret_cast<void**>(&obj)));
+
+        args.resize(argc);
+        NODE_API_CALL_RETURN_VOID(env, napi_get_cb_info(env, info, &argc, args.data(), &_this, nullptr));
+    }
+
+    T* operator->()
+    {
+        return obj;
+    }
+
+    NodeValue Get(size_t index)
+    {
+        return NodeValue(env_, args[index]);
+    }
+
+private:
+    napi_env env_;
+    T* obj;
+    std::vector<napi_value> args;
+};
+
+template <typename T>
+class NodeClass {
+protected:
+    static napi_value New(napi_env env, napi_callback_info info)
+    {
+        napi_value new_target;
+        NODE_API_CALL(env, napi_get_new_target(env, info, &new_target));
+        NODE_API_ASSERT(env, new_target != nullptr, "Not a constructor call");
+
+        napi_value _this;
+        NODE_API_CALL(env, napi_get_cb_info(env, info, nullptr, nullptr, &_this, nullptr));
+        T* obj(new T(env, info));
+        napi_wrap(env, _this, obj, Destructor, nullptr, &obj->wrapper_);
+
+        return _this;
+    }
+
+    static void Destructor(napi_env env, void* nativeObject, void*)
+    {
+        T* obj = static_cast<T*>(nativeObject);
+        napi_delete_reference(obj->env_, obj->wrapper_);
+        delete obj;
+    }
+};

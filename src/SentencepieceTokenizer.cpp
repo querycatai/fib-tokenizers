@@ -40,15 +40,9 @@ JSSentencepieceTokenizer::JSSentencepieceTokenizer(napi_env env, napi_callback_i
 
 napi_value JSSentencepieceTokenizer::tokenize(napi_env env, napi_callback_info info)
 {
-    napi_value _this;
-    size_t argc = 1;
-    napi_value args[1];
-    NODE_API_CALL(env, napi_get_cb_info(env, info, &argc, args, &_this, nullptr));
+    NodeArg<JSSentencepieceTokenizer> obj(env, info);
 
-    JSSentencepieceTokenizer* obj;
-    NODE_API_CALL(env, napi_unwrap(env, _this, reinterpret_cast<void**>(&obj)));
-
-    std::string text = NodeValue(env, args[0]);
+    std::string text = obj.Get(0);
     std::vector<std::string> tokens;
 
     sentencepiece::SentencePieceText spt;
@@ -67,15 +61,9 @@ napi_value JSSentencepieceTokenizer::tokenize(napi_env env, napi_callback_info i
 
 napi_value JSSentencepieceTokenizer::encode(napi_env env, napi_callback_info info)
 {
-    napi_value _this;
-    size_t argc = 1;
-    napi_value args[1];
-    NODE_API_CALL(env, napi_get_cb_info(env, info, &argc, args, &_this, nullptr));
+    NodeArg<JSSentencepieceTokenizer> obj(env, info);
 
-    JSSentencepieceTokenizer* obj;
-    NODE_API_CALL(env, napi_unwrap(env, _this, reinterpret_cast<void**>(&obj)));
-
-    std::string text = NodeValue(env, args[0]);
+    std::string text = obj.Get(0);
     std::vector<int> ids;
 
     sentencepiece::SentencePieceText spt;
@@ -110,15 +98,9 @@ napi_value JSSentencepieceTokenizer::encode(napi_env env, napi_callback_info inf
 
 napi_value JSSentencepieceTokenizer::decode(napi_env env, napi_callback_info info)
 {
-    napi_value _this;
-    size_t argc = 1;
-    napi_value args[1];
-    NODE_API_CALL(env, napi_get_cb_info(env, info, &argc, args, &_this, nullptr));
+    NodeArg<JSSentencepieceTokenizer> obj(env, info);
 
-    JSSentencepieceTokenizer* obj;
-    NODE_API_CALL(env, napi_unwrap(env, _this, reinterpret_cast<void**>(&obj)));
-
-    std::vector<int> ids = NodeValue(env, args[0]);
+    std::vector<int> ids = obj.Get(0);
     std::string text;
 
     std::vector<std::string> pieces;
