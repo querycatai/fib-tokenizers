@@ -33,10 +33,10 @@ private:
     std::vector<std::string>& lines;
 };
 
-JSTikTokenizer::JSTikTokenizer(NodeArg<JSTikTokenizer>& arg)
-    : env_(arg.env())
+JSTikTokenizer::JSTikTokenizer(NodeArg<JSTikTokenizer>& args)
+    : env_(args.env())
 {
-    NodeOpt opt(arg.args(1));
+    NodeOpt opt(args[1]);
     LanguageModel base_model = LanguageModel::CL100K_BASE;
     std::string opt_base_model = opt.Get("base_model", std::string("cl100k_base"));
     if (opt_base_model == "cl100k_base")
@@ -50,39 +50,27 @@ JSTikTokenizer::JSTikTokenizer(NodeArg<JSTikTokenizer>& arg)
     else
         NODE_API_ASSERT_RETURN_VOID(env_, false, "Unknown base model");
 
-    std::vector<std::string> lines = arg.args(0);
+    std::vector<std::string> lines = args[0];
     LinesReader lines_reader(lines);
     encoder_ = GptEncoding::get_encoding(base_model, &lines_reader);
 }
 
 napi_value JSTikTokenizer::encode(napi_env env, napi_callback_info info)
 {
-    napi_value _this;
-    size_t argc = 1;
-    napi_value args[1];
-    NODE_API_CALL(env, napi_get_cb_info(env, info, &argc, args, &_this, nullptr));
+    NodeArg<JSTikTokenizer> args(env, info);
 
-    JSTikTokenizer* obj;
-    NODE_API_CALL(env, napi_unwrap(env, _this, reinterpret_cast<void**>(&obj)));
-
-    std::string text = NodeValue(env, args[0]);
-    std::vector<int> tokens = obj->encoder_->encode(text);
+    std::string text = args[0];
+    std::vector<int> tokens = args->encoder_->encode(text);
 
     return NodeValue(env, tokens);
 }
 
 napi_value JSTikTokenizer::decode(napi_env env, napi_callback_info info)
 {
-    napi_value _this;
-    size_t argc = 1;
-    napi_value args[1];
-    NODE_API_CALL(env, napi_get_cb_info(env, info, &argc, args, &_this, nullptr));
+    NodeArg<JSTikTokenizer> args(env, info);
 
-    JSTikTokenizer* obj;
-    NODE_API_CALL(env, napi_unwrap(env, _this, reinterpret_cast<void**>(&obj)));
-
-    std::vector<int> ids = NodeValue(env, args[0]);
-    std::string text = obj->encoder_->decode(ids);
+    std::vector<int> ids = args[0];
+    std::string text = args->encoder_->decode(ids);
 
     return NodeValue(env, text);
 }

@@ -317,17 +317,17 @@ public:
         return this_;
     }
 
-    NodeValue args(size_t index)
+    size_t argc() const
+    {
+        return args_.size();
+    }
+
+    NodeValue operator[](size_t index)
     {
         if (index >= args_.size())
             return NodeValue(env_, napi_value(nullptr));
 
         return NodeValue(env_, args_[index]);
-    }
-
-    size_t argc() const
-    {
-        return args_.size();
     }
 
 private:
@@ -346,11 +346,11 @@ protected:
         NODE_API_CALL(env, napi_get_new_target(env, info, &new_target));
         NODE_API_ASSERT(env, new_target != nullptr, "Not a constructor call");
 
-        NodeArg<T> o(env, info);
-        T* obj(new T(o));
-        napi_wrap(env, o.This(), obj, Destructor, nullptr, &obj->wrapper_);
+        NodeArg<T> args(env, info);
+        T* obj(new T(args));
+        napi_wrap(env, args.This(), obj, Destructor, nullptr, &obj->wrapper_);
 
-        return o.This();
+        return args.This();
     }
 
     static void Destructor(napi_env env, void* nativeObject, void*)

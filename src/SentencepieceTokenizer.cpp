@@ -18,12 +18,12 @@ napi_value JSSentencepieceTokenizer::Init(napi_env env)
     return cons;
 }
 
-JSSentencepieceTokenizer::JSSentencepieceTokenizer(NodeArg<JSSentencepieceTokenizer>& arg)
-    : env_(arg.env())
+JSSentencepieceTokenizer::JSSentencepieceTokenizer(NodeArg<JSSentencepieceTokenizer>& args)
+    : env_(args.env())
 {
-    sentence_piece_.LoadFromSerializedProto(arg.args(0));
+    sentence_piece_.LoadFromSerializedProto(args[0]);
 
-    NodeOpt opt(arg.args(1));
+    NodeOpt opt(args[1]);
     sentence_piece_.SetEncodeExtraOptions(opt.Get("extra_options", std::string()));
     offset = opt.Get("offset", 0);
     added_tokens = opt.Get("added_tokens", std::vector<std::string>());
@@ -36,14 +36,14 @@ JSSentencepieceTokenizer::JSSentencepieceTokenizer(NodeArg<JSSentencepieceTokeni
 
 napi_value JSSentencepieceTokenizer::tokenize(napi_env env, napi_callback_info info)
 {
-    NodeArg<JSSentencepieceTokenizer> obj(env, info);
+    NodeArg<JSSentencepieceTokenizer> args(env, info);
 
-    std::string text = obj.args(0);
+    std::string text = args[0];
     std::vector<std::string> tokens;
 
     sentencepiece::SentencePieceText spt;
-    obj->sentence_piece_.Encode(text, &spt);
-    size_t added_tokens_size = obj->added_tokens.size();
+    args->sentence_piece_.Encode(text, &spt);
+    size_t added_tokens_size = args->added_tokens.size();
 
     tokens.resize(spt.pieces_size());
     for (int i = 0; i < spt.pieces_size(); i++) {
@@ -57,25 +57,25 @@ napi_value JSSentencepieceTokenizer::tokenize(napi_env env, napi_callback_info i
 
 napi_value JSSentencepieceTokenizer::encode(napi_env env, napi_callback_info info)
 {
-    NodeArg<JSSentencepieceTokenizer> obj(env, info);
+    NodeArg<JSSentencepieceTokenizer> args(env, info);
 
-    std::string text = obj.args(0);
+    std::string text = args[0];
     std::vector<int> ids;
 
     sentencepiece::SentencePieceText spt;
-    obj->sentence_piece_.Encode(text, &spt);
-    size_t added_tokens_size = obj->added_tokens.size();
+    args->sentence_piece_.Encode(text, &spt);
+    size_t added_tokens_size = args->added_tokens.size();
 
     ids.resize(spt.pieces_size());
     for (int i = 0; i < spt.pieces_size(); i++) {
         auto piece = spt.pieces(i);
 
-        if (added_tokens_size || obj->offset) {
+        if (added_tokens_size || args->offset) {
             int j;
             std::string txt = piece.piece();
 
             for (j = 0; j < added_tokens_size; j++) {
-                if (txt == obj->added_tokens[j]) {
+                if (txt == args->added_tokens[j]) {
                     ids[i] = j;
                     break;
                 }
@@ -83,7 +83,7 @@ napi_value JSSentencepieceTokenizer::encode(napi_env env, napi_callback_info inf
 
             if (j == added_tokens_size) {
                 uint32_t id = piece.id();
-                ids[i] = id ? id + obj->offset : obj->unk_id;
+                ids[i] = id ? id + args->offset : args->unk_id;
             }
         } else
             ids[i] = piece.id();
@@ -94,26 +94,26 @@ napi_value JSSentencepieceTokenizer::encode(napi_env env, napi_callback_info inf
 
 napi_value JSSentencepieceTokenizer::decode(napi_env env, napi_callback_info info)
 {
-    NodeArg<JSSentencepieceTokenizer> obj(env, info);
+    NodeArg<JSSentencepieceTokenizer> args(env, info);
 
-    std::vector<int> ids = obj.args(0);
+    std::vector<int> ids = args[0];
     std::string text;
 
     std::vector<std::string> pieces;
-    const int num_pieces = obj->sentence_piece_.GetPieceSize();
+    const int num_pieces = args->sentence_piece_.GetPieceSize();
     pieces.reserve(ids.size());
-    size_t added_tokens_size = obj->added_tokens.size();
+    size_t added_tokens_size = args->added_tokens.size();
 
     for (const int id : ids) {
-        if (id < 0 || id >= num_pieces + obj->offset)
+        if (id < 0 || id >= num_pieces + args->offset)
             pieces.emplace_back("");
         else if (id < added_tokens_size)
-            pieces.emplace_back(obj->added_tokens[id]);
+            pieces.emplace_back(args->added_tokens[id]);
         else
-            pieces.emplace_back(obj->sentence_piece_.IdToPiece(id - obj->offset));
+            pieces.emplace_back(args->sentence_piece_.IdToPiece(id - args->offset));
     }
 
-    obj->sentence_piece_.Decode(pieces, &text);
+    args->sentence_piece_.Decode(pieces, &text);
 
     return napi_value();
 }

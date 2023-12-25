@@ -7,7 +7,7 @@
 
 class JSWordpieceTokenizer : public NodeClass<JSWordpieceTokenizer> {
 public:
-    JSWordpieceTokenizer(NodeArg<JSWordpieceTokenizer>& arg);
+    JSWordpieceTokenizer(NodeArg<JSWordpieceTokenizer>& args);
 
 public:
     static napi_value Init(napi_env env);

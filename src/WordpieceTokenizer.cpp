@@ -15,14 +15,14 @@ napi_value JSWordpieceTokenizer::Init(napi_env env)
     return cons;
 }
 
-JSWordpieceTokenizer::JSWordpieceTokenizer(NodeArg<JSWordpieceTokenizer>& arg)
-    : env_(arg.env())
+JSWordpieceTokenizer::JSWordpieceTokenizer(NodeArg<JSWordpieceTokenizer>& args)
+    : env_(args.env())
 {
-    vocab_array = arg.args(0);
+    vocab_array = args[0];
     for (int i = 0; i < vocab_array.size(); i++)
         vocab_[vocab_array[i]] = i;
 
-    NodeOpt opt(arg.args(1));
+    NodeOpt opt(args[1]);
     unk_token_ = opt.Get("unk_token", std::u16string(u"UNK"));
     max_input_chars_per_word_ = opt.Get("max_input_chars_per_word", max_input_chars_per_word_);
 }
@@ -49,14 +49,14 @@ std::vector<std::u16string> whitespace_tokenize(std::u16string text)
 
 napi_value JSWordpieceTokenizer::tokenize(napi_env env, napi_callback_info info)
 {
-    NodeArg<JSWordpieceTokenizer> obj(env, info);
+    NodeArg<JSWordpieceTokenizer> args(env, info);
 
-    std::vector<std::u16string> words = whitespace_tokenize(obj.args(0));
+    std::vector<std::u16string> words = whitespace_tokenize(args[0]);
     std::vector<std::u16string> tokens;
 
     for (auto itk = words.begin(); itk != words.end(); ++itk) {
-        if (static_cast<int64_t>(itk->size()) > obj->max_input_chars_per_word_) {
-            tokens.push_back(obj->unk_token_);
+        if (static_cast<int64_t>(itk->size()) > args->max_input_chars_per_word_) {
+            tokens.push_back(args->unk_token_);
             continue;
         }
 
@@ -74,7 +74,7 @@ napi_value JSWordpieceTokenizer::tokenize(napi_env env, napi_callback_info info)
                 if (start > 0)
                     substr = u"##" + substr;
 
-                if (obj->vocab_.find(substr) != obj->vocab_.end()) {
+                if (args->vocab_.find(substr) != args->vocab_.end()) {
                     cur_substr = substr;
                     cur_substr_index = start;
                     break;
@@ -93,7 +93,7 @@ napi_value JSWordpieceTokenizer::tokenize(napi_env env, napi_callback_info info)
         }
 
         if (is_bad)
-            tokens.push_back(obj->unk_token_);
+            tokens.push_back(args->unk_token_);
         else
             tokens.insert(tokens.end(), sub_tokens.begin(), sub_tokens.end());
     }

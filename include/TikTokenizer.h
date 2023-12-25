@@ -5,7 +5,7 @@
 
 class JSTikTokenizer : public NodeClass<JSTikTokenizer> {
 public:
-    JSTikTokenizer(NodeArg<JSTikTokenizer>& arg);
+    JSTikTokenizer(NodeArg<JSTikTokenizer>& args);
 
 public:
     static napi_value Init(napi_env env);

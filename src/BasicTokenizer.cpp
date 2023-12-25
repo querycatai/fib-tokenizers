@@ -16,10 +16,10 @@ napi_value JSBasicTokenizer::Init(napi_env env)
     return cons;
 }
 
-JSBasicTokenizer::JSBasicTokenizer(NodeArg<JSBasicTokenizer>& arg)
-    : env_(arg.env())
+JSBasicTokenizer::JSBasicTokenizer(NodeArg<JSBasicTokenizer>& args)
+    : env_(args.env())
 {
-    NodeOpt opt(arg.args(0));
+    NodeOpt opt(args[0]);
     do_lower_case_ = opt.Get("do_lower_case", true);
     strip_accents_ = opt.Get("strip_accents", true);
     tokenize_chinese_chars_ = opt.Get("tokenize_chinese_chars", true);
@@ -29,9 +29,9 @@ JSBasicTokenizer::JSBasicTokenizer(NodeArg<JSBasicTokenizer>& arg)
 
 napi_value JSBasicTokenizer::tokenize(napi_env env, napi_callback_info info)
 {
-    NodeArg<JSBasicTokenizer> obj(env, info);
+    NodeArg<JSBasicTokenizer> args(env, info);
 
-    ustring text = obj.args(0);
+    ustring text = args[0];
 
     std::vector<ustring> result;
     ustring token;
@@ -49,32 +49,32 @@ napi_value JSBasicTokenizer::tokenize(napi_env env, napi_callback_info info)
     };
 
     // strip accent first
-    if (obj->strip_accents_) {
+    if (args->strip_accents_) {
         for (auto& c : text) {
             c = StripAccent(c);
         }
     }
 
-    if (obj->do_lower_case_) {
+    if (args->do_lower_case_) {
         for (auto& c : text) {
             c = ToLower(c);
         }
     }
 
     for (auto c : text) {
-        if (obj->tokenize_chinese_chars_ && IsCJK(c)) {
+        if (args->tokenize_chinese_chars_ && IsCJK(c)) {
             push_current_token_and_clear();
             push_single_char_and_clear(c);
             continue;
         }
 
-        if (obj->strip_accents_ && IsAccent(c)) {
+        if (args->strip_accents_ && IsAccent(c)) {
             continue;
         }
 
         // 0x2019 unicode is not punctuation in some Linux platform,
         // to be consistent, take it as punctuation.
-        if (obj->tokenize_punctuation_ && IsPunct(c)) {
+        if (args->tokenize_punctuation_ && IsPunct(c)) {
             push_current_token_and_clear();
             push_single_char_and_clear(c);
             continue;
@@ -86,7 +86,7 @@ napi_value JSBasicTokenizer::tokenize(napi_env env, napi_callback_info info)
             continue;
         }
 
-        if (obj->remove_control_chars_ && IsControl(c)) {
+        if (args->remove_control_chars_ && IsControl(c)) {
             continue;
         }
 

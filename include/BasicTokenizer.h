@@ -7,7 +7,7 @@
 
 class JSBasicTokenizer : public NodeClass<JSBasicTokenizer> {
 public:
-    JSBasicTokenizer(NodeArg<JSBasicTokenizer>& arg);
+    JSBasicTokenizer(NodeArg<JSBasicTokenizer>& args);
 
 public:
     static napi_value Init(napi_env env);
