@@ -55,7 +55,7 @@ napi_value JSWordpieceTokenizer::tokenize(napi_env env, napi_callback_info info)
 {
     NodeArg<JSWordpieceTokenizer> obj(env, info);
 
-    std::vector<std::u16string> words = whitespace_tokenize(obj.Get(0));
+    std::vector<std::u16string> words = whitespace_tokenize(obj.args(0));
     std::vector<std::u16string> tokens;
 
     for (auto itk = words.begin(); itk != words.end(); ++itk) {

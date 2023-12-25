@@ -42,7 +42,7 @@ napi_value JSSentencepieceTokenizer::tokenize(napi_env env, napi_callback_info i
 {
     NodeArg<JSSentencepieceTokenizer> obj(env, info);
 
-    std::string text = obj.Get(0);
+    std::string text = obj.args(0);
     std::vector<std::string> tokens;
 
     sentencepiece::SentencePieceText spt;
@@ -63,7 +63,7 @@ napi_value JSSentencepieceTokenizer::encode(napi_env env, napi_callback_info inf
 {
     NodeArg<JSSentencepieceTokenizer> obj(env, info);
 
-    std::string text = obj.Get(0);
+    std::string text = obj.args(0);
     std::vector<int> ids;
 
     sentencepiece::SentencePieceText spt;
@@ -100,7 +100,7 @@ napi_value JSSentencepieceTokenizer::decode(napi_env env, napi_callback_info inf
 {
     NodeArg<JSSentencepieceTokenizer> obj(env, info);
 
-    std::vector<int> ids = obj.Get(0);
+    std::vector<int> ids = obj.args(0);
     std::string text;
 
     std::vector<std::string> pieces;

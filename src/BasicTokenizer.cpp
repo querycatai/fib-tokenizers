@@ -35,7 +35,7 @@ napi_value JSBasicTokenizer::tokenize(napi_env env, napi_callback_info info)
 {
     NodeArg<JSBasicTokenizer> obj(env, info);
 
-    ustring text = obj.Get(0);
+    ustring text = obj.args(0);
 
     std::vector<ustring> result;
     ustring token;

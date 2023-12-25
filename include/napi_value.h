@@ -10,6 +10,10 @@
 
 class NodeValue {
 public:
+    NodeValue()
+    {
+    }
+
     NodeValue(napi_env env, napi_value value)
         : env_(env)
         , value_(value)
@@ -283,24 +287,31 @@ public:
         NODE_API_CALL_RETURN_VOID(env, napi_get_cb_info(env, info, &argc, nullptr, &_this, nullptr));
         NODE_API_CALL_RETURN_VOID(env, napi_unwrap(env, _this, reinterpret_cast<void**>(&obj)));
 
-        args.resize(argc);
-        NODE_API_CALL_RETURN_VOID(env, napi_get_cb_info(env, info, &argc, args.data(), &_this, nullptr));
+        args_.resize(argc);
+        NODE_API_CALL_RETURN_VOID(env, napi_get_cb_info(env, info, &argc, args_.data(), &_this, nullptr));
     }
 
     T* operator->()
     {
+        NODE_API_ASSERT(env_, obj != nullptr, "Wrong argument index");
         return obj;
     }
 
-    NodeValue Get(size_t index)
+    NodeValue args(size_t index)
     {
-        return NodeValue(env_, args[index]);
+        NODE_API_ASSERT_BASE(env_, index < args_.size(), "Wrong argument index", NodeValue());
+        return NodeValue(env_, args_[index]);
+    }
+
+    size_t argc() const
+    {
+        return args_.size();
     }
 
 private:
     napi_env env_;
     T* obj;
-    std::vector<napi_value> args;
+    std::vector<napi_value> args_;
 };
 
 template <typename T>
