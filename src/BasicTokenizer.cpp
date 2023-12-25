@@ -16,14 +16,10 @@ napi_value JSBasicTokenizer::Init(napi_env env)
     return cons;
 }
 
-JSBasicTokenizer::JSBasicTokenizer(napi_env env, napi_callback_info info)
-    : env_(env)
+JSBasicTokenizer::JSBasicTokenizer(NodeArg<JSBasicTokenizer>& arg)
+    : env_(arg.env())
 {
-    size_t argc = 1;
-    napi_value args[1];
-    NODE_API_CALL_RETURN_VOID(env, napi_get_cb_info(env, info, &argc, args, nullptr, nullptr));
-
-    NodeOpt opt(env, args[0]);
+    NodeOpt opt(arg.args(0));
     do_lower_case_ = opt.Get("do_lower_case", true);
     strip_accents_ = opt.Get("strip_accents", true);
     tokenize_chinese_chars_ = opt.Get("tokenize_chinese_chars", true);

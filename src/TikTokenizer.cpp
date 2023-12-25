@@ -33,14 +33,10 @@ private:
     std::vector<std::string>& lines;
 };
 
-JSTikTokenizer::JSTikTokenizer(napi_env env, napi_callback_info info)
-    : env_(env)
+JSTikTokenizer::JSTikTokenizer(NodeArg<JSTikTokenizer>& arg)
+    : env_(arg.env())
 {
-    size_t argc = 2;
-    napi_value args[2];
-    NODE_API_CALL_RETURN_VOID(env, napi_get_cb_info(env, info, &argc, args, nullptr, nullptr));
-
-    NodeOpt opt(env, args[1]);
+    NodeOpt opt(arg.args(1));
     LanguageModel base_model = LanguageModel::CL100K_BASE;
     std::string opt_base_model = opt.Get("base_model", std::string("cl100k_base"));
     if (opt_base_model == "cl100k_base")
@@ -52,9 +48,9 @@ JSTikTokenizer::JSTikTokenizer(napi_env env, napi_callback_info info)
     else if (opt_base_model == "p50k_edit")
         base_model = LanguageModel::P50K_EDIT;
     else
-        NODE_API_ASSERT_RETURN_VOID(env, false, "Unknown base model");
+        NODE_API_ASSERT_RETURN_VOID(env_, false, "Unknown base model");
 
-    std::vector<std::string> lines = NodeValue(env, args[0]);
+    std::vector<std::string> lines = arg.args(0);
     LinesReader lines_reader(lines);
     encoder_ = GptEncoding::get_encoding(base_model, &lines_reader);
 }

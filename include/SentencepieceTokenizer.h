@@ -5,7 +5,7 @@
 
 class JSSentencepieceTokenizer : public NodeClass<JSSentencepieceTokenizer> {
 public:
-    JSSentencepieceTokenizer(napi_env env, napi_callback_info info);
+    JSSentencepieceTokenizer(NodeArg<JSSentencepieceTokenizer>& arg);
 
 public:
     static napi_value Init(napi_env env);

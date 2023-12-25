@@ -235,6 +235,12 @@ public:
         return result;
     }
 
+public:
+    napi_env env() const
+    {
+        return env_;
+    }
+
 private:
     napi_env env_;
     napi_value value_;
@@ -242,8 +248,8 @@ private:
 
 class NodeOpt {
 public:
-    NodeOpt(napi_env env, napi_value opt)
-        : env_(env)
+    NodeOpt(NodeValue opt)
+        : env_(opt.env())
     {
         napi_valuetype valuetype = napi_undefined;
         napi_typeof(env_, opt, &valuetype);
@@ -282,24 +288,40 @@ public:
     NodeArg(napi_env env, napi_callback_info info)
         : env_(env)
     {
-        napi_value _this;
-        size_t argc = 0;
-        NODE_API_CALL_RETURN_VOID(env, napi_get_cb_info(env, info, &argc, nullptr, &_this, nullptr));
-        NODE_API_CALL_RETURN_VOID(env, napi_unwrap(env, _this, reinterpret_cast<void**>(&obj)));
 
-        args_.resize(argc);
-        NODE_API_CALL_RETURN_VOID(env, napi_get_cb_info(env, info, &argc, args_.data(), &_this, nullptr));
+        size_t argc = 0;
+        NODE_API_CALL_RETURN_VOID(env_, napi_get_cb_info(env_, info, &argc, nullptr, &this_, nullptr));
+
+        if (argc) {
+            args_.resize(argc);
+            NODE_API_CALL_RETURN_VOID(env_, napi_get_cb_info(env_, info, &argc, args_.data(), nullptr, nullptr));
+        }
     }
 
     T* operator->()
     {
-        NODE_API_ASSERT(env_, obj != nullptr, "Wrong argument index");
+        if (!obj) {
+            NODE_API_CALL(env_, napi_unwrap(env_, this_, reinterpret_cast<void**>(&obj)));
+        }
+
         return obj;
+    }
+
+    napi_env env() const
+    {
+        return env_;
+    }
+
+    napi_value This() const
+    {
+        return this_;
     }
 
     NodeValue args(size_t index)
     {
-        NODE_API_ASSERT_BASE(env_, index < args_.size(), "Wrong argument index", NodeValue());
+        if (index >= args_.size())
+            return NodeValue(env_, napi_value(nullptr));
+
         return NodeValue(env_, args_[index]);
     }
 
@@ -310,7 +332,8 @@ public:
 
 private:
     napi_env env_;
-    T* obj;
+    napi_value this_ = nullptr;
+    T* obj = nullptr;
     std::vector<napi_value> args_;
 };
 
@@ -323,12 +346,11 @@ protected:
         NODE_API_CALL(env, napi_get_new_target(env, info, &new_target));
         NODE_API_ASSERT(env, new_target != nullptr, "Not a constructor call");
 
-        napi_value _this;
-        NODE_API_CALL(env, napi_get_cb_info(env, info, nullptr, nullptr, &_this, nullptr));
-        T* obj(new T(env, info));
-        napi_wrap(env, _this, obj, Destructor, nullptr, &obj->wrapper_);
+        NodeArg<T> o(env, info);
+        T* obj(new T(o));
+        napi_wrap(env, o.This(), obj, Destructor, nullptr, &obj->wrapper_);
 
-        return _this;
+        return o.This();
     }
 
     static void Destructor(napi_env env, void* nativeObject, void*)

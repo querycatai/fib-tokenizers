@@ -18,16 +18,12 @@ napi_value JSSentencepieceTokenizer::Init(napi_env env)
     return cons;
 }
 
-JSSentencepieceTokenizer::JSSentencepieceTokenizer(napi_env env, napi_callback_info info)
-    : env_(env)
+JSSentencepieceTokenizer::JSSentencepieceTokenizer(NodeArg<JSSentencepieceTokenizer>& arg)
+    : env_(arg.env())
 {
-    size_t argc = 2;
-    napi_value args[2];
-    NODE_API_CALL_RETURN_VOID(env, napi_get_cb_info(env, info, &argc, args, nullptr, nullptr));
+    sentence_piece_.LoadFromSerializedProto(arg.args(0));
 
-    sentence_piece_.LoadFromSerializedProto(NodeValue(env, args[0]));
-
-    NodeOpt opt(env, args[1]);
+    NodeOpt opt(arg.args(1));
     sentence_piece_.SetEncodeExtraOptions(opt.Get("extra_options", std::string()));
     offset = opt.Get("offset", 0);
     added_tokens = opt.Get("added_tokens", std::vector<std::string>());
