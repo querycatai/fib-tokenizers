@@ -322,7 +322,7 @@ public:
         return args_.size();
     }
 
-    NodeValue operator[](size_t index)
+    NodeValue operator[](size_t index) const
     {
         if (index >= args_.size())
             return NodeValue(env_, napi_value(nullptr));
