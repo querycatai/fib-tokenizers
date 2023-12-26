@@ -234,8 +234,10 @@ napi_value JSSentencepieceTokenizer::encode(napi_env env, napi_callback_info inf
 
     args->encode(text, &ids);
 
-    if (args->add_eos_token)
-        ids.emplace_back(args->eos_id);
+    if (args->add_eos_token) {
+        if (ids.size() == 0 || ids[ids.size() - 1] != args->eos_id)
+            ids.emplace_back(args->eos_id);
+    }
 
     // sentencepiece::SentencePieceText spt;
     // args->sentence_piece_.Encode(text, &spt);

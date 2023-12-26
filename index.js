@@ -29,10 +29,22 @@ tokenizers.from_folder = module.exports = function (home, model) {
 
     const model_config = tokenizers.config_from_name(config, tokenizer_config, file_list, special_tokens_map);
 
-    return new tokenizers[model_config.tokenizer_class](
-        fs.readFileSync(path.join(model_path, "tokenizer.model")),
-        model_config
-    );
+    const vocabs = tokenizers[model_config.tokenizer_class].vocabs.map(vocab => fs.readFileSync(path.join(model_path, vocab)));
+    var tokenizer;
+
+    switch (vocabs.length) {
+        case 1:
+            tokenizer = new tokenizers[model_config.tokenizer_class](vocabs[0], model_config);
+            break;
+        case 2:
+            tokenizer = new tokenizers[model_config.tokenizer_class](vocabs[0], vocabs[1], model_config);
+            break;
+        default:
+            throw new Error("Unsupported vocabs");
+    }
+    tokenizer.config = model_config;
+
+    return tokenizer;
 }
 
 module.exports = tokenizers;
