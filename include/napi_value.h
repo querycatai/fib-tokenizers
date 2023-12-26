@@ -151,10 +151,10 @@ public:
     {
         std::string result;
         size_t size;
-        NODE_API_CALL(env_, napi_get_value_string_utf8(env_, value_, nullptr, 0, &size));
+        NODE_API_CALL_BASE(env_, napi_get_value_string_utf8(env_, value_, nullptr, 0, &size), result);
         result.resize(size);
         char* data = result.data();
-        NODE_API_CALL(env_, napi_get_value_string_utf8(env_, value_, data, size + 1, nullptr));
+        NODE_API_CALL_BASE(env_, napi_get_value_string_utf8(env_, value_, data, size + 1, nullptr), result);
         return result;
     }
 
@@ -181,12 +181,12 @@ public:
         napi_value input_buffer;
         size_t byte_offset;
         size_t i, length;
-        NODE_API_CALL(env_, napi_get_typedarray_info(env_, value_, &type, &length, NULL, &input_buffer, &byte_offset));
-        NODE_API_ASSERT(env_, type == napi_uint8_array, "Wrong argument type, must be Uint8Array");
+        NODE_API_CALL_BASE(env_, napi_get_typedarray_info(env_, value_, &type, &length, NULL, &input_buffer, &byte_offset), std::string_view());
+        NODE_API_ASSERT_BASE(env_, type == napi_uint8_array, "Wrong argument type, must be Uint8Array", std::string_view());
 
         void* data;
         size_t byte_length;
-        NODE_API_CALL(env_, napi_get_arraybuffer_info(env_, input_buffer, &data, &byte_length));
+        NODE_API_CALL_BASE(env_, napi_get_arraybuffer_info(env_, input_buffer, &data, &byte_length), std::string_view());
 
         return std::string_view((char*)data + byte_offset, length);
     }
@@ -271,7 +271,7 @@ public:
 
         napi_valuetype valuetype = napi_undefined;
         napi_typeof(env_, value, &valuetype);
-        if (valuetype == napi_undefined)
+        if (valuetype == napi_undefined || valuetype == napi_null)
             return default_value;
 
         return NodeValue(env_, value);
