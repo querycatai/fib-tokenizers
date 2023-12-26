@@ -123,7 +123,7 @@ JSSentencepieceTokenizer::JSSentencepieceTokenizer(NodeArg<JSSentencepieceTokeni
         }
 
         has_pattern = true;
-        pattern = std::regex(pattern_str);
+        pattern = std::regex("\\s?(" + pattern_str + ")\\s?");
     }
 }
 
@@ -197,18 +197,22 @@ void JSSentencepieceTokenizer::encode(std::string& text, std::vector<T>* ids)
             size_t pos = m[0].first - text.cbegin();
 
             if (pos != lastPos) {
-                sentencepiece_encode(std::string_view(text.data() + lastPos, pos - lastPos), ids);
+                std::string_view text_piece(text.data() + lastPos, pos - lastPos);
+                sentencepiece_encode(text_piece, ids);
             }
 
-            push_token(std::string_view(text.data() + pos, m[0].length()), ids);
+            pos = m[1].first - text.cbegin();
+            std::string_view token(text.data() + pos, m[1].length());
+            push_token(token, ids);
 
-            lastPos = pos + m[0].length();
             searchStart = m[0].first + m[0].length();
+            lastPos = searchStart - text.cbegin();
         }
     }
 
     if (lastPos < text.size()) {
-        sentencepiece_encode(std::string_view(text.data() + lastPos, text.size() - lastPos), ids);
+        std::string_view text_piece(text.data() + lastPos, text.size() - lastPos);
+        sentencepiece_encode(text_piece, ids);
     }
 }
 
