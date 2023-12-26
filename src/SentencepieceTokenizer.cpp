@@ -112,6 +112,7 @@ JSSentencepieceTokenizer::JSSentencepieceTokenizer(NodeArg<JSSentencepieceTokeni
     }
 
     offset = opt.Get("offset", 0);
+    legacy = opt.Get("legacy", true);
 
     if (token_to_id.size() > 0) {
         std::string pattern_str;
@@ -164,24 +165,31 @@ void JSSentencepieceTokenizer::push_token(std::string_view token, std::vector<st
     ids->push_back(token);
 }
 
-void JSSentencepieceTokenizer::sentencepiece_encode(std::string_view text, std::vector<int>* ids)
+static void push_piece(const sentencepiece::SentencePieceText_SentencePiece& piece, std::vector<int>* ids)
 {
-    sentencepiece::SentencePieceText spt;
-    sentence_piece_.Encode(text, &spt);
-
-    for (const auto& sp : spt.pieces()) {
-        ids->emplace_back(sp.id());
-    }
+    ids->emplace_back(piece.id());
 }
 
-void JSSentencepieceTokenizer::sentencepiece_encode(std::string_view text, std::vector<std::string_view>* ids)
+static void push_piece(const sentencepiece::SentencePieceText_SentencePiece& piece, std::vector<std::string_view>* ids)
 {
-    sentencepiece::SentencePieceText spt;
-    sentence_piece_.Encode(text, &spt);
+    ids->emplace_back(piece.piece());
+}
 
-    for (const auto& sp : spt.pieces()) {
-        ids->emplace_back(sp.piece());
+template <typename T>
+void JSSentencepieceTokenizer::sentencepiece_encode(char* text, size_t size, std::vector<T>* ids)
+{
+    int32_t start = 0;
+    if (!legacy && ids->size() > (add_bos_token ? 1 : 0)) {
+        *--text = '-';
+        size++;
+        start = 1;
     }
+
+    sentencepiece::SentencePieceText spt;
+    sentence_piece_.Encode(std::string_view(text, size), &spt);
+
+    for (; start < spt.pieces_size(); start++)
+        push_piece(spt.pieces(start), ids);
 }
 
 template <typename T>
@@ -197,8 +205,7 @@ void JSSentencepieceTokenizer::encode(std::string& text, std::vector<T>* ids)
             size_t pos = m[0].first - text.cbegin();
 
             if (pos != lastPos) {
-                std::string_view text_piece(text.data() + lastPos, pos - lastPos);
-                sentencepiece_encode(text_piece, ids);
+                sentencepiece_encode(text.data() + lastPos, pos - lastPos, ids);
             }
 
             pos = m[1].first - text.cbegin();
@@ -211,8 +218,7 @@ void JSSentencepieceTokenizer::encode(std::string& text, std::vector<T>* ids)
     }
 
     if (lastPos < text.size()) {
-        std::string_view text_piece(text.data() + lastPos, text.size() - lastPos);
-        sentencepiece_encode(text_piece, ids);
+        sentencepiece_encode(text.data() + lastPos, text.size() - lastPos, ids);
     }
 }
 

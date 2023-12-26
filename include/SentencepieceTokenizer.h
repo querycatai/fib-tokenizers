@@ -26,8 +26,8 @@ private:
     void push_token(std::string_view token, std::vector<int>* ids);
     void push_token(std::string_view token, std::vector<std::string_view>* ids);
 
-    void sentencepiece_encode(std::string_view text, std::vector<int>* ids);
-    void sentencepiece_encode(std::string_view text, std::vector<std::string_view>* ids);
+    template <typename T>
+    void sentencepiece_encode(char* text, size_t size, std::vector<T>* ids);
 
 private:
     sentencepiece::SentencePieceProcessor sentence_piece_;
@@ -46,6 +46,8 @@ private:
     int eos_id;
     int unk_id;
     int pad_id;
+
+    bool legacy;
 
     std::unordered_map<std::string_view, int> token_to_id;
     std::unordered_map<int, std::string> id_to_token;
