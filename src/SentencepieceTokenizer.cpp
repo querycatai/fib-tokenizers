@@ -89,27 +89,27 @@ JSSentencepieceTokenizer::JSSentencepieceTokenizer(NodeArg<JSSentencepieceTokeni
     unk_token = opt.Get("unk_token", std::string("<unk>"));
     pad_token = opt.Get("pad_token", std::string("<pad>"));
 
-    if (token_to_id.size() == 0) {
-        if (unk_token.length() > 0) {
-            token_to_id[unk_token] = 0;
-            id_to_token[0] = unk_token;
-        }
-
-        if (bos_token.length() > 0) {
-            token_to_id[bos_token] = 1;
-            id_to_token[1] = bos_token;
-        }
-
-        if (eos_token.length() > 0) {
-            token_to_id[eos_token] = 2;
-            id_to_token[2] = eos_token;
-        }
-    }
-
     bos_id = convert_token_to_id(bos_token);
     eos_id = convert_token_to_id(eos_token);
     unk_id = convert_token_to_id(unk_token);
     pad_id = convert_token_to_id(pad_token);
+
+    if (token_to_id.size() == 0) {
+        if (unk_token.length() > 0) {
+            token_to_id[unk_token] = unk_id;
+            id_to_token[unk_id] = unk_token;
+        }
+
+        if (bos_token.length() > 0) {
+            token_to_id[bos_token] = bos_id;
+            id_to_token[bos_id] = bos_token;
+        }
+
+        if (eos_token.length() > 0) {
+            token_to_id[eos_token] = eos_id;
+            id_to_token[eos_id] = eos_token;
+        }
+    }
 
     offset = opt.Get("offset", 0);
 
