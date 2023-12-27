@@ -9,11 +9,11 @@ Napi::Function JSWordpieceTokenizer::Init(Napi::Env env)
 JSWordpieceTokenizer::JSWordpieceTokenizer(const Napi::CallbackInfo& info)
     : Napi::ObjectWrap<JSWordpieceTokenizer>(info)
 {
-    vocab_array = NodeValue(info[0]);
+    vocab_array = to_array<std::u16string>(info[0]);
     for (int i = 0; i < vocab_array.size(); i++)
         vocab_[vocab_array[i]] = i;
 
-    NodeOpt opt(info[1]);
+    Napi::Config opt(info[1]);
     unk_token_ = opt.Get("unk_token", std::u16string(u"UNK"));
     max_input_chars_per_word_ = opt.Get("max_input_chars_per_word", max_input_chars_per_word_);
 }
@@ -40,7 +40,7 @@ std::vector<std::u16string> whitespace_tokenize(std::u16string text)
 
 Napi::Value JSWordpieceTokenizer::tokenize(const Napi::CallbackInfo& info)
 {
-    std::vector<std::u16string> words = whitespace_tokenize(NodeValue(info[0]));
+    std::vector<std::u16string> words = whitespace_tokenize(from_value<std::u16string>(info[0]));
     std::vector<std::u16string> tokens;
 
     for (auto itk = words.begin(); itk != words.end(); ++itk) {
@@ -87,5 +87,5 @@ Napi::Value JSWordpieceTokenizer::tokenize(const Napi::CallbackInfo& info)
             tokens.insert(tokens.end(), sub_tokens.begin(), sub_tokens.end());
     }
 
-    return NodeValue(info.Env(), tokens);
+    return to_value(info.Env(), tokens);
 }

@@ -7,18 +7,18 @@
 
 class JSSentencepieceTokenizer : public Napi::ObjectWrap<JSSentencepieceTokenizer> {
 public:
-    class SpecialTokens {
+    class SpecialToken {
     public:
-        SpecialTokens()
+        SpecialToken()
         {
         }
 
-        SpecialTokens(const char* content_)
+        SpecialToken(const char* content_)
             : content(content_)
         {
         }
 
-        SpecialTokens(const SpecialTokens& other)
+        SpecialToken(const SpecialToken& other)
         {
             content = other.content;
             lstrip = other.lstrip;
@@ -28,9 +28,14 @@ public:
             special = other.special;
         }
 
-        SpecialTokens(NodeValue value)
+        SpecialToken(Napi::Value value)
         {
-            NodeOpt opt(value);
+            if (value.IsString()) {
+                content = value.As<Napi::String>();
+                return;
+            }
+
+            Napi::Config opt(value);
 
             content = opt.Get("content", std::string());
             lstrip = opt.Get("lstrip", false);
@@ -94,6 +99,9 @@ private:
 
     std::unordered_map<std::string_view, int> token_to_id;
     std::unordered_map<int, std::string> id_to_token;
+
+    std::unordered_map<std::string, SpecialToken> special_tokens_map;
+
     std::regex pattern;
     bool has_pattern = false;
 

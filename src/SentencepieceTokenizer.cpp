@@ -24,14 +24,14 @@ JSSentencepieceTokenizer::JSSentencepieceTokenizer(const Napi::CallbackInfo& inf
         "bos_token", "eos_token", "unk_token", "pad_token", "mask_token", "sep_token"
     };
 
-    sentence_piece_.LoadFromSerializedProto(NodeValue(info[0]));
+    sentence_piece_.LoadFromSerializedProto(from_value<std::string_view>(info[0]));
 
-    NodeOpt opt(info[1]);
+    Napi::Config opt(info[1]);
 
     add_bos_token = opt.Get("add_bos_token", false);
     add_eos_token = opt.Get("add_eos_token", false);
 
-    std::unordered_map<std::string, SpecialTokens> added_tokens_decoder;
+    std::unordered_map<std::string, SpecialToken> added_tokens_decoder;
     added_tokens_decoder = opt.Get("added_tokens_decoder", added_tokens_decoder);
 
     for (auto& [key, value] : added_tokens_decoder) {
@@ -40,6 +40,13 @@ JSSentencepieceTokenizer::JSSentencepieceTokenizer(const Napi::CallbackInfo& inf
         auto it = id_to_token.emplace(id, value.content);
         if (value.content.length() > 0)
             token_to_id[it.first->second] = id;
+    }
+
+    for (auto& key : special_tokens) {
+        Napi::Value value = opt.Get(key, Napi::Value());
+
+        if (!value.IsUndefined() && !value.IsNull())
+            special_tokens_map[key] = value;
     }
 
     bos_token = opt.Get("bos_token", std::string("<s>"));
@@ -88,7 +95,7 @@ JSSentencepieceTokenizer::JSSentencepieceTokenizer(const Napi::CallbackInfo& inf
 
 Napi::Value JSSentencepieceTokenizer::tokenize(const Napi::CallbackInfo& info)
 {
-    std::string text = NodeValue(info[0]);
+    std::string text = from_value<std::string>(info[0]);
     std::vector<std::string> tokens;
 
     sentencepiece::SentencePieceText spt;
@@ -99,7 +106,7 @@ Napi::Value JSSentencepieceTokenizer::tokenize(const Napi::CallbackInfo& info)
     for (int i = 0; i < spt.pieces_size(); i++)
         tokens[i] = spt.pieces(i).piece();
 
-    return NodeValue(info.Env(), tokens);
+    return to_value(info.Env(), tokens);
 }
 
 int JSSentencepieceTokenizer::convert_token_to_id(std::string_view token)
@@ -180,7 +187,7 @@ void JSSentencepieceTokenizer::encode(std::string& text, std::vector<T>* ids)
 
 Napi::Value JSSentencepieceTokenizer::encode(const Napi::CallbackInfo& info)
 {
-    std::string text = NodeValue(info[0]);
+    std::string text = from_value<std::string>(info[0]);
     std::vector<int> ids;
 
     if (add_bos_token)
@@ -220,12 +227,12 @@ Napi::Value JSSentencepieceTokenizer::encode(const Napi::CallbackInfo& info)
     //         ids[i] = piece.id();
     // }
 
-    return NodeValue(info.Env(), ids);
+    return to_value(info.Env(), ids);
 }
 
 Napi::Value JSSentencepieceTokenizer::decode(const Napi::CallbackInfo& info)
 {
-    std::vector<int> ids = NodeValue(info[0]);
+    std::vector<int> ids = to_array<int>(info[0]);
     std::string text;
 
     std::vector<std::string> pieces;
@@ -244,5 +251,5 @@ Napi::Value JSSentencepieceTokenizer::decode(const Napi::CallbackInfo& info)
 
     sentence_piece_.Decode(pieces, &text);
 
-    return NodeValue(info.Env(), text);
+    return to_value(info.Env(), text);
 }

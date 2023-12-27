@@ -27,7 +27,7 @@ private:
 JSTikTokenizer::JSTikTokenizer(const Napi::CallbackInfo& info)
     : Napi::ObjectWrap<JSTikTokenizer>(info)
 {
-    NodeOpt opt(info[1]);
+    Napi::Config opt(info[1]);
     LanguageModel base_model = LanguageModel::CL100K_BASE;
     std::string opt_base_model = opt.Get("base_model", std::string("cl100k_base"));
     if (opt_base_model == "cl100k_base")
@@ -41,23 +41,23 @@ JSTikTokenizer::JSTikTokenizer(const Napi::CallbackInfo& info)
     else
         throw Napi::Error::New(info.Env(), "Unknown base model");
 
-    std::vector<std::string> lines = NodeValue(info[0]);
+    std::vector<std::string> lines = to_array<std::string>(info[0]);
     LinesReader lines_reader(lines);
     encoder_ = GptEncoding::get_encoding(base_model, &lines_reader);
 }
 
 Napi::Value JSTikTokenizer::encode(const Napi::CallbackInfo& info)
 {
-    std::string text = NodeValue(info[0]);
+    std::string text = info[0].As<Napi::String>();
     std::vector<int> tokens = encoder_->encode(text);
 
-    return NodeValue(info.Env(), tokens);
+    return to_value(info.Env(), tokens);
 }
 
 Napi::Value JSTikTokenizer::decode(const Napi::CallbackInfo& info)
 {
-    std::vector<int> ids = NodeValue(info[0]);
+    std::vector<int> ids = to_array<int>(info[0]);
     std::string text = encoder_->decode(ids);
 
-    return NodeValue(info.Env(), text);
+    return to_value(info.Env(), text);
 }

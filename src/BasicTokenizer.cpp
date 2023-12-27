@@ -10,7 +10,7 @@ Napi::Function JSBasicTokenizer::Init(Napi::Env env)
 JSBasicTokenizer::JSBasicTokenizer(const Napi::CallbackInfo& info)
     : Napi::ObjectWrap<JSBasicTokenizer>(info)
 {
-    NodeOpt opt(info[0]);
+    Napi::Config opt(info[0]);
     do_lower_case_ = opt.Get("do_lower_case", true);
     strip_accents_ = opt.Get("strip_accents", true);
     tokenize_chinese_chars_ = opt.Get("tokenize_chinese_chars", true);
@@ -20,7 +20,8 @@ JSBasicTokenizer::JSBasicTokenizer(const Napi::CallbackInfo& info)
 
 Napi::Value JSBasicTokenizer::tokenize(const Napi::CallbackInfo& info)
 {
-    ustring text = NodeValue(info[0]);
+    std::string text_utf8 = info[0].As<Napi::String>();
+    ustring text(text_utf8);
 
     std::vector<ustring> result;
     ustring token;
@@ -84,5 +85,5 @@ Napi::Value JSBasicTokenizer::tokenize(const Napi::CallbackInfo& info)
 
     push_current_token_and_clear();
 
-    return NodeValue(info.Env(), result);
+    return to_value(info.Env(), result);
 }
