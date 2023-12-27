@@ -11,7 +11,7 @@ public:
     {
     }
 
-    SpecialToken(const char* content_)
+    SpecialToken(std::string content_)
         : content(content_)
     {
     }
@@ -69,9 +69,6 @@ private:
     std::vector<std::string> added_tokens;
     int32_t offset = 0;
 
-    bool add_bos_token;
-    bool add_eos_token;
-
     int bos_id;
     int eos_id;
     int unk_id;
@@ -82,6 +79,12 @@ private:
     std::unordered_map<int, std::string> id_to_token;
 
     std::unordered_map<std::string, SpecialToken> special_tokens_map;
+
+    bool add_bos_token;
+    bool add_eos_token;
+
+    std::vector<int> prefix_tokens;
+    std::vector<int> suffix_tokens;
 
     std::regex pattern;
     bool has_pattern = false;
