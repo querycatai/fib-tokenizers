@@ -205,6 +205,11 @@ public:
     }
 
 private:
+    void _convert(const Value& value, Value* result) const
+    {
+        *result = value;
+    }
+
     template <typename VALUE_TYPE>
     void _convert(const Value& value, VALUE_TYPE* result) const
     {

@@ -21,7 +21,11 @@ JSSentencepieceTokenizer::JSSentencepieceTokenizer(const Napi::CallbackInfo& inf
     : Napi::ObjectWrap<JSSentencepieceTokenizer>(info)
 {
     static const char* special_tokens[] = {
-        "bos_token", "eos_token", "unk_token", "pad_token", "mask_token", "sep_token"
+        "unk_token", "bos_token", "eos_token", "pad_token", "mask_token", "sep_token"
+    };
+
+    static const char* special_token_values[] = {
+        "<unk>", "<s>", "</s>", "<pad>", "<mask>", "<sep>"
     };
 
     sentence_piece_.LoadFromSerializedProto(from_value<std::string_view>(info[0]));
@@ -42,47 +46,42 @@ JSSentencepieceTokenizer::JSSentencepieceTokenizer(const Napi::CallbackInfo& inf
             token_to_id[it.first->second] = id;
     }
 
-    for (auto& key : special_tokens) {
+    for (int i = 0; i < sizeof(special_tokens) / sizeof(special_tokens[0]); i++) {
+        const char* key(special_tokens[i]);
         Napi::Value value = opt.Get(key, Napi::Value());
+        SpecialToken token;
 
+        napi_valuetype type = value.Type();
         if (!value.IsUndefined() && !value.IsNull())
-            special_tokens_map[key] = value;
-    }
+            token = value;
 
-    bos_token = opt.Get("bos_token", std::string("<s>"));
-    eos_token = opt.Get("eos_token", std::string("</s>"));
-    unk_token = opt.Get("unk_token", std::string("<unk>"));
-    pad_token = opt.Get("pad_token", std::string("<pad>"));
+        if (token.content.length() == 0)
+            token.content = special_token_values[i];
 
-    bos_id = convert_token_to_id(bos_token);
-    eos_id = convert_token_to_id(eos_token);
-    unk_id = convert_token_to_id(unk_token);
-    pad_id = convert_token_to_id(pad_token);
-
-    if (token_to_id.size() == 0) {
-        if (unk_token.length() > 0) {
-            token_to_id[unk_token] = unk_id;
-            id_to_token[unk_id] = unk_token;
+        token.id = convert_token_to_id(token.content);
+        switch (i) {
+        case 0:
+            unk_id = token.id;
+            break;
+        case 1:
+            bos_id = token.id;
+            break;
+        case 2:
+            eos_id = token.id;
+            break;
         }
 
-        if (bos_token.length() > 0) {
-            token_to_id[bos_token] = bos_id;
-            id_to_token[bos_id] = bos_token;
-        }
-
-        if (eos_token.length() > 0) {
-            token_to_id[eos_token] = eos_id;
-            id_to_token[eos_id] = eos_token;
-        }
+        if (special_tokens_map.find(token.content) == special_tokens_map.end())
+            auto it = special_tokens_map.emplace(token.content, token);
     }
 
     offset = opt.Get("offset", 0);
     legacy = opt.Get("legacy", true);
 
-    if (token_to_id.size() > 0) {
+    if (special_tokens_map.size() > 0) {
         std::string pattern_str;
 
-        for (auto& [key, value] : token_to_id) {
+        for (auto& [key, value] : special_tokens_map) {
             if (pattern_str.length() > 0)
                 pattern_str += "|";
             pattern_str += escapeRegex(std::string(key));
@@ -118,14 +117,14 @@ int JSSentencepieceTokenizer::convert_token_to_id(std::string_view token)
     return sentence_piece_.PieceToId(token);
 }
 
-void JSSentencepieceTokenizer::push_token(std::string_view token, std::vector<int>* ids)
+static void push_token(const SpecialToken& token, std::vector<int>* ids)
 {
-    ids->push_back(convert_token_to_id(token));
+    ids->push_back(token.id);
 }
 
-void JSSentencepieceTokenizer::push_token(std::string_view token, std::vector<std::string_view>* ids)
+static void push_token(const SpecialToken& token, std::vector<std::string_view>* ids)
 {
-    ids->push_back(token);
+    ids->push_back(token.content);
 }
 
 static void push_piece(const sentencepiece::SentencePieceText_SentencePiece& piece, std::vector<int>* ids)
@@ -165,24 +164,21 @@ void JSSentencepieceTokenizer::encode(std::string& text, std::vector<T>* ids)
         std::string::const_iterator searchStart(text.cbegin());
 
         while (std::regex_search(searchStart, text.cend(), m, pattern)) {
-            size_t pos = m[0].first - text.cbegin();
+            const SpecialToken& token = special_tokens_map[m[1]];
 
-            if (pos != lastPos) {
+            size_t pos = (token.lstrip ? m[0].first : m[1].first) - text.cbegin();
+            if (pos != lastPos)
                 sentencepiece_encode(text.data() + lastPos, pos - lastPos, ids);
-            }
 
-            pos = m[1].first - text.cbegin();
-            std::string_view token(text.data() + pos, m[1].length());
             push_token(token, ids);
 
-            searchStart = m[0].first + m[0].length();
+            searchStart = token.rstrip ? m[0].first + m[0].length() : m[1].first + m[1].length();
             lastPos = searchStart - text.cbegin();
         }
     }
 
-    if (lastPos < text.size()) {
+    if (lastPos < text.size())
         sentencepiece_encode(text.data() + lastPos, text.size() - lastPos, ids);
-    }
 }
 
 Napi::Value JSSentencepieceTokenizer::encode(const Napi::CallbackInfo& info)

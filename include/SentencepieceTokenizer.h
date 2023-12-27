@@ -5,55 +5,45 @@
 #include "napi_value.h"
 #include "sentencepiece_processor.h"
 
-class JSSentencepieceTokenizer : public Napi::ObjectWrap<JSSentencepieceTokenizer> {
+class SpecialToken {
 public:
-    class SpecialToken {
-    public:
-        SpecialToken()
-        {
+    SpecialToken()
+    {
+    }
+
+    SpecialToken(const char* content_)
+        : content(content_)
+    {
+    }
+
+    SpecialToken(Napi::Value value)
+    {
+        if (value.IsString()) {
+            content = value.As<Napi::String>();
+            return;
         }
 
-        SpecialToken(const char* content_)
-            : content(content_)
-        {
-        }
+        Napi::Config opt(value);
 
-        SpecialToken(const SpecialToken& other)
-        {
-            content = other.content;
-            lstrip = other.lstrip;
-            normalized = other.normalized;
-            rstrip = other.rstrip;
-            single_word = other.single_word;
-            special = other.special;
-        }
+        content = opt.Get("content", std::string());
+        lstrip = opt.Get("lstrip", true);
+        normalized = opt.Get("normalized", false);
+        rstrip = opt.Get("rstrip", true);
+        single_word = opt.Get("single_word", false);
+        special = opt.Get("special", false);
+    }
 
-        SpecialToken(Napi::Value value)
-        {
-            if (value.IsString()) {
-                content = value.As<Napi::String>();
-                return;
-            }
+public:
+    std::string content;
+    bool lstrip = true;
+    bool normalized = false;
+    bool rstrip = true;
+    bool single_word = false;
+    bool special = false;
+    int id = 0;
+};
 
-            Napi::Config opt(value);
-
-            content = opt.Get("content", std::string());
-            lstrip = opt.Get("lstrip", false);
-            normalized = opt.Get("normalized", false);
-            rstrip = opt.Get("rstrip", false);
-            single_word = opt.Get("single_word", false);
-            special = opt.Get("special", false);
-        }
-
-    public:
-        std::string content;
-        bool lstrip = true;
-        bool normalized = false;
-        bool rstrip = true;
-        bool single_word = false;
-        bool special = false;
-    };
-
+class JSSentencepieceTokenizer : public Napi::ObjectWrap<JSSentencepieceTokenizer> {
 public:
     JSSentencepieceTokenizer(const Napi::CallbackInfo& info);
 
@@ -71,9 +61,6 @@ private:
     template <typename T>
     void encode(std::string& text, std::vector<T>* ids);
 
-    void push_token(std::string_view token, std::vector<int>* ids);
-    void push_token(std::string_view token, std::vector<std::string_view>* ids);
-
     template <typename T>
     void sentencepiece_encode(char* text, size_t size, std::vector<T>* ids);
 
@@ -85,15 +72,9 @@ private:
     bool add_bos_token;
     bool add_eos_token;
 
-    std::string bos_token;
-    std::string eos_token;
-    std::string unk_token;
-    std::string pad_token;
-
     int bos_id;
     int eos_id;
     int unk_id;
-    int pad_id;
 
     bool legacy;
 
