@@ -1,28 +1,19 @@
 #include "WordpieceTokenizer.h"
 
-napi_ref JSWordpieceTokenizer::constructor;
-
-napi_value JSWordpieceTokenizer::Init(napi_env env)
+Napi::Function JSWordpieceTokenizer::Init(Napi::Env env)
 {
-    napi_property_descriptor properties[] = {
-        { "tokenize", nullptr, tokenize, nullptr, nullptr, nullptr, napi_enumerable, nullptr }
-    };
-
-    napi_value cons;
-    NODE_API_CALL(env, napi_define_class(env, "WordpieceTokenizer", -1, New, nullptr, sizeof(properties) / sizeof(napi_property_descriptor), properties, &cons));
-    NODE_API_CALL(env, napi_create_reference(env, cons, 1, &constructor));
-
-    return cons;
+    return DefineClass(env, "WordpieceTokenizer",
+        { InstanceMethod("tokenize", &JSWordpieceTokenizer::tokenize, napi_enumerable) });
 }
 
-JSWordpieceTokenizer::JSWordpieceTokenizer(NodeArg<JSWordpieceTokenizer>& args)
-    : env_(args.env())
+JSWordpieceTokenizer::JSWordpieceTokenizer(const Napi::CallbackInfo& info)
+    : Napi::ObjectWrap<JSWordpieceTokenizer>(info)
 {
-    vocab_array = args[0];
+    vocab_array = NodeValue(info[0]);
     for (int i = 0; i < vocab_array.size(); i++)
         vocab_[vocab_array[i]] = i;
 
-    NodeOpt opt(args[1]);
+    NodeOpt opt(info[1]);
     unk_token_ = opt.Get("unk_token", std::u16string(u"UNK"));
     max_input_chars_per_word_ = opt.Get("max_input_chars_per_word", max_input_chars_per_word_);
 }
@@ -47,16 +38,14 @@ std::vector<std::u16string> whitespace_tokenize(std::u16string text)
     return words;
 }
 
-napi_value JSWordpieceTokenizer::tokenize(napi_env env, napi_callback_info info)
+Napi::Value JSWordpieceTokenizer::tokenize(const Napi::CallbackInfo& info)
 {
-    NodeArg<JSWordpieceTokenizer> args(env, info);
-
-    std::vector<std::u16string> words = whitespace_tokenize(args[0]);
+    std::vector<std::u16string> words = whitespace_tokenize(NodeValue(info[0]));
     std::vector<std::u16string> tokens;
 
     for (auto itk = words.begin(); itk != words.end(); ++itk) {
-        if (static_cast<int64_t>(itk->size()) > args->max_input_chars_per_word_) {
-            tokens.push_back(args->unk_token_);
+        if (static_cast<int64_t>(itk->size()) > max_input_chars_per_word_) {
+            tokens.push_back(unk_token_);
             continue;
         }
 
@@ -74,7 +63,7 @@ napi_value JSWordpieceTokenizer::tokenize(napi_env env, napi_callback_info info)
                 if (start > 0)
                     substr = u"##" + substr;
 
-                if (args->vocab_.find(substr) != args->vocab_.end()) {
+                if (vocab_.find(substr) != vocab_.end()) {
                     cur_substr = substr;
                     cur_substr_index = start;
                     break;
@@ -93,10 +82,10 @@ napi_value JSWordpieceTokenizer::tokenize(napi_env env, napi_callback_info info)
         }
 
         if (is_bad)
-            tokens.push_back(args->unk_token_);
+            tokens.push_back(unk_token_);
         else
             tokens.insert(tokens.end(), sub_tokens.begin(), sub_tokens.end());
     }
 
-    return NodeValue(env, tokens);
+    return NodeValue(info.Env(), tokens);
 }

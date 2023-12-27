@@ -5,17 +5,60 @@
 #include "napi_value.h"
 #include "sentencepiece_processor.h"
 
-class JSSentencepieceTokenizer : public NodeClass<JSSentencepieceTokenizer> {
+class JSSentencepieceTokenizer : public Napi::ObjectWrap<JSSentencepieceTokenizer> {
 public:
-    JSSentencepieceTokenizer(NodeArg<JSSentencepieceTokenizer>& args);
+    class SpecialTokens {
+    public:
+        SpecialTokens()
+        {
+        }
+
+        SpecialTokens(const char* content_)
+            : content(content_)
+        {
+        }
+
+        SpecialTokens(const SpecialTokens& other)
+        {
+            content = other.content;
+            lstrip = other.lstrip;
+            normalized = other.normalized;
+            rstrip = other.rstrip;
+            single_word = other.single_word;
+            special = other.special;
+        }
+
+        SpecialTokens(NodeValue value)
+        {
+            NodeOpt opt(value);
+
+            content = opt.Get("content", std::string());
+            lstrip = opt.Get("lstrip", false);
+            normalized = opt.Get("normalized", false);
+            rstrip = opt.Get("rstrip", false);
+            single_word = opt.Get("single_word", false);
+            special = opt.Get("special", false);
+        }
+
+    public:
+        std::string content;
+        bool lstrip = true;
+        bool normalized = false;
+        bool rstrip = true;
+        bool single_word = false;
+        bool special = false;
+    };
 
 public:
-    static napi_value Init(napi_env env);
+    JSSentencepieceTokenizer(const Napi::CallbackInfo& info);
+
+public:
+    static Napi::Function Init(Napi::Env env);
 
 private:
-    static napi_value tokenize(napi_env env, napi_callback_info info);
-    static napi_value encode(napi_env env, napi_callback_info info);
-    static napi_value decode(napi_env env, napi_callback_info info);
+    Napi::Value tokenize(const Napi::CallbackInfo& info);
+    Napi::Value encode(const Napi::CallbackInfo& info);
+    Napi::Value decode(const Napi::CallbackInfo& info);
 
 private:
     int convert_token_to_id(std::string_view token);
@@ -55,7 +98,6 @@ private:
     bool has_pattern = false;
 
 public:
-    static napi_ref constructor;
     napi_env env_;
     napi_ref wrapper_;
 };

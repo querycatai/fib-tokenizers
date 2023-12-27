@@ -1,59 +1,13 @@
 #include "SentencepieceTokenizer.h"
 #include "sentencepiece.pb.h"
 
-napi_ref JSSentencepieceTokenizer::constructor;
-
-napi_value JSSentencepieceTokenizer::Init(napi_env env)
+Napi::Function JSSentencepieceTokenizer::Init(Napi::Env env)
 {
-    napi_property_descriptor properties[] = {
-        { "tokenize", nullptr, tokenize, nullptr, nullptr, nullptr, napi_enumerable, nullptr },
-        { "encode", nullptr, encode, nullptr, nullptr, nullptr, napi_enumerable, nullptr },
-        { "decode", nullptr, decode, nullptr, nullptr, nullptr, napi_enumerable, nullptr }
-    };
-
-    napi_value cons;
-    NODE_API_CALL(env, napi_define_class(env, "SentencepieceTokenizer", -1, New, nullptr, sizeof(properties) / sizeof(napi_property_descriptor), properties, &cons));
-    NODE_API_CALL(env, napi_create_reference(env, cons, 1, &constructor));
-
-    return cons;
+    return DefineClass(env, "SentencepieceTokenizer",
+        { InstanceMethod("tokenize", &JSSentencepieceTokenizer::tokenize, napi_enumerable),
+            InstanceMethod("encode", &JSSentencepieceTokenizer::encode, napi_enumerable),
+            InstanceMethod("decode", &JSSentencepieceTokenizer::decode, napi_enumerable) });
 }
-
-class AddedTokens {
-public:
-    AddedTokens()
-    {
-    }
-
-    AddedTokens(const AddedTokens& other)
-    {
-        content = other.content;
-        lstrip = other.lstrip;
-        normalized = other.normalized;
-        rstrip = other.rstrip;
-        single_word = other.single_word;
-        special = other.special;
-    }
-
-    AddedTokens(NodeValue value)
-    {
-        NodeOpt opt(value);
-
-        content = opt.Get("content", std::string());
-        lstrip = opt.Get("lstrip", false);
-        normalized = opt.Get("normalized", false);
-        rstrip = opt.Get("rstrip", false);
-        single_word = opt.Get("single_word", false);
-        special = opt.Get("special", false);
-    }
-
-public:
-    std::string content;
-    bool lstrip;
-    bool normalized;
-    bool rstrip;
-    bool single_word;
-    bool special;
-};
 
 std::string escapeRegex(const std::string& str)
 {
@@ -63,17 +17,21 @@ std::string escapeRegex(const std::string& str)
     return std::regex_replace(str, escape, format, std::regex_constants::format_sed);
 }
 
-JSSentencepieceTokenizer::JSSentencepieceTokenizer(NodeArg<JSSentencepieceTokenizer>& args)
-    : env_(args.env())
+JSSentencepieceTokenizer::JSSentencepieceTokenizer(const Napi::CallbackInfo& info)
+    : Napi::ObjectWrap<JSSentencepieceTokenizer>(info)
 {
-    sentence_piece_.LoadFromSerializedProto(args[0]);
+    static const char* special_tokens[] = {
+        "bos_token", "eos_token", "unk_token", "pad_token", "mask_token", "sep_token"
+    };
 
-    NodeOpt opt(args[1]);
+    sentence_piece_.LoadFromSerializedProto(NodeValue(info[0]));
+
+    NodeOpt opt(info[1]);
 
     add_bos_token = opt.Get("add_bos_token", false);
     add_eos_token = opt.Get("add_eos_token", false);
 
-    std::unordered_map<std::string, AddedTokens> added_tokens_decoder;
+    std::unordered_map<std::string, SpecialTokens> added_tokens_decoder;
     added_tokens_decoder = opt.Get("added_tokens_decoder", added_tokens_decoder);
 
     for (auto& [key, value] : added_tokens_decoder) {
@@ -128,22 +86,20 @@ JSSentencepieceTokenizer::JSSentencepieceTokenizer(NodeArg<JSSentencepieceTokeni
     }
 }
 
-napi_value JSSentencepieceTokenizer::tokenize(napi_env env, napi_callback_info info)
+Napi::Value JSSentencepieceTokenizer::tokenize(const Napi::CallbackInfo& info)
 {
-    NodeArg<JSSentencepieceTokenizer> args(env, info);
-
-    std::string text = args[0];
+    std::string text = NodeValue(info[0]);
     std::vector<std::string> tokens;
 
     sentencepiece::SentencePieceText spt;
-    args->sentence_piece_.Encode(text, &spt);
-    size_t added_tokens_size = args->added_tokens.size();
+    sentence_piece_.Encode(text, &spt);
+    size_t added_tokens_size = added_tokens.size();
 
     tokens.resize(spt.pieces_size());
     for (int i = 0; i < spt.pieces_size(); i++)
         tokens[i] = spt.pieces(i).piece();
 
-    return NodeValue(env, tokens);
+    return NodeValue(info.Env(), tokens);
 }
 
 int JSSentencepieceTokenizer::convert_token_to_id(std::string_view token)
@@ -222,37 +178,35 @@ void JSSentencepieceTokenizer::encode(std::string& text, std::vector<T>* ids)
     }
 }
 
-napi_value JSSentencepieceTokenizer::encode(napi_env env, napi_callback_info info)
+Napi::Value JSSentencepieceTokenizer::encode(const Napi::CallbackInfo& info)
 {
-    NodeArg<JSSentencepieceTokenizer> args(env, info);
-
-    std::string text = args[0];
+    std::string text = NodeValue(info[0]);
     std::vector<int> ids;
 
-    if (args->add_bos_token)
-        ids.emplace_back(args->bos_id);
+    if (add_bos_token)
+        ids.emplace_back(bos_id);
 
-    args->encode(text, &ids);
+    encode(text, &ids);
 
-    if (args->add_eos_token) {
-        if (ids.size() == 0 || ids[ids.size() - 1] != args->eos_id)
-            ids.emplace_back(args->eos_id);
+    if (add_eos_token) {
+        if (ids.size() == 0 || ids[ids.size() - 1] != eos_id)
+            ids.emplace_back(eos_id);
     }
 
     // sentencepiece::SentencePieceText spt;
-    // args->sentence_piece_.Encode(text, &spt);
-    // size_t added_tokens_size = args->added_tokens.size();
+    // sentence_piece_.Encode(text, &spt);
+    // size_t added_tokens_size = added_tokens.size();
 
     // ids.resize(spt.pieces_size());
     // for (int i = 0; i < spt.pieces_size(); i++) {
     //     auto piece = spt.pieces(i);
 
-    //     if (added_tokens_size || args->offset) {
+    //     if (added_tokens_size || offset) {
     //         int j;
     //         const std::string& txt = piece.piece();
 
     //         for (j = 0; j < added_tokens_size; j++) {
-    //             if (txt == args->added_tokens[j]) {
+    //             if (txt == added_tokens[j]) {
     //                 ids[i] = j;
     //                 break;
     //             }
@@ -260,37 +214,35 @@ napi_value JSSentencepieceTokenizer::encode(napi_env env, napi_callback_info inf
 
     //         if (j == added_tokens_size) {
     //             uint32_t id = piece.id();
-    //             ids[i] = id ? id + args->offset : args->unk_id;
+    //             ids[i] = id ? id + offset : unk_id;
     //         }
     //     } else
     //         ids[i] = piece.id();
     // }
 
-    return NodeValue(env, ids);
+    return NodeValue(info.Env(), ids);
 }
 
-napi_value JSSentencepieceTokenizer::decode(napi_env env, napi_callback_info info)
+Napi::Value JSSentencepieceTokenizer::decode(const Napi::CallbackInfo& info)
 {
-    NodeArg<JSSentencepieceTokenizer> args(env, info);
-
-    std::vector<int> ids = args[0];
+    std::vector<int> ids = NodeValue(info[0]);
     std::string text;
 
     std::vector<std::string> pieces;
-    const int num_pieces = args->sentence_piece_.GetPieceSize();
+    const int num_pieces = sentence_piece_.GetPieceSize();
     pieces.reserve(ids.size());
-    size_t added_tokens_size = args->added_tokens.size();
+    size_t added_tokens_size = added_tokens.size();
 
     for (const int id : ids) {
-        if (id < 0 || id >= num_pieces + args->offset)
+        if (id < 0 || id >= num_pieces + offset)
             pieces.emplace_back("");
         else if (id < added_tokens_size)
-            pieces.emplace_back(args->added_tokens[id]);
+            pieces.emplace_back(added_tokens[id]);
         else
-            pieces.emplace_back(args->sentence_piece_.IdToPiece(id - args->offset));
+            pieces.emplace_back(sentence_piece_.IdToPiece(id - offset));
     }
 
-    args->sentence_piece_.Decode(pieces, &text);
+    sentence_piece_.Decode(pieces, &text);
 
-    return napi_value();
+    return NodeValue(info.Env(), text);
 }

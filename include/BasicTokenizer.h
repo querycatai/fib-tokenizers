@@ -3,17 +3,16 @@
 #include "napi_value.h"
 #include <node_api.h>
 #include <memory>
-#include "common.h"
 
-class JSBasicTokenizer : public NodeClass<JSBasicTokenizer> {
+class JSBasicTokenizer : public Napi::ObjectWrap<JSBasicTokenizer> {
 public:
-    JSBasicTokenizer(NodeArg<JSBasicTokenizer>& args);
+    JSBasicTokenizer(const Napi::CallbackInfo& info);
 
 public:
-    static napi_value Init(napi_env env);
+    static Napi::Function Init(Napi::Env env);
 
 private:
-    static napi_value tokenize(napi_env env, napi_callback_info info);
+    Napi::Value tokenize(const Napi::CallbackInfo& info);
 
 private:
     bool do_lower_case_ = true;
@@ -21,9 +20,4 @@ private:
     bool tokenize_chinese_chars_ = true;
     bool tokenize_punctuation_ = true;
     bool remove_control_chars_ = true;
-
-public:
-    static napi_ref constructor;
-    napi_env env_;
-    napi_ref wrapper_;
 };
