@@ -46,6 +46,10 @@ JSSentencepieceTokenizer::JSSentencepieceTokenizer(const Napi::CallbackInfo& inf
             token_to_id[it.first->second] = id;
     }
 
+    unk_id = convert_token_to_id("<unk>");
+    bos_id = convert_token_to_id("<s>");
+    eos_id = convert_token_to_id("</s>");
+
     for (int i = 0; i < sizeof(special_tokens) / sizeof(special_tokens[0]); i++) {
         const char* key(special_tokens[i]);
         Napi::Value value = opt.Get(key, Napi::Value());
@@ -55,24 +59,23 @@ JSSentencepieceTokenizer::JSSentencepieceTokenizer(const Napi::CallbackInfo& inf
         if (!value.IsUndefined() && !value.IsNull())
             token = value;
 
-        if (token.content.length() == 0)
-            token.content = special_token_values[i];
+        if (token.content.length() > 0) {
+            token.id = convert_token_to_id(token.content);
+            switch (i) {
+            case 0:
+                unk_id = token.id;
+                break;
+            case 1:
+                bos_id = token.id;
+                break;
+            case 2:
+                eos_id = token.id;
+                break;
+            }
 
-        token.id = convert_token_to_id(token.content);
-        switch (i) {
-        case 0:
-            unk_id = token.id;
-            break;
-        case 1:
-            bos_id = token.id;
-            break;
-        case 2:
-            eos_id = token.id;
-            break;
+            if (special_tokens_map.find(token.content) == special_tokens_map.end())
+                auto it = special_tokens_map.emplace(token.content, token);
         }
-
-        if (special_tokens_map.find(token.content) == special_tokens_map.end())
-            auto it = special_tokens_map.emplace(token.content, token);
     }
 
     offset = opt.Get("offset", 0);
