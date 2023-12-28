@@ -149,10 +149,8 @@ inline std::vector<VALUE_TYPE> to_array(const Napi::Value& value)
     uint32_t length = array.Length();
 
     result.resize(length);
-    for (uint32_t i = 0; i < length; ++i) {
-        VALUE_TYPE value = from_value<VALUE_TYPE>(array.Get(i));
-        result[i] = value;
-    }
+    for (uint32_t i = 0; i < length; ++i)
+        result[i] = from_value<VALUE_TYPE>(array.Get(i));
 
     return result;
 }
@@ -168,8 +166,8 @@ inline std::unordered_map<std::basic_string<CHAR_TYPE>, VALUE_TYPE> to_object(co
     for (uint32_t i = 0; i < length; ++i) {
         Napi::Value key = keys.Get(i);
         std::basic_string<CHAR_TYPE> name = from_value<std::basic_string<CHAR_TYPE>>(key);
-        VALUE_TYPE index = object.Get(key);
-        result[name] = index;
+
+        result[name] = from_value<VALUE_TYPE>(object.Get(key));
     }
 
     return result;

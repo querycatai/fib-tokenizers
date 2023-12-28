@@ -44,6 +44,11 @@ public:
     int id = 0;
 };
 
+template <>
+inline SpecialToken from_value<SpecialToken>(const Napi::Value& value)
+{
+    return SpecialToken(value);
+}
 class JSSentencepieceTokenizer : public Napi::ObjectWrap<JSSentencepieceTokenizer> {
 public:
     JSSentencepieceTokenizer(const Napi::CallbackInfo& info);
