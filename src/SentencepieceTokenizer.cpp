@@ -17,20 +17,8 @@ std::string escapeRegex(const std::string& str)
     return std::regex_replace(str, escape, format, std::regex_constants::format_sed);
 }
 
-JSSentencepieceTokenizer::JSSentencepieceTokenizer(const Napi::CallbackInfo& info)
-    : Napi::ObjectWrap<JSSentencepieceTokenizer>(info)
+void JSSentencepieceTokenizer::config_tokens_decoder(const Napi::Config& opt)
 {
-    static const char* special_tokens[] = {
-        "unk_token", "bos_token", "eos_token", "pad_token", "mask_token", "sep_token"
-    };
-
-    sentence_piece_.LoadFromSerializedProto(from_value<std::string_view>(info[0]));
-
-    Napi::Config opt(info[1]);
-
-    legacy = opt.Get("legacy", true);
-    offset = opt.Get("offset", 0);
-
     std::unordered_map<std::string, SpecialToken> added_tokens_decoder;
     added_tokens_decoder = opt.Get("added_tokens_decoder", added_tokens_decoder);
 
@@ -41,6 +29,13 @@ JSSentencepieceTokenizer::JSSentencepieceTokenizer(const Napi::CallbackInfo& inf
         if (value.content.length() > 0)
             token_to_id[it.first->second] = id;
     }
+}
+
+void JSSentencepieceTokenizer::config_basic_tokens(const Napi::Config& opt)
+{
+    static const char* special_tokens[] = {
+        "unk_token", "bos_token", "eos_token", "pad_token", "mask_token", "sep_token"
+    };
 
     bos_id = sentence_piece_.bos_id();
     eos_id = sentence_piece_.eos_id();
@@ -73,7 +68,10 @@ JSSentencepieceTokenizer::JSSentencepieceTokenizer(const Napi::CallbackInfo& inf
                 special_tokens_map.emplace(token.content, token);
         }
     }
+}
 
+void JSSentencepieceTokenizer::config_special_tokens(const Napi::Config& opt)
+{
     int vacob_size = sentence_piece_.GetPieceSize();
     std::vector<std::string> additional_special_tokens;
     additional_special_tokens = opt.Get("additional_special_tokens", additional_special_tokens);
@@ -90,7 +88,10 @@ JSSentencepieceTokenizer::JSSentencepieceTokenizer(const Napi::CallbackInfo& inf
                     special_tokens_map.emplace(stoken, SpecialToken(stoken, id));
             }
         }
+}
 
+void JSSentencepieceTokenizer::config_prefix_suffix(const Napi::Config& opt)
+{
     std::vector<std::string> config_tokens;
 
     config_tokens = opt.Get("prefix_tokens", config_tokens);
@@ -110,7 +111,10 @@ JSSentencepieceTokenizer::JSSentencepieceTokenizer(const Napi::CallbackInfo& inf
     config_tokens = opt.Get("suffix_tokens", config_tokens);
     for (auto& token : config_tokens)
         suffix_tokens.emplace_back(convert_token_to_id(token));
+}
 
+void JSSentencepieceTokenizer::config_pattern(const Napi::Config& opt)
+{
     if (special_tokens_map.size() > 0) {
         std::string pattern_str;
 
@@ -123,6 +127,23 @@ JSSentencepieceTokenizer::JSSentencepieceTokenizer(const Napi::CallbackInfo& inf
         has_pattern = true;
         pattern = std::regex("\\s?(" + pattern_str + ")\\s?");
     }
+}
+
+JSSentencepieceTokenizer::JSSentencepieceTokenizer(const Napi::CallbackInfo& info)
+    : Napi::ObjectWrap<JSSentencepieceTokenizer>(info)
+{
+    sentence_piece_.LoadFromSerializedProto(from_value<std::string_view>(info[0]));
+
+    Napi::Config opt(info[1]);
+
+    legacy = opt.Get("legacy", true);
+    offset = opt.Get("offset", 0);
+
+    config_tokens_decoder(opt);
+    config_basic_tokens(opt);
+    config_special_tokens(opt);
+    config_prefix_suffix(opt);
+    config_pattern(opt);
 }
 
 Napi::Value JSSentencepieceTokenizer::tokenize(const Napi::CallbackInfo& info)

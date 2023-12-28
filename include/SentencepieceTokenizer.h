@@ -66,6 +66,13 @@ private:
     void sentencepiece_encode(char* text, size_t size, std::vector<T>* ids);
 
 private:
+    void config_tokens_decoder(const Napi::Config& opt);
+    void config_basic_tokens(const Napi::Config& opt);
+    void config_special_tokens(const Napi::Config& opt);
+    void config_prefix_suffix(const Napi::Config& opt);
+    void config_pattern(const Napi::Config& opt);
+
+private:
     void push_token(int token, std::vector<int>* ids);
     void push_token(const SpecialToken& token, std::vector<int>* ids);
     void push_token(const SpecialToken& token, std::vector<std::string_view>* ids);
