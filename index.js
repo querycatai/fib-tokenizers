@@ -2,23 +2,17 @@ const fs = require("fs");
 const path = require("path");
 
 var tokenizers = require(`./addon/${path.basename(__dirname)}.node`);
-
 require('./lib/models')(tokenizers);
 
 const tokenizers_index = {};
-
 for (var key in tokenizers)
     tokenizers_index[key.toLowerCase()] = tokenizers[key];
 
+tokenizers.resolve_model = require('./lib/resolve_model');
 tokenizers.config_from_name = require('./lib/config_from_name');
+
 tokenizers.from_folder = module.exports = function (home, model) {
-    const model_home = path.join(home, "models--" + model.replace(/\//g, "--"));
-    var model_path;
-    if (fs.existsSync(path.join(model_home, "refs")) && path.join(model_home, "snapshots")) {
-        const tag = fs.readFileSync(path.join(model_home, "refs", "main"), "utf-8");
-        model_path = path.join(model_home, "snapshots", tag);
-    } else
-        model_path = model_home;
+    const model_path = tokenizers.resolve_model(home, model);
 
     function get_json(file) {
         if (fs.existsSync(file))
