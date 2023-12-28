@@ -42,24 +42,6 @@ JSSentencepieceTokenizer::JSSentencepieceTokenizer(const Napi::CallbackInfo& inf
             token_to_id[it.first->second] = id;
     }
 
-    int vacob_size = sentence_piece_.GetPieceSize();
-
-    std::vector<std::string> additional_special_tokens;
-    additional_special_tokens = opt.Get("additional_special_tokens", additional_special_tokens);
-    for (auto& stoken : additional_special_tokens)
-        if (stoken.length() > 0) {
-            int id = convert_token_to_id(stoken);
-
-            if (id == 0) {
-                id = vacob_size++;
-                auto it = id_to_token.emplace(id, stoken);
-                token_to_id[it.first->second] = id;
-
-                if (special_tokens_map.find(stoken) == special_tokens_map.end())
-                    special_tokens_map.emplace(stoken, SpecialToken(stoken, id));
-            }
-        }
-
     bos_id = sentence_piece_.bos_id();
     eos_id = sentence_piece_.eos_id();
     unk_id = sentence_piece_.unk_id();
@@ -91,6 +73,23 @@ JSSentencepieceTokenizer::JSSentencepieceTokenizer(const Napi::CallbackInfo& inf
                 special_tokens_map.emplace(token.content, token);
         }
     }
+
+    int vacob_size = sentence_piece_.GetPieceSize();
+    std::vector<std::string> additional_special_tokens;
+    additional_special_tokens = opt.Get("additional_special_tokens", additional_special_tokens);
+    for (auto& stoken : additional_special_tokens)
+        if (stoken.length() > 0) {
+            int id = convert_token_to_id(stoken);
+
+            if (id == 0) {
+                id = vacob_size++;
+                auto it = id_to_token.emplace(id, stoken);
+                token_to_id[it.first->second] = id;
+
+                if (special_tokens_map.find(stoken) == special_tokens_map.end())
+                    special_tokens_map.emplace(stoken, SpecialToken(stoken, id));
+            }
+        }
 
     std::vector<std::string> config_tokens;
 
