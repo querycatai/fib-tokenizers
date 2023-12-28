@@ -187,9 +187,14 @@ void JSSentencepieceTokenizer::push_token(const sentencepiece::SentencePieceText
 {
     int id = piece.id();
 
-    if (id == 0)
-        ids->push_back(unk_id);
-    else
+    if (offset > 0) {
+        if (id == 0)
+            ids->push_back(unk_id);
+        else if (id == unk_id)
+            ids->push_back(unk_id + offset);
+        else
+            push_token(id, ids);
+    } else
         push_token(id, ids);
 }
 
@@ -252,7 +257,7 @@ Napi::Value JSSentencepieceTokenizer::encode(const Napi::CallbackInfo& info)
 
     encode(text, &ids);
 
-    if (add_eos_token && ids.size() > 0 && ids[ids.size() - 1] == eos_id)
+    if (offset == 0 && add_eos_token && ids.size() > 0 && ids[ids.size() - 1] == eos_id)
         for (int i = 1; i < suffix_tokens.size(); i++)
             push_token(suffix_tokens[i], &ids);
     else
