@@ -21,12 +21,14 @@ tokenizers.from_folder = module.exports = function (home, model) {
         return {};
     }
 
-    var config = get_json(path.join(model_path, "config.json"));
-    var tokenizer_config = get_json(path.join(model_path, "tokenizer_config.json"));
-    var special_tokens_map = get_json(path.join(model_path, "special_tokens_map.json"));
-    var file_list = fs.readdirSync(model_path);
+    const model_config = tokenizers.config_from_name(
+        get_json(path.join(model_path, "config.json")),
+        get_json(path.join(model_path, "tokenizer_config.json")),
+        fs.readdirSync(model_path),
+        get_json(path.join(model_path, "special_tokens_map.json"))
+    );
 
-    const model_config = tokenizers.config_from_name(config, tokenizer_config, file_list, special_tokens_map);
+    model_config.added_tokens = get_json(path.join(model_path, "added_tokens.json"));
 
     const tokenizer_class = tokenizers_index[model_config.tokenizer_class.toLowerCase()];
     const vocabs = tokenizer_class.vocabs.map(vocab => fs.readFileSync(path.join(model_path, vocab)));

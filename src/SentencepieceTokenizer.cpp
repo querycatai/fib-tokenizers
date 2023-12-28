@@ -55,25 +55,14 @@ JSSentencepieceTokenizer::JSSentencepieceTokenizer(const Napi::CallbackInfo& inf
                 auto it = id_to_token.emplace(id, stoken);
                 token_to_id[it.first->second] = id;
 
-                SpecialToken token(stoken);
-                token.id = id;
-
-                if (special_tokens_map.find(token.content) == special_tokens_map.end())
-                    auto it = special_tokens_map.emplace(token.content, token);
+                if (special_tokens_map.find(stoken) == special_tokens_map.end())
+                    special_tokens_map.emplace(stoken, SpecialToken(stoken, id));
             }
         }
 
     bos_id = sentence_piece_.bos_id();
-    if (bos_id >= 0)
-        bos_id = convert_token_to_id(sentence_piece_.IdToPiece(bos_id));
-
     eos_id = sentence_piece_.eos_id();
-    if (eos_id >= 0)
-        eos_id = convert_token_to_id(sentence_piece_.IdToPiece(eos_id));
-
     unk_id = sentence_piece_.unk_id();
-    if (unk_id >= 0)
-        unk_id = convert_token_to_id(sentence_piece_.IdToPiece(unk_id));
 
     for (int i = 0; i < sizeof(special_tokens) / sizeof(special_tokens[0]); i++) {
         const char* key(special_tokens[i]);
@@ -99,7 +88,7 @@ JSSentencepieceTokenizer::JSSentencepieceTokenizer(const Napi::CallbackInfo& inf
             }
 
             if (special_tokens_map.find(token.content) == special_tokens_map.end())
-                auto it = special_tokens_map.emplace(token.content, token);
+                special_tokens_map.emplace(token.content, token);
         }
     }
 
