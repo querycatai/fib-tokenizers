@@ -158,22 +158,6 @@ JSSentencepieceTokenizer::JSSentencepieceTokenizer(const Napi::CallbackInfo& inf
     config_pattern(opt);
 }
 
-Napi::Value JSSentencepieceTokenizer::tokenize(const Napi::CallbackInfo& info)
-{
-    std::string text = from_value<std::string>(info[0]);
-    std::vector<std::string> tokens;
-
-    sentencepiece::SentencePieceText spt;
-    sentence_piece_.Encode(text, &spt);
-    size_t added_tokens_size = added_tokens.size();
-
-    tokens.resize(spt.pieces_size());
-    for (int i = 0; i < spt.pieces_size(); i++)
-        tokens[i] = spt.pieces(i).piece();
-
-    return to_value(info.Env(), tokens);
-}
-
 int JSSentencepieceTokenizer::convert_token_to_id(std::string_view token)
 {
     auto it = token_to_id.find(token);
@@ -199,7 +183,7 @@ void JSSentencepieceTokenizer::push_token(const SpecialToken& token, std::vector
     push_token(token.id, ids);
 }
 
-void JSSentencepieceTokenizer::push_token(const SpecialToken& token, std::vector<std::string_view>* ids)
+void JSSentencepieceTokenizer::push_token(const SpecialToken& token, std::vector<std::string>* ids)
 {
     ids->push_back(token.content);
 }
@@ -219,16 +203,16 @@ void JSSentencepieceTokenizer::push_token(const sentencepiece::SentencePieceText
         push_token(id, ids);
 }
 
-void JSSentencepieceTokenizer::push_token(const sentencepiece::SentencePieceText_SentencePiece& piece, std::vector<std::string_view>* ids)
+void JSSentencepieceTokenizer::push_token(const sentencepiece::SentencePieceText_SentencePiece& piece, std::vector<std::string>* ids)
 {
     ids->push_back(piece.piece());
 }
 
 template <typename T>
-void JSSentencepieceTokenizer::sentencepiece_encode(char* text, size_t size, std::vector<T>* ids)
+void JSSentencepieceTokenizer::sentencepiece_encode(char* text, size_t size, std::vector<T>* ids, int32_t prefix_count)
 {
     int32_t start = 0;
-    if (!legacy && ids->size() > (prefix_tokens.size() > 0 ? 1 : 0)) {
+    if (!legacy && ids->size() > prefix_count) {
         *--text = '-';
         size++;
         start = 1;
@@ -245,6 +229,7 @@ template <typename T>
 void JSSentencepieceTokenizer::encode(std::string& text, std::vector<T>* ids)
 {
     size_t lastPos = 0;
+    int32_t prefix_count = ids->size();
 
     if (has_pattern) {
         std::smatch m;
@@ -255,7 +240,7 @@ void JSSentencepieceTokenizer::encode(std::string& text, std::vector<T>* ids)
 
             size_t pos = (token.lstrip ? m[0].first : m[1].first) - text.cbegin();
             if (pos != lastPos)
-                sentencepiece_encode(text.data() + lastPos, pos - lastPos, ids);
+                sentencepiece_encode(text.data() + lastPos, pos - lastPos, ids, prefix_count);
 
             push_token(token, ids);
 
@@ -265,7 +250,17 @@ void JSSentencepieceTokenizer::encode(std::string& text, std::vector<T>* ids)
     }
 
     if (lastPos < text.size())
-        sentencepiece_encode(text.data() + lastPos, text.size() - lastPos, ids);
+        sentencepiece_encode(text.data() + lastPos, text.size() - lastPos, ids, prefix_count);
+}
+
+Napi::Value JSSentencepieceTokenizer::tokenize(const Napi::CallbackInfo& info)
+{
+    std::string text = from_value<std::string>(info[0]);
+    std::vector<std::string> tokens;
+
+    encode(text, &tokens);
+
+    return to_value(info.Env(), tokens);
 }
 
 Napi::Value JSSentencepieceTokenizer::encode(const Napi::CallbackInfo& info)

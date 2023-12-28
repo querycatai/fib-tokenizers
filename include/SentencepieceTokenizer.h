@@ -68,7 +68,7 @@ private:
     void encode(std::string& text, std::vector<T>* ids);
 
     template <typename T>
-    void sentencepiece_encode(char* text, size_t size, std::vector<T>* ids);
+    void sentencepiece_encode(char* text, size_t size, std::vector<T>* ids, int32_t prefix_count);
 
 private:
     void config_tokens_decoder(const Napi::Config& opt);
@@ -81,9 +81,9 @@ private:
 private:
     void push_token(int token, std::vector<int>* ids);
     void push_token(const SpecialToken& token, std::vector<int>* ids);
-    void push_token(const SpecialToken& token, std::vector<std::string_view>* ids);
+    void push_token(const SpecialToken& token, std::vector<std::string>* ids);
     void push_token(const sentencepiece::SentencePieceText_SentencePiece& piece, std::vector<int>* ids);
-    void push_token(const sentencepiece::SentencePieceText_SentencePiece& piece, std::vector<std::string_view>* ids);
+    void push_token(const sentencepiece::SentencePieceText_SentencePiece& piece, std::vector<std::string>* ids);
 
 private:
     sentencepiece::SentencePieceProcessor sentence_piece_;
