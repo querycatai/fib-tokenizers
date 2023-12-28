@@ -90,6 +90,17 @@ void JSSentencepieceTokenizer::config_special_tokens(const Napi::Config& opt)
         }
 }
 
+void JSSentencepieceTokenizer::config_added_tokens(const Napi::Config& opt)
+{
+    std::unordered_map<std::string, int> added_tokens_map;
+    added_tokens_map = opt.Get("added_tokens", added_tokens_map);
+
+    for (auto& [key, value] : added_tokens_map) {
+        if (special_tokens_map.find(key) == special_tokens_map.end())
+            special_tokens_map.emplace(key, SpecialToken(key, value));
+    }
+}
+
 void JSSentencepieceTokenizer::config_prefix_suffix(const Napi::Config& opt)
 {
     std::vector<std::string> config_tokens;
@@ -142,6 +153,7 @@ JSSentencepieceTokenizer::JSSentencepieceTokenizer(const Napi::CallbackInfo& inf
     config_tokens_decoder(opt);
     config_basic_tokens(opt);
     config_special_tokens(opt);
+    config_added_tokens(opt);
     config_prefix_suffix(opt);
     config_pattern(opt);
 }

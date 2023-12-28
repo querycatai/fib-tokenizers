@@ -74,6 +74,7 @@ private:
     void config_tokens_decoder(const Napi::Config& opt);
     void config_basic_tokens(const Napi::Config& opt);
     void config_special_tokens(const Napi::Config& opt);
+    void config_added_tokens(const Napi::Config& opt);
     void config_prefix_suffix(const Napi::Config& opt);
     void config_pattern(const Napi::Config& opt);
 
