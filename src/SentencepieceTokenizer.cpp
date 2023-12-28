@@ -67,9 +67,23 @@ JSSentencepieceTokenizer::JSSentencepieceTokenizer(const Napi::CallbackInfo& inf
             }
         }
 
-    unk_id = convert_token_to_id("<unk>");
-    bos_id = convert_token_to_id("<s>");
-    eos_id = convert_token_to_id("</s>");
+    bos_id = sentence_piece_.bos_id();
+    if (bos_id >= 0) {
+        bos_token = sentence_piece_.IdToPiece(bos_id);
+        bos_id = convert_token_to_id(bos_token);
+    }
+
+    eos_id = sentence_piece_.eos_id();
+    if (eos_id >= 0) {
+        eos_token = sentence_piece_.IdToPiece(eos_id);
+        eos_id = convert_token_to_id(eos_token);
+    }
+
+    unk_id = sentence_piece_.unk_id();
+    if (unk_id >= 0) {
+        unk_token = sentence_piece_.IdToPiece(unk_id);
+        unk_id = convert_token_to_id(unk_token);
+    }
 
     for (int i = 0; i < sizeof(special_tokens) / sizeof(special_tokens[0]); i++) {
         const char* key(special_tokens[i]);

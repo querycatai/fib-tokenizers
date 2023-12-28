@@ -69,6 +69,10 @@ private:
     std::vector<std::string> added_tokens;
     int32_t offset = 0;
 
+    std::string bos_token;
+    std::string eos_token;
+    std::string unk_token;
+
     int bos_id;
     int eos_id;
     int unk_id;
