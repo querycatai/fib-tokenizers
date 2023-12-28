@@ -11,8 +11,9 @@ public:
     {
     }
 
-    SpecialToken(std::string content_)
+    SpecialToken(std::string content_, int id_ = 0)
         : content(content_)
+        , id(id_)
     {
     }
 
@@ -65,17 +66,20 @@ private:
     void sentencepiece_encode(char* text, size_t size, std::vector<T>* ids);
 
 private:
+    void push_token(int token, std::vector<int>* ids);
+    void push_token(const SpecialToken& token, std::vector<int>* ids);
+    void push_token(const SpecialToken& token, std::vector<std::string_view>* ids);
+    void push_token(const sentencepiece::SentencePieceText_SentencePiece& piece, std::vector<int>* ids);
+    void push_token(const sentencepiece::SentencePieceText_SentencePiece& piece, std::vector<std::string_view>* ids);
+
+private:
     sentencepiece::SentencePieceProcessor sentence_piece_;
     std::vector<std::string> added_tokens;
     int32_t offset = 0;
 
-    std::string bos_token;
-    std::string eos_token;
-    std::string unk_token;
-
+    int unk_id;
     int bos_id;
     int eos_id;
-    int unk_id;
 
     bool legacy;
 

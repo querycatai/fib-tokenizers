@@ -24,10 +24,6 @@ JSSentencepieceTokenizer::JSSentencepieceTokenizer(const Napi::CallbackInfo& inf
         "unk_token", "bos_token", "eos_token", "pad_token", "mask_token", "sep_token"
     };
 
-    static const char* special_token_values[] = {
-        "<unk>", "<s>", "</s>", "<pad>", "<mask>", "<sep>"
-    };
-
     sentence_piece_.LoadFromSerializedProto(from_value<std::string_view>(info[0]));
 
     Napi::Config opt(info[1]);
@@ -68,22 +64,16 @@ JSSentencepieceTokenizer::JSSentencepieceTokenizer(const Napi::CallbackInfo& inf
         }
 
     bos_id = sentence_piece_.bos_id();
-    if (bos_id >= 0) {
-        bos_token = sentence_piece_.IdToPiece(bos_id);
-        bos_id = convert_token_to_id(bos_token);
-    }
+    if (bos_id >= 0)
+        bos_id = convert_token_to_id(sentence_piece_.IdToPiece(bos_id));
 
     eos_id = sentence_piece_.eos_id();
-    if (eos_id >= 0) {
-        eos_token = sentence_piece_.IdToPiece(eos_id);
-        eos_id = convert_token_to_id(eos_token);
-    }
+    if (eos_id >= 0)
+        eos_id = convert_token_to_id(sentence_piece_.IdToPiece(eos_id));
 
     unk_id = sentence_piece_.unk_id();
-    if (unk_id >= 0) {
-        unk_token = sentence_piece_.IdToPiece(unk_id);
-        unk_id = convert_token_to_id(unk_token);
-    }
+    if (unk_id >= 0)
+        unk_id = convert_token_to_id(sentence_piece_.IdToPiece(unk_id));
 
     for (int i = 0; i < sizeof(special_tokens) / sizeof(special_tokens[0]); i++) {
         const char* key(special_tokens[i]);
@@ -172,24 +162,40 @@ int JSSentencepieceTokenizer::convert_token_to_id(std::string_view token)
     return sentence_piece_.PieceToId(token);
 }
 
-static void push_token(const SpecialToken& token, std::vector<int>* ids)
+void JSSentencepieceTokenizer::push_token(int token, std::vector<int>* ids)
 {
-    ids->push_back(token.id);
+    if (offset) {
+        if (id_to_token.find(token) != id_to_token.end())
+            ids->push_back(token);
+        else
+            ids->push_back(token + offset);
+    } else
+        ids->push_back(token);
 }
 
-static void push_token(const SpecialToken& token, std::vector<std::string_view>* ids)
+void JSSentencepieceTokenizer::push_token(const SpecialToken& token, std::vector<int>* ids)
+{
+    push_token(token.id, ids);
+}
+
+void JSSentencepieceTokenizer::push_token(const SpecialToken& token, std::vector<std::string_view>* ids)
 {
     ids->push_back(token.content);
 }
 
-static void push_piece(const sentencepiece::SentencePieceText_SentencePiece& piece, std::vector<int>* ids)
+void JSSentencepieceTokenizer::push_token(const sentencepiece::SentencePieceText_SentencePiece& piece, std::vector<int>* ids)
 {
-    ids->emplace_back(piece.id());
+    int id = piece.id();
+
+    if (id == 0)
+        ids->push_back(unk_id);
+    else
+        push_token(id, ids);
 }
 
-static void push_piece(const sentencepiece::SentencePieceText_SentencePiece& piece, std::vector<std::string_view>* ids)
+void JSSentencepieceTokenizer::push_token(const sentencepiece::SentencePieceText_SentencePiece& piece, std::vector<std::string_view>* ids)
 {
-    ids->emplace_back(piece.piece());
+    ids->push_back(piece.piece());
 }
 
 template <typename T>
@@ -206,7 +212,7 @@ void JSSentencepieceTokenizer::sentencepiece_encode(char* text, size_t size, std
     sentence_piece_.Encode(std::string_view(text, size), &spt);
 
     for (; start < spt.pieces_size(); start++)
-        push_piece(spt.pieces(start), ids);
+        push_token(spt.pieces(start), ids);
 }
 
 template <typename T>
@@ -241,14 +247,17 @@ Napi::Value JSSentencepieceTokenizer::encode(const Napi::CallbackInfo& info)
     std::string text = from_value<std::string>(info[0]);
     std::vector<int> ids;
 
-    ids.insert(ids.end(), prefix_tokens.begin(), prefix_tokens.end());
+    for (auto& token : prefix_tokens)
+        push_token(token, &ids);
 
     encode(text, &ids);
 
     if (add_eos_token && ids.size() > 0 && ids[ids.size() - 1] == eos_id)
-        ids.insert(ids.end(), suffix_tokens.begin() + 1, suffix_tokens.end());
+        for (int i = 1; i < suffix_tokens.size(); i++)
+            push_token(suffix_tokens[i], &ids);
     else
-        ids.insert(ids.end(), suffix_tokens.begin(), suffix_tokens.end());
+        for (auto& token : suffix_tokens)
+            push_token(token, &ids);
 
     // sentencepiece::SentencePieceText spt;
     // sentence_piece_.Encode(text, &spt);
