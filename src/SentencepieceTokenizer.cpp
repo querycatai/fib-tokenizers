@@ -264,33 +264,6 @@ Napi::Value JSSentencepieceTokenizer::encode(const Napi::CallbackInfo& info)
         for (auto& token : suffix_tokens)
             push_token(token, &ids);
 
-    // sentencepiece::SentencePieceText spt;
-    // sentence_piece_.Encode(text, &spt);
-    // size_t added_tokens_size = added_tokens.size();
-
-    // ids.resize(spt.pieces_size());
-    // for (int i = 0; i < spt.pieces_size(); i++) {
-    //     auto piece = spt.pieces(i);
-
-    //     if (added_tokens_size || offset) {
-    //         int j;
-    //         const std::string& txt = piece.piece();
-
-    //         for (j = 0; j < added_tokens_size; j++) {
-    //             if (txt == added_tokens[j]) {
-    //                 ids[i] = j;
-    //                 break;
-    //             }
-    //         }
-
-    //         if (j == added_tokens_size) {
-    //             uint32_t id = piece.id();
-    //             ids[i] = id ? id + offset : unk_id;
-    //         }
-    //     } else
-    //         ids[i] = piece.id();
-    // }
-
     return to_value(info.Env(), ids);
 }
 
