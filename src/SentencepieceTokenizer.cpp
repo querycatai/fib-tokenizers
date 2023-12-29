@@ -42,10 +42,6 @@ void JSSentencepieceTokenizer::config_basic_tokens(const Napi::Config& opt)
         "unk_token", "bos_token", "eos_token", "pad_token", "mask_token", "sep_token"
     };
 
-    static const char* special_token_values[] = {
-        "<unk>", "", "", "<pad>", "<mask>", "<sep>"
-    };
-
     bos_id = sentence_piece_.bos_id();
     eos_id = sentence_piece_.eos_id();
     unk_id = sentence_piece_.unk_id();
@@ -69,12 +65,12 @@ void JSSentencepieceTokenizer::config_basic_tokens(const Napi::Config& opt)
                 special_tokens.emplace(token.content, token);
             }
 
-            if (config_value_type == napi_undefined || config_value_type == napi_null || config_value_type == napi_object || special_type != napi_string)
-                token = special_value;
+            if (config_value_type == napi_undefined || config_value_type == napi_null
+                || config_value_type == napi_object || special_type != napi_string)
+                token = special_token;
             else
                 token.content = special_token.content;
-        } else
-            token = config_value;
+        }
 
         if (token.content.length() > 0) {
             token.id = convert_token_to_id(token.content);
