@@ -8,6 +8,11 @@
 #include <unordered_map>
 #include "ustring.h"
 
+inline Napi::Value to_value(Napi::Env env, const Napi::Value& value)
+{
+    return value;
+}
+
 inline Napi::Value to_value(Napi::Env env, int32_t value)
 {
     return Napi::Number::New(env, value);
@@ -131,6 +136,12 @@ inline ustring from_value<ustring>(const Napi::Value& value)
 {
     ustring result(from_value<std::string>(value));
     return result;
+}
+
+template <>
+inline Napi::Value from_value<Napi::Value>(const Napi::Value& value)
+{
+    return value;
 }
 
 template <>

@@ -99,7 +99,7 @@ private:
     std::unordered_map<std::string_view, int> token_to_id;
     std::unordered_map<int, std::string> id_to_token;
 
-    std::unordered_map<std::string, SpecialToken> special_tokens_map;
+    std::unordered_map<std::string, SpecialToken> special_tokens;
 
     bool add_bos_token;
     bool add_eos_token;

@@ -24,11 +24,11 @@ tokenizers.from_folder = function (home, model) {
     const model_config = tokenizers.config_from_name(
         get_json(path.join(model_path, "config.json")),
         get_json(path.join(model_path, "tokenizer_config.json")),
-        fs.readdirSync(model_path),
-        get_json(path.join(model_path, "special_tokens_map.json"))
+        fs.readdirSync(model_path)
     );
 
     model_config.added_tokens = get_json(path.join(model_path, "added_tokens.json"));
+    model_config.special_tokens_map = get_json(path.join(model_path, "special_tokens_map.json"));
 
     const tokenizer_class = tokenizers_index[model_config.tokenizer_class.toLowerCase()];
     const vocabs = tokenizer_class.vocabs.map(vocab => fs.readFileSync(path.join(model_path, vocab)));
