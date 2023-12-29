@@ -36,9 +36,9 @@ public:
 
 public:
     std::string content;
-    bool lstrip = true;
+    bool lstrip = false;
     bool normalized = false;
-    bool rstrip = true;
+    bool rstrip = false;
     bool single_word = false;
     bool special = false;
     int id = 0;

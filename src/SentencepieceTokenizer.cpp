@@ -22,12 +22,17 @@ void JSSentencepieceTokenizer::config_tokens_decoder(const Napi::Config& opt)
     std::unordered_map<std::string, SpecialToken> added_tokens_decoder;
     added_tokens_decoder = opt.Get("added_tokens_decoder", added_tokens_decoder);
 
-    for (auto& [key, value] : added_tokens_decoder) {
+    for (auto& [key, token] : added_tokens_decoder) {
         uint32_t id = std::stoul(key);
 
-        auto it = id_to_token.emplace(id, value.content);
-        if (value.content.length() > 0)
+        auto it = id_to_token.emplace(id, token.content);
+        if (token.content.length() > 0) {
+            token.id = id;
             token_to_id[it.first->second] = id;
+
+            if (token.special && special_tokens_map.find(token.content) == special_tokens_map.end())
+                special_tokens_map.emplace(token.content, token);
+        }
     }
 }
 
