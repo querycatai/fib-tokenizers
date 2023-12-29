@@ -46,6 +46,7 @@ const test_class = [
     "InternLMTokenizer",
     "PegasusTokenizer",
     "YiTokenizer",
+    "NllbTokenizer"
 ];
 
 var test_limit = 1000;

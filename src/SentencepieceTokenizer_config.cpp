@@ -101,7 +101,7 @@ void JSSentencepieceTokenizer::config_special_tokens(const Napi::Config& opt)
             int id = convert_token_to_id(stoken);
 
             if (id == 0) {
-                id = vacob_size++;
+                id = vacob_size++ + offset;
                 auto it = id_to_token.emplace(id, stoken);
                 token_to_id[it.first->second] = id;
 
