@@ -11,15 +11,15 @@ for (var key in tokenizers)
 tokenizers.resolve_model = require('./lib/resolve_model');
 tokenizers.config_from_name = require('./lib/config_from_name');
 
-tokenizers.from_folder = module.exports = function (home, model) {
+function get_json(file) {
+    if (fs.existsSync(file))
+        return JSON.parse(fs.readFileSync(file, "utf-8"));
+
+    return {};
+}
+
+tokenizers.from_folder = function (home, model) {
     const model_path = tokenizers.resolve_model(home, model);
-
-    function get_json(file) {
-        if (fs.existsSync(file))
-            return JSON.parse(fs.readFileSync(file, "utf-8"));
-
-        return {};
-    }
 
     const model_config = tokenizers.config_from_name(
         get_json(path.join(model_path, "config.json")),
@@ -47,6 +47,18 @@ tokenizers.from_folder = module.exports = function (home, model) {
     tokenizer.config = model_config;
 
     return tokenizer;
+}
+
+tokenizers.check_model = function (home, model) {
+    const model_path = tokenizers.resolve_model(home, model);
+
+    const model_config = tokenizers.config_from_name(
+        get_json(path.join(model_path, "config.json")),
+        get_json(path.join(model_path, "tokenizer_config.json"))
+    );
+
+    const tokenizer_class = tokenizers_index[model_config.tokenizer_class.toLowerCase()];
+    return tokenizer_class.vocabs.every(vocab => fs.existsSync(path.join(model_path, vocab)));
 }
 
 module.exports = tokenizers;

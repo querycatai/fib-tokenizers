@@ -64,34 +64,41 @@ describe("tokenizer", () => {
                 if (test_limit-- <= 0)
                     return;
 
-                try {
-                    const tokenizer = tokenizers.from_folder(home, model);
+                if (!tokenizers.check_model(home, model)) {
+                    console.error(`Model not found: ${model}`);
+                    return;
+                }
 
-                    describe(`${model}`, () => {
-                        tokenizer_tests[model].datasets.forEach((test) => {
-                            describe(JSON.stringify(test.input.substr(0, 64)), () => {
-                                it("encode", () => {
-                                    const result = tokenizer.encode(test.input);
-                                    assert.deepEqual(result, test.ids);
-                                });
+                describe(`${model}`, () => {
+                    var tokenizer;
 
-                                it("tokenize", () => {
-                                    const result = tokenizer.tokenize(test.input);
-                                    assert.deepEqual(result, test.tokens);
-                                });
-
-                                // it("decode", () => {
-                                //     const result = tokenizer.decode(test.ids);
-                                //     assert.equal(result, test.decoded_);
-                                // });
-                            });
-                        });
+                    before(() => {
+                        tokenizer = tokenizers.from_folder(home, model);
                     });
 
-                } catch (e) {
-                    console.log(model);
-                    console.log(e);
-                }
+                    after(() => {
+                        tokenizer = null;
+                    });
+
+                    tokenizer_tests[model].datasets.forEach((test) => {
+                        describe(JSON.stringify(test.input.substr(0, 64)), () => {
+                            it("encode", () => {
+                                const result = tokenizer.encode(test.input);
+                                assert.deepEqual(result, test.ids);
+                            });
+
+                            it("tokenize", () => {
+                                const result = tokenizer.tokenize(test.input);
+                                assert.deepEqual(result, test.tokens);
+                            });
+
+                            // it("decode", () => {
+                            //     const result = tokenizer.decode(test.ids);
+                            //     assert.equal(result, test.decoded_);
+                            // });
+                        });
+                    });
+                });
             });
         });
     });
