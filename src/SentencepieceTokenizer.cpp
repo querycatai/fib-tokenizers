@@ -53,18 +53,22 @@ void JSSentencepieceTokenizer::config_basic_tokens(const Napi::Config& opt)
         Napi::Value config_value = opt.Get(special_token_keys[i], Napi::Value());
         napi_valuetype config_value_type = config_value.Type();
 
-        SpecialToken token;
+        SpecialToken token = config_value;
         auto it = special_tokens_map.find(special_token_keys[i]);
         if (it != special_tokens_map.end()) {
             Napi::Value special_value = it->second;
             napi_valuetype special_type = special_value.Type();
+            SpecialToken special_token = special_value;
+
+            if (token.content.length() > 0 && token.content != special_token.content) {
+                token.id = convert_token_to_id(token.content);
+                special_tokens.emplace(token.content, token);
+            }
 
             if (config_value_type == napi_undefined || config_value_type == napi_null || config_value_type == napi_object || special_type != napi_string)
                 token = special_value;
-            else {
-                token = config_value;
-                token.content = from_value<std::string>(special_value);
-            }
+            else
+                token.content = special_token.content;
         } else
             token = config_value;
 
