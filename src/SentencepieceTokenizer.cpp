@@ -42,6 +42,10 @@ void JSSentencepieceTokenizer::config_basic_tokens(const Napi::Config& opt)
         "unk_token", "bos_token", "eos_token", "pad_token", "mask_token", "sep_token"
     };
 
+    static const char* special_token_values[] = {
+        "<unk>", "", "", "<pad>", "<mask>", "<sep>"
+    };
+
     bos_id = sentence_piece_.bos_id();
     eos_id = sentence_piece_.eos_id();
     unk_id = sentence_piece_.unk_id();
@@ -145,17 +149,43 @@ void JSSentencepieceTokenizer::config_prefix_suffix(const Napi::Config& opt)
 
 void JSSentencepieceTokenizer::config_pattern(const Napi::Config& opt)
 {
+    static const char* space_tokens[] = {
+        " ",
+        "\t",
+        "\n",
+        "\r",
+        "\f",
+        "\v"
+    };
+
     if (special_tokens.size() > 0) {
         std::string pattern_str;
+        std::vector<std::string> keys;
 
-        for (auto& [key, value] : special_tokens) {
+        for (auto& [key, value] : special_tokens)
+            keys.emplace_back(key);
+
+        std::sort(keys.begin(), keys.end(), [](const std::string& a, const std::string& b) {
+            return a.length() > b.length();
+        });
+
+        for (auto& key : keys) {
             if (pattern_str.length() > 0)
                 pattern_str += "|";
             pattern_str += escapeRegex(std::string(key));
         }
 
+        std::string space_str;
+        for (auto& token : space_tokens) {
+            if (special_tokens.find(token) == special_tokens.end()) {
+                if (space_str.length() > 0)
+                    space_str += "|";
+                space_str += escapeRegex(std::string(token));
+            }
+        }
+
         has_pattern = true;
-        pattern = std::regex("\\s?(" + pattern_str + ")\\s?");
+        pattern = std::regex("(" + space_str + ")?(" + pattern_str + ")(" + space_str + ")?");
     }
 }
 
@@ -255,15 +285,15 @@ void JSSentencepieceTokenizer::encode(std::string& text, std::vector<T>* ids)
         std::string::const_iterator searchStart(text.cbegin());
 
         while (std::regex_search(searchStart, text.cend(), m, pattern)) {
-            const SpecialToken& token = special_tokens[m[1]];
+            const SpecialToken& token = special_tokens[m[2]];
 
-            size_t pos = (token.lstrip ? m[0].first : m[1].first) - text.cbegin();
+            size_t pos = (token.lstrip ? m[0].first : m[2].first) - text.cbegin();
             if (pos != lastPos)
                 sentencepiece_encode(text.data() + lastPos, pos - lastPos, ids, prefix_count);
 
             push_token(token, ids);
 
-            searchStart = token.rstrip ? m[0].first + m[0].length() : m[1].first + m[1].length();
+            searchStart = token.rstrip ? m[0].first + m[0].length() : m[2].first + m[2].length();
             lastPos = searchStart - text.cbegin();
         }
     }
