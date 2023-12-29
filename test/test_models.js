@@ -23,13 +23,12 @@ var home = path.join(process.env.HOME, ".cache/huggingface/hub");
 // MBart50Tokenizer sentencepiece.bpe.model
 // NllbTokenizer sentencepiece.bpe.model
 // CamembertTokenizer sentencepiece.bpe.model
+// SpeechT5Tokenizer spm_char.model
 
 // =================================
 
 // M2M100Tokenizer sentencepiece.bpe.model
 // SeamlessM4TTokenizer sentencepiece.bpe.model
-// SpeechT5Tokenizer spm_char.model
-
 
 const test_class = [
     "LlamaTokenizer",
@@ -45,7 +44,7 @@ const test_class = [
     "MBart50Tokenizer",
     "NllbTokenizer",
     "CamembertTokenizer",
-    // =================================
+    "SpeechT5Tokenizer"
 ];
 
 var test_limit = 1000;
