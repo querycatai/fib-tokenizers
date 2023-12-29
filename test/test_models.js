@@ -13,40 +13,36 @@ var home = path.join(process.env.HOME, ".cache/huggingface/hub");
 // LlamaTokenizer tokenizer.model
 // T5Tokenizer spiece.model
 // XLMRobertaTokenizer sentencepiece.bpe.model
-// ChatGLMTokenizer ice_text.model
 // DebertaV2Tokenizer spm.model
 // CodeLlamaTokenizer tokenizer.model
-// BaichuanTokenizer tokenizer.model
+// ChatGLMTokenizer tokenizer.model
 // InternLMTokenizer tokenizer.model
 // PegasusTokenizer spiece.model
 // YiTokenizer tokenizer.model
-
-// =================================
-
+// BaichuanTokenizer tokenizer.model
 // MBart50Tokenizer sentencepiece.bpe.model
-// ReplitLMTokenizer spiece.model
+// NllbTokenizer sentencepiece.bpe.model
 // CamembertTokenizer sentencepiece.bpe.model
-// GLMChineseTokenizer cog-pretrain.model
 // M2M100Tokenizer sentencepiece.bpe.model
+// SeamlessM4TTokenizer sentencepiece.bpe.model
 // SpeechT5Tokenizer spm_char.model
 
 // =================================
 
-// NllbTokenizer sentencepiece.bpe.model
-
 const test_class = [
     "LlamaTokenizer",
     "T5Tokenizer",
-    // =================================
-    "CodeLlamaTokenizer",
-    "DebertaV2Tokenizer",
-    "ChatGLMTokenizer",
-    "BaichuanTokenizer",
     "XLMRobertaTokenizer",
+    "DebertaV2Tokenizer",
+    "CodeLlamaTokenizer",
+    "ChatGLMTokenizer",
     "InternLMTokenizer",
     "PegasusTokenizer",
     "YiTokenizer",
-    "NllbTokenizer"
+    "BaichuanTokenizer",
+    "MBart50Tokenizer",
+    "NllbTokenizer",
+    // =================================
 ];
 
 var test_limit = 1000;

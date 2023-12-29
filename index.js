@@ -14,8 +14,6 @@ tokenizers.config_from_name = require('./lib/config_from_name');
 function get_json(file) {
     if (fs.existsSync(file))
         return JSON.parse(fs.readFileSync(file, "utf-8"));
-
-    return {};
 }
 
 tokenizers.from_folder = function (home, model) {
@@ -27,8 +25,13 @@ tokenizers.from_folder = function (home, model) {
         fs.readdirSync(model_path)
     );
 
-    model_config.added_tokens = get_json(path.join(model_path, "added_tokens.json"));
-    model_config.special_tokens_map = get_json(path.join(model_path, "special_tokens_map.json"));
+    const added_tokens = get_json(path.join(model_path, "added_tokens.json"));
+    if (added_tokens)
+        model_config.added_tokens = added_tokens;
+
+    const special_tokens_map = get_json(path.join(model_path, "special_tokens_map.json"));
+    if (special_tokens_map)
+        model_config.special_tokens_map = special_tokens_map;
 
     const tokenizer_class = tokenizers_index[model_config.tokenizer_class.toLowerCase()];
     const vocabs = tokenizer_class.vocabs.map(vocab => fs.readFileSync(path.join(model_path, vocab)));
