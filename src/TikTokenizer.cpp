@@ -1,4 +1,5 @@
 #include "TikTokenizer.h"
+#include "string_util.h"
 #include "emdedded_resource_reader.h"
 
 Napi::Function JSTikTokenizer::Init(Napi::Env env)
@@ -41,7 +42,10 @@ JSTikTokenizer::JSTikTokenizer(const Napi::CallbackInfo& info)
     else
         throw Napi::Error::New(info.Env(), "Unknown base model");
 
-    std::vector<std::string> lines = to_array<std::string>(info[0]);
+    std::vector<std::string> lines;
+    std::string_view vocab_data = from_value<std::string_view>(info[0]);
+    split_vocab(vocab_data, lines);
+
     LinesReader lines_reader(lines);
     encoder_ = GptEncoding::get_encoding(base_model, &lines_reader);
 }

@@ -337,22 +337,26 @@ inline ssize_t convert(const T1* src, ssize_t srclen, T2* dst, ssize_t dstlen)
 }
 
 template <typename T1, typename T2>
-inline ssize_t convert(const std::basic_string<T1>& src, std::basic_string<T2>& dst)
+inline ssize_t convert(const T1* src, ssize_t srclen, std::basic_string<T2>& dst)
 {
-    size_t srclen = src.size();
-
     if (srclen) {
-        ssize_t n = _test(src.c_str(), srclen, (T2*)NULL);
+        ssize_t n = _test(src, srclen, (T2*)NULL);
 
         if (n > 0) {
             dst.resize(n);
-            convert(src.c_str(), srclen, &dst[0], n);
+            convert(src, srclen, &dst[0], n);
         }
 
         return n;
     }
 
     return 0;
+}
+
+template <typename T1, typename T2>
+inline ssize_t convert(const std::basic_string<T1>& src, std::basic_string<T2>& dst)
+{
+    return convert(src.c_str(), src.size(), dst);
 }
 
 }

@@ -88,7 +88,7 @@ def generate_one(model):
 
             tokens = tokenizer.tokenize(text)
             if tokens and isinstance(tokens[0], bytes):
-                tokens = [token.decode('utf-8') for token in tokens]
+                tokens = [token.decode('utf-8', errors='ignore') for token in tokens]
 
             decoded = tokenizer.decode(ids, skip_special_tokens=True)
             decoded_with_special = tokenizer.decode(ids, skip_special_tokens=False)
@@ -111,8 +111,8 @@ def generate_one(model):
         shutil.rmtree(cache_dir, ignore_errors=True)
         print(f"\n{Fore.RED}===========> Failed to generate for {model}: {e}{Fore.RESET}\n")
 
-    with open("tokenizer_tests.json", "w", encoding="utf-8") as fp:
-        json.dump(tokenizer_tests, fp, indent=4)
+    with open("tokenizer_tests.json", "w", encoding="utf-8", errors='ignore') as fp:
+        json.dump(tokenizer_tests, fp)
 
 
 response = requests.get("https://huggingface.co/api/models", params={

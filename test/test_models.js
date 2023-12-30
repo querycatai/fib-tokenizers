@@ -53,9 +53,14 @@ const BertTokenizer = [
     "MPNetTokenizer"
 ];
 
+const TikTokenizer = [
+    "QWenTokenizer"
+];
+
 const base_class = {
     SentencepieceTokenizer,
-    BertTokenizer
+    BertTokenizer,
+    TikTokenizer
 };
 
 var test_limit = 1000;
@@ -64,6 +69,7 @@ describe("tokenizer", () => {
     for (var _base_class in base_class) {
         describe(_base_class, () => {
             base_class[_base_class].forEach((_class) => {
+                const base_class = _base_class;
                 describe(_class, () => {
                     models.forEach((model) => {
                         if (!tokenizer_tests[model].tokenizer_class)
@@ -95,10 +101,11 @@ describe("tokenizer", () => {
 
                             tokenizer_tests[model].datasets.forEach((test) => {
                                 describe(JSON.stringify(test.input.substr(0, 64)), () => {
-                                    it("tokenize", () => {
-                                        var result = tokenizer.tokenize(test.input);
-                                        assert.deepEqual(result, test.tokens);
-                                    });
+                                    if (base_class != "TikTokenizer")
+                                        it("tokenize", () => {
+                                            var result = tokenizer.tokenize(test.input);
+                                            assert.deepEqual(result, test.tokens);
+                                        });
 
                                     it("encode", () => {
                                         var result = tokenizer.encode(test.input);

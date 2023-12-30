@@ -88,3 +88,67 @@ inline char32_t StripAccent(char32_t c)
 
     return tr[c - 192];
 }
+
+inline void split_vocab(std::string_view vocab_data, std::vector<std::u32string>& vocab_array)
+{
+    size_t start = 0;
+    size_t pos = 0;
+
+    for (; pos < vocab_data.size(); ++pos) {
+        char ch = vocab_data[pos];
+        if (ch == '\n') {
+            ssize_t end = pos;
+            if (end > 0 && vocab_data[end - 1] == '\r')
+                end -= 1;
+
+            std::string line(vocab_data.data() + start, end - start);
+            std::u32string wline;
+
+            utf8::convert(line, wline);
+            vocab_array.push_back(wline);
+
+            start = pos + 1;
+        }
+    }
+
+    if (pos > start) {
+        ssize_t end = pos;
+        if (end > 0 && vocab_data[end - 1] == '\r')
+            end -= 1;
+
+        std::string line(vocab_data.data() + start, end - start);
+        std::u32string wline;
+
+        utf8::convert(line, wline);
+        vocab_array.push_back(wline);
+    }
+}
+
+inline void split_vocab(std::string_view vocab_data, std::vector<std::string>& vocab_array)
+{
+    size_t start = 0;
+    size_t pos = 0;
+
+    for (; pos < vocab_data.size(); ++pos) {
+        char ch = vocab_data[pos];
+        if (ch == '\n') {
+            ssize_t end = pos;
+            if (end > 0 && vocab_data[end - 1] == '\r')
+                end -= 1;
+
+            std::string line(vocab_data.data() + start, end - start);
+            vocab_array.push_back(line);
+
+            start = pos + 1;
+        }
+    }
+
+    if (pos > start) {
+        ssize_t end = pos;
+        if (end > 0 && vocab_data[end - 1] == '\r')
+            end -= 1;
+
+        std::string line(vocab_data.data() + start, end - start);
+        vocab_array.push_back(line);
+    }
+}
