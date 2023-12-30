@@ -56,11 +56,11 @@ JSBertTokenizer::JSBertTokenizer(const Napi::CallbackInfo& info)
 
     do_basic_tokenize = opt.Get("do_basic_tokenize", false);
 
-    do_lower_case_ = opt.Get("do_lower_case", false);
-    strip_accents_ = opt.Get("strip_accents", false);
-    tokenize_chinese_chars_ = opt.Get("tokenize_chinese_chars", false);
-    tokenize_punctuation_ = opt.Get("tokenize_punctuation", false);
-    remove_control_chars_ = opt.Get("remove_control_chars", false);
+    do_lower_case_ = opt.Get("do_lower_case", true);
+    strip_accents_ = opt.Get("strip_accents", true);
+    tokenize_chinese_chars_ = opt.Get("tokenize_chinese_chars", true);
+    tokenize_punctuation_ = opt.Get("tokenize_punctuation", true);
+    remove_control_chars_ = opt.Get("remove_control_chars", true);
 
     max_input_chars_per_word_ = opt.Get("max_input_chars_per_word", max_input_chars_per_word_);
 }
