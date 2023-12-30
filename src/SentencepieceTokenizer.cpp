@@ -134,17 +134,11 @@ Napi::Value JSSentencepieceTokenizer::decode(const Napi::CallbackInfo& info)
     std::vector<std::string> pieces;
     const int num_pieces = sentence_piece_.GetPieceSize();
     pieces.reserve(ids.size());
-    size_t added_tokens_size = added_tokens.size();
 
-    for (const int id : ids) {
-        if (id != unk_id) {
-            auto it = id_to_token.find(id);
-            if (it != id_to_token.end()) {
-                // pieces.emplace_back(it->second);
-            } else if (id >= 0 && id < num_pieces + offset)
-                pieces.emplace_back(sentence_piece_.IdToPiece(id - offset));
-        }
-    }
+    for (const int id : ids)
+        if (id != unk_id && id_to_token.find(id) == id_to_token.end()
+            && id >= offset && id < num_pieces + offset)
+            pieces.emplace_back(sentence_piece_.IdToPiece(id - offset));
 
     sentence_piece_.Decode(pieces, &text);
 

@@ -87,7 +87,6 @@ private:
 
 private:
     sentencepiece::SentencePieceProcessor sentence_piece_;
-    std::vector<std::string> added_tokens;
     int32_t offset = 0;
 
     int unk_id;
