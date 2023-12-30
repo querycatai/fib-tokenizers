@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <cstring>
 
 #ifndef ssize_t
 typedef ptrdiff_t ssize_t;

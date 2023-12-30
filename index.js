@@ -60,10 +60,7 @@ tokenizers.check_model = function (home, model) {
         get_json(path.join(model_path, "tokenizer_config.json"))
     );
 
-    console.log(model_config);
-
     const tokenizer_class = tokenizers_index[model_config.tokenizer_class.toLowerCase()];
-
     return tokenizer_class.vocabs.every(vocab => fs.existsSync(path.join(model_path, vocab)));
 }
 

@@ -52,7 +52,7 @@ const BertTokenizer = [
 ];
 
 const base_class = {
-    // SentencepieceTokenizer,
+    SentencepieceTokenizer,
     BertTokenizer
 };
 
@@ -93,20 +93,20 @@ describe("tokenizer", () => {
 
                             tokenizer_tests[model].datasets.forEach((test) => {
                                 describe(JSON.stringify(test.input.substr(0, 64)), () => {
-                                    // it("encode", () => {
-                                    //     var result = tokenizer.encode(test.input);
-                                    //     assert.deepEqual(result, test.ids);
-                                    // });
-
                                     it("tokenize", () => {
                                         var result = tokenizer.tokenize(test.input);
                                         assert.deepEqual(result, test.tokens);
                                     });
 
-                                    // it("decode", () => {
-                                    //     var result = tokenizer.decode(test.ids);
-                                    //     assert.equal(result, test.decoded_);
-                                    // });
+                                    it("encode", () => {
+                                        var result = tokenizer.encode(test.input);
+                                        assert.deepEqual(result, test.ids);
+                                    });
+
+                                    it("decode", () => {
+                                        var result = tokenizer.decode(test.ids);
+                                        assert.equal(result, test.decoded_);
+                                    });
                                 });
                             });
                         });

@@ -4,7 +4,9 @@
 Napi::Function JSBertTokenizer::Init(Napi::Env env)
 {
     return DefineClass(env, "BertTokenizer",
-        { InstanceMethod("tokenize", &JSBertTokenizer::tokenize, napi_enumerable) });
+        { InstanceMethod("tokenize", &JSBertTokenizer::tokenize, napi_enumerable),
+            InstanceMethod("encode", &JSBertTokenizer::encode, napi_enumerable),
+            InstanceMethod("decode", &JSBertTokenizer::decode, napi_enumerable) });
 }
 
 static void split_vocab(std::string_view vocab_data, std::vector<std::u32string>& vocab_array)
@@ -48,130 +50,127 @@ JSBertTokenizer::JSBertTokenizer(const Napi::CallbackInfo& info)
     std::string_view vocab_data = from_value<std::string_view>(info[0]);
     split_vocab(vocab_data, vocab_array);
 
-    for (int i = 0; i < vocab_array.size(); i++)
-        vocab_[vocab_array[i]] = i;
-
     Napi::Config opt(info[1]);
-    unk_token_ = opt.Get("unk_token", std::u32string(U"[UNK]"));
 
-    do_basic_tokenize = opt.Get("do_basic_tokenize", false);
-
+    do_basic_tokenize_ = opt.Get("do_basic_tokenize", true);
     do_lower_case_ = opt.Get("do_lower_case", true);
-    strip_accents_ = opt.Get("strip_accents", true);
     tokenize_chinese_chars_ = opt.Get("tokenize_chinese_chars", true);
-    tokenize_punctuation_ = opt.Get("tokenize_punctuation", true);
-    remove_control_chars_ = opt.Get("remove_control_chars", true);
+    strip_accents_ = opt.Get("strip_accents", false);
+    suffix_indicator_ = opt.Get("suffix_indicator", std::u32string(U"##"));
+    max_input_chars_per_word_ = opt.Get("max_input_chars_per_word", 100);
 
-    max_input_chars_per_word_ = opt.Get("max_input_chars_per_word", max_input_chars_per_word_);
-}
+    for (int i = 0; i < vocab_array.size(); i++) {
+        auto& token = vocab_array[i];
+        vocab_.emplace(token, i);
 
-static std::vector<std::u32string> whitespace_tokenize(std::u32string text)
-{
-    std::vector<std::u32string> words;
-    size_t pos = 0;
-    size_t last = 0;
-
-    for (; pos < text.size(); ++pos) {
-        if (text[pos] == ' ') {
-            if (last >= 0 && last < pos)
-                words.push_back(text.substr(last, pos - last));
-            last = pos + 1;
+        if (token.rfind(suffix_indicator_, 0) == 0) {
+            vocab_array[i] = token.substr(suffix_indicator_.size(), token.size() - suffix_indicator_.size());
+            is_substr_.push_back(true);
+        } else {
+            is_substr_.push_back(false);
         }
     }
 
-    if (last >= 0 && last < text.size())
-        words.push_back(text.substr(last, pos - last));
+    unk_token_ = opt.Get("unk_token", std::u32string(U"[UNK]"));
+    FindTokenId(unk_token_, unk_token_id_);
 
-    return words;
+    sep_token_ = opt.Get("sep_token", std::u32string(U"[SEP]"));
+    FindTokenId(sep_token_, sep_token_id_);
+
+    pad_token_ = opt.Get("pad_token", std::u32string(U"[PAD]"));
+    FindTokenId(pad_token_, pad_token_id_);
+
+    cls_token_ = opt.Get("cls_token", std::u32string(U"[CLS]"));
+    FindTokenId(cls_token_, cls_token_id_);
+
+    mask_token_ = opt.Get("mask_token", std::u32string(U"[MASK]"));
+    FindTokenId(mask_token_, mask_token_id_);
 }
 
-Napi::Value JSBertTokenizer::tokenize(const Napi::CallbackInfo& info)
+bool JSBertTokenizer::FindTokenId(const std::u32string& token, int32_t& token_id)
 {
-    std::u32string text = from_value<std::u32string>(info[0]);
-    std::vector<std::u32string> tokens;
+    auto it = vocab_.find(token);
+    if (it == vocab_.end()) {
+        return false;
+    }
 
-    if (do_basic_tokenize)
-        basic_tokenize(text, &tokens);
-    else
-        wordpiece_tokenize(text, &tokens);
-
-    return to_value(info.Env(), tokens);
+    token_id = it->second;
+    return true;
 }
 
-void JSBertTokenizer::wordpiece_tokenize(std::u32string& text, std::vector<std::u32string>* tokens)
+void JSBertTokenizer::GreedySearch(const std::u32string& token, std::vector<std::u32string>& tokenized_result)
 {
-    if (strip_accents_) {
-        for (auto& c : text) {
-            c = StripAccent(c);
-        }
+    if (static_cast<int64_t>(token.size()) > max_input_chars_per_word_) {
+        tokenized_result.push_back(unk_token_);
+        return;
     }
 
-    if (do_lower_case_) {
-        for (auto& c : text) {
-            c = ToLower(c);
+    size_t start = 0;
+    size_t end = 0;
+    std::u32string substr;
+    for (; start < token.size();) {
+        end = token.size();
+        bool is_found = false;
+        // try to found the longest matched sub-token in vocab
+        for (; start < end;) {
+            substr = static_cast<const std::u32string>(token.substr(start, end - start));
+            if (start > 0) {
+                substr = static_cast<const std::u32string>(suffix_indicator_ + substr);
+            }
+            if (FindToken(substr)) {
+                is_found = true;
+                break;
+            }
+            end -= 1;
         }
+        // token not found in vocab
+        if (!is_found) {
+            tokenized_result.push_back(unk_token_);
+            break;
+        }
+
+        tokenized_result.push_back(substr);
+        start = end;
     }
+}
 
-    std::vector<std::u32string> words = whitespace_tokenize(text);
+std::vector<std::u32string> JSBertTokenizer::wordpiece_tokenize(std::u32string& text)
+{
+    std::vector<std::u32string> result;
+    std::u32string token;
 
-    for (auto itk = words.begin(); itk != words.end(); ++itk) {
-        if (static_cast<int64_t>(itk->size()) > max_input_chars_per_word_) {
-            tokens->push_back(unk_token_);
+    for (auto c : text) {
+        if (c == U' ' && !token.empty()) {
+            GreedySearch(token, result);
+            token.clear();
             continue;
         }
 
-        bool is_bad = false;
-        uint32_t start = 0;
-        std::vector<std::u32string> sub_tokens;
-
-        for (; start < itk->size();) {
-            uint32_t end = itk->size();
-            std::u32string cur_substr;
-            uint32_t cur_substr_index = -1;
-
-            for (; start < end;) {
-                std::u32string substr = itk->substr(start, end - start);
-                if (start > 0)
-                    substr = U"##" + substr;
-
-                if (vocab_.find(substr) != vocab_.end()) {
-                    cur_substr = substr;
-                    cur_substr_index = start;
-                    break;
-                }
-
-                end -= 1;
-            }
-
-            if (cur_substr_index == -1) {
-                is_bad = true;
-                break;
-            }
-
-            sub_tokens.push_back(cur_substr);
-            start = end;
-        }
-
-        if (is_bad)
-            tokens->push_back(unk_token_);
-        else
-            tokens->insert(tokens->end(), sub_tokens.begin(), sub_tokens.end());
+        token.push_back(c);
     }
+
+    if (!token.empty()) {
+        GreedySearch(token, result);
+    }
+
+    return result;
 }
 
-void JSBertTokenizer::basic_tokenize(std::u32string& text, std::vector<std::u32string>* tokens)
+std::vector<std::u32string> JSBertTokenizer::basic_tokenize(std::u32string& text)
 {
+    std::vector<std::u32string> tokens;
     std::u32string token;
-    auto push_current_token_and_clear = [tokens, &token]() {
+
+    auto push_current_token_and_clear = [&tokens, &token]() {
         if (!token.empty()) {
-            tokens->push_back(token);
+            tokens.push_back(token);
             token.clear();
         }
     };
 
-    auto push_single_char_and_clear = [tokens, &token](char32_t c) {
+    auto push_single_char_and_clear = [&tokens, &token](char32_t c) {
         token.push_back(c);
-        tokens->push_back(token);
+        tokens.push_back(token);
         token.clear();
     };
 
@@ -199,15 +198,12 @@ void JSBertTokenizer::basic_tokenize(std::u32string& text, std::vector<std::u32s
             continue;
         }
 
-        // 0x2019 unicode is not punctuation in some Linux platform,
-        // to be consistent, take it as punctuation.
         if (tokenize_punctuation_ && IsPunct(c)) {
             push_current_token_and_clear();
             push_single_char_and_clear(c);
             continue;
         }
 
-        // split by space
         if (IsSpace(c)) {
             push_current_token_and_clear();
             continue;
@@ -221,4 +217,131 @@ void JSBertTokenizer::basic_tokenize(std::u32string& text, std::vector<std::u32s
     }
 
     push_current_token_and_clear();
+
+    std::vector<std::u32string> result;
+    for (const auto& token : tokens) {
+        GreedySearch(token, result);
+    }
+
+    return result;
+}
+
+Napi::Value JSBertTokenizer::tokenize(const Napi::CallbackInfo& info)
+{
+    std::u32string text = from_value<std::u32string>(info[0]);
+    std::vector<std::u32string> tokens;
+
+    if (do_basic_tokenize_)
+        tokens = basic_tokenize(text);
+    else
+        tokens = wordpiece_tokenize(text);
+
+    return to_value(info.Env(), tokens);
+}
+
+Napi::Value JSBertTokenizer::encode(const Napi::CallbackInfo& info)
+{
+    std::u32string text = from_value<std::u32string>(info[0]);
+    std::vector<std::u32string> tokens;
+
+    if (do_basic_tokenize_)
+        tokens = basic_tokenize(text);
+    else
+        tokens = wordpiece_tokenize(text);
+
+    std::vector<int64_t> ids;
+
+    ids.push_back(cls_token_id_);
+    for (const auto& token : tokens) {
+        int32_t token_id = -1;
+        if (!FindTokenId(token, token_id)) {
+            ids.push_back(unk_token_id_);
+            continue;
+        }
+
+        ids.push_back(token_id);
+    }
+    ids.push_back(sep_token_id_);
+
+    return to_value(info.Env(), ids);
+}
+
+bool JSBertTokenizer::RemoveTokenizeSpace(int64_t pre_token_id, int64_t new_token_id)
+{
+    if (pre_token_id < 0) {
+        return true;
+    }
+
+    auto pre_char = vocab_array[static_cast<size_t>(pre_token_id)].back();
+    auto cur_char = vocab_array[static_cast<size_t>(new_token_id)][0];
+
+    // normal punctuation
+    if (cur_char == U'!' || cur_char == U'.' || cur_char == U'?' || cur_char == U',' || cur_char == '~' || cur_char == ':') {
+        return true;
+    }
+
+    // only remove left side space
+    if (cur_char == U'}' || cur_char == U']' || cur_char == U'>' || cur_char == ')') {
+        return true;
+    }
+
+    // only remove right side space
+    if (pre_char == U'{' || pre_char == U'[' || pre_char == U'<' || pre_char == '(' || pre_char == '$') {
+        return true;
+    }
+
+    // remove both side space
+    if (pre_char == U'-' || pre_char == U'\'' || pre_char == U'"' || pre_char == U'/' || pre_char == U'@' || pre_char == U'\\' || cur_char == U'-' || cur_char == U'\'' || cur_char == U'"' || cur_char == U'/' || cur_char == U'@' || cur_char == U'\\') {
+        return true;
+    }
+
+    // remove both space beside unicode punctuation
+    if (pre_char > 128 && IsPunct(pre_char)) {
+        return true;
+    }
+
+    if (cur_char > 128 && IsPunct(cur_char)) {
+        return true;
+    }
+
+    return false;
+}
+
+Napi::Value JSBertTokenizer::decode(const Napi::CallbackInfo& info)
+{
+    std::vector<int64_t> ids = to_array<int64_t>(info[0]);
+
+    bool skip_special_tokens = true;
+
+    std::u32string result;
+    int64_t pre_token = -1;
+
+    for (auto id : ids) {
+        if (skip_special_tokens && (id == unk_token_id_ || id == sep_token_id_ || id == pad_token_id_ || id == cls_token_id_ || id == mask_token_id_)) {
+            continue;
+        }
+
+        // deal with unk ids
+        if (id < 0 || static_cast<size_t>(id) >= vocab_array.size()) {
+            if (!result.empty()) {
+                result.push_back(' ');
+            }
+            result.append(unk_token_);
+            continue;
+        }
+
+        // skip first substr
+        if (result.empty() && is_substr_[static_cast<size_t>(id)]) {
+            continue;
+        }
+
+        if (!(result.empty() || is_substr_[static_cast<size_t>(id)] || RemoveTokenizeSpace(pre_token, id))) {
+            result.push_back(' ');
+        }
+
+        result.append(vocab_array[static_cast<size_t>(id)]);
+        pre_token = id;
+    }
+
+    return to_value(info.Env(), result);
 }
