@@ -44,7 +44,7 @@ const test_class = [
     "MBart50Tokenizer",
     "NllbTokenizer",
     "CamembertTokenizer",
-    "SpeechT5Tokenizer"
+    "SpeechT5Tokenizer",
 ];
 
 var test_limit = 1000;
@@ -91,10 +91,10 @@ describe("tokenizer", () => {
                                 assert.deepEqual(result, test.tokens);
                             });
 
-                            // it("decode", () => {
-                            //     const result = tokenizer.decode(test.ids);
-                            //     assert.equal(result, test.decoded_);
-                            // });
+                            it("decode", () => {
+                                const result = tokenizer.decode(test.ids);
+                                assert.equal(result, test.decoded_);
+                            });
                         });
                     });
                 });
