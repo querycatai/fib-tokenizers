@@ -87,11 +87,19 @@ static std::vector<std::u32string> whitespace_tokenize(std::u32string text)
 
 Napi::Value JSBertTokenizer::tokenize(const Napi::CallbackInfo& info)
 {
-    if (do_basic_tokenize)
-        return basic_tokenize(info);
-
     std::u32string text = from_value<std::u32string>(info[0]);
+    std::vector<std::u32string> tokens;
 
+    if (do_basic_tokenize)
+        basic_tokenize(text, &tokens);
+    else
+        wordpiece_tokenize(text, &tokens);
+
+    return to_value(info.Env(), tokens);
+}
+
+void JSBertTokenizer::wordpiece_tokenize(std::u32string& text, std::vector<std::u32string>* tokens)
+{
     if (strip_accents_) {
         for (auto& c : text) {
             c = StripAccent(c);
@@ -105,11 +113,10 @@ Napi::Value JSBertTokenizer::tokenize(const Napi::CallbackInfo& info)
     }
 
     std::vector<std::u32string> words = whitespace_tokenize(text);
-    std::vector<std::u32string> tokens;
 
     for (auto itk = words.begin(); itk != words.end(); ++itk) {
         if (static_cast<int64_t>(itk->size()) > max_input_chars_per_word_) {
-            tokens.push_back(unk_token_);
+            tokens->push_back(unk_token_);
             continue;
         }
 
@@ -146,30 +153,25 @@ Napi::Value JSBertTokenizer::tokenize(const Napi::CallbackInfo& info)
         }
 
         if (is_bad)
-            tokens.push_back(unk_token_);
+            tokens->push_back(unk_token_);
         else
-            tokens.insert(tokens.end(), sub_tokens.begin(), sub_tokens.end());
+            tokens->insert(tokens->end(), sub_tokens.begin(), sub_tokens.end());
     }
-
-    return to_value(info.Env(), tokens);
 }
 
-Napi::Value JSBertTokenizer::basic_tokenize(const Napi::CallbackInfo& info)
+void JSBertTokenizer::basic_tokenize(std::u32string& text, std::vector<std::u32string>* tokens)
 {
-    std::u32string text = from_value<std::u32string>(info[0]);
-
-    std::vector<std::u32string> result;
     std::u32string token;
-    auto push_current_token_and_clear = [&result, &token]() {
+    auto push_current_token_and_clear = [tokens, &token]() {
         if (!token.empty()) {
-            result.push_back(token);
+            tokens->push_back(token);
             token.clear();
         }
     };
 
-    auto push_single_char_and_clear = [&result, &token](char32_t c) {
+    auto push_single_char_and_clear = [tokens, &token](char32_t c) {
         token.push_back(c);
-        result.push_back(token);
+        tokens->push_back(token);
         token.clear();
     };
 
@@ -219,6 +221,4 @@ Napi::Value JSBertTokenizer::basic_tokenize(const Napi::CallbackInfo& info)
     }
 
     push_current_token_and_clear();
-
-    return to_value(info.Env(), result);
 }

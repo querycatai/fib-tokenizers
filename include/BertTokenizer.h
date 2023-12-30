@@ -13,7 +13,8 @@ public:
 
 private:
     Napi::Value tokenize(const Napi::CallbackInfo& info);
-    Napi::Value basic_tokenize(const Napi::CallbackInfo& info);
+    void basic_tokenize(std::u32string& text, std::vector<std::u32string>* tokens);
+    void wordpiece_tokenize(std::u32string& text, std::vector<std::u32string>* tokens);
 
 private:
     std::vector<std::u32string> vocab_array;
