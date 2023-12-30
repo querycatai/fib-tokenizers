@@ -30,24 +30,26 @@ var home = path.join(process.env.HOME, ".cache/huggingface/hub");
 // M2M100Tokenizer sentencepiece.bpe.model
 // SeamlessM4TTokenizer sentencepiece.bpe.model
 
+const SentencepieceTokenizer = [
+    "LlamaTokenizer",
+    "T5Tokenizer",
+    "XLMRobertaTokenizer",
+    "DebertaV2Tokenizer",
+    "CodeLlamaTokenizer",
+    "ChatGLMTokenizer",
+    "InternLMTokenizer",
+    "PegasusTokenizer",
+    "YiTokenizer",
+    "BaichuanTokenizer",
+    "MBart50Tokenizer",
+    "NllbTokenizer",
+    "CamembertTokenizer",
+    "SpeechT5Tokenizer",
+];
+
 const base_class = {
-    "SentencepieceTokenizer": [
-        "LlamaTokenizer",
-        "T5Tokenizer",
-        "XLMRobertaTokenizer",
-        "DebertaV2Tokenizer",
-        "CodeLlamaTokenizer",
-        "ChatGLMTokenizer",
-        "InternLMTokenizer",
-        "PegasusTokenizer",
-        "YiTokenizer",
-        "BaichuanTokenizer",
-        "MBart50Tokenizer",
-        "NllbTokenizer",
-        "CamembertTokenizer",
-        "SpeechT5Tokenizer",
-    ]
-}
+    SentencepieceTokenizer
+};
 
 var test_limit = 1000;
 
