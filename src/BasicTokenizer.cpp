@@ -1,5 +1,5 @@
 #include "BasicTokenizer.h"
-#include "string_utils.h"
+#include "string_util.h"
 
 Napi::Function JSBasicTokenizer::Init(Napi::Env env)
 {
@@ -20,11 +20,10 @@ JSBasicTokenizer::JSBasicTokenizer(const Napi::CallbackInfo& info)
 
 Napi::Value JSBasicTokenizer::tokenize(const Napi::CallbackInfo& info)
 {
-    std::string text_utf8 = info[0].As<Napi::String>();
-    ustring text(text_utf8);
+    std::u32string text = from_value<std::u32string>(info[0]);
 
-    std::vector<ustring> result;
-    ustring token;
+    std::vector<std::u32string> result;
+    std::u32string token;
     auto push_current_token_and_clear = [&result, &token]() {
         if (!token.empty()) {
             result.push_back(token);

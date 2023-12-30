@@ -6,7 +6,7 @@
 #include <string_view>
 #include <vector>
 #include <unordered_map>
-#include "ustring.h"
+#include "utf8.h"
 
 inline Napi::Value to_value(Napi::Env env, const Napi::Value& value)
 {
@@ -53,9 +53,11 @@ inline Napi::Value to_value(Napi::Env env, const std::u16string& value)
     return Napi::String::New(env, value);
 }
 
-inline Napi::Value to_value(Napi::Env env, const ustring& value)
+inline Napi::Value to_value(Napi::Env env, const std::u32string& value)
 {
-    std::string string(value);
+    std::string string;
+
+    utf8::convert(value, string);
     return Napi::String::New(env, string);
 }
 
@@ -132,9 +134,12 @@ inline std::u16string from_value<std::u16string>(const Napi::Value& value)
 }
 
 template <>
-inline ustring from_value<ustring>(const Napi::Value& value)
+inline std::u32string from_value<std::u32string>(const Napi::Value& value)
 {
-    ustring result(from_value<std::string>(value));
+    std::u16string u16value(from_value<std::u16string>(value));
+    std::u32string result;
+
+    utf8::convert(u16value, result);
     return result;
 }
 

@@ -18,7 +18,7 @@ JSWordpieceTokenizer::JSWordpieceTokenizer(const Napi::CallbackInfo& info)
     max_input_chars_per_word_ = opt.Get("max_input_chars_per_word", max_input_chars_per_word_);
 }
 
-std::vector<std::u16string> whitespace_tokenize(std::u16string text)
+static std::vector<std::u16string> whitespace_tokenize(std::u16string text)
 {
     std::vector<std::u16string> words;
     size_t pos = 0;

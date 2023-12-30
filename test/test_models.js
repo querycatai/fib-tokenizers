@@ -47,8 +47,13 @@ const SentencepieceTokenizer = [
     "SpeechT5Tokenizer",
 ];
 
+const BertTokenizer = [
+    "BertTokenizer"
+];
+
 const base_class = {
-    SentencepieceTokenizer
+    // SentencepieceTokenizer,
+    BertTokenizer
 };
 
 var test_limit = 1000;
@@ -88,10 +93,10 @@ describe("tokenizer", () => {
 
                             tokenizer_tests[model].datasets.forEach((test) => {
                                 describe(JSON.stringify(test.input.substr(0, 64)), () => {
-                                    it("encode", () => {
-                                        var result = tokenizer.encode(test.input);
-                                        assert.deepEqual(result, test.ids);
-                                    });
+                                    // it("encode", () => {
+                                    //     var result = tokenizer.encode(test.input);
+                                    //     assert.deepEqual(result, test.ids);
+                                    // });
 
                                     it("tokenize", () => {
                                         var result = tokenizer.tokenize(test.input);

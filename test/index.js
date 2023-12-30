@@ -96,6 +96,17 @@ describe("tokenizer", () => {
         assert.deepEqual(tokenizer.tokenize("unwantedX running"), ["[UNK]", "runn", "##ing"]);
     });
 
+    it("BertTokenizer", () => {
+        const vocab = ["[UNK]", "[CLS]", "[SEP]", "want", "##want", "##ed", "wa", "un", "runn", "##ing"];
+        const tokenizer = new tokenizers.BertTokenizer(Buffer.from(vocab.join('\n')), {
+            unk_token: "[UNK]"
+        });
+
+        assert.deepEqual(tokenizer.tokenize(""), []);
+        assert.deepEqual(tokenizer.tokenize("unwanted running"), ["un", "##want", "##ed", "runn", "##ing"]);
+        assert.deepEqual(tokenizer.tokenize("unwantedX running"), ["[UNK]", "runn", "##ing"]);
+    });
+
     describe("tiktoken", () => {
         const models = {
             cl100k_base: new tokenizers.TikTokenizer(fs.readFile(path.join(__dirname, "models/cl100k_base.tiktoken"), "utf-8").split("\n"), {
