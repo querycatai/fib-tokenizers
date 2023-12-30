@@ -38,7 +38,7 @@ for (var tokenizer_class in sorted_tokenizer_list) {
     const model_path = tokenizers.resolve_model(home, sorted_tokenizer_list[tokenizer_class][0]);
     var vocab_file = "";
     fs.readdirSync(model_path).forEach((file) => {
-        if (file.endsWith(".model"))
+        if (file.endsWith("vocab.txt"))
             vocab_file = file;
     });
 

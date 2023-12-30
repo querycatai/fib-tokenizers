@@ -48,7 +48,9 @@ const SentencepieceTokenizer = [
 ];
 
 const BertTokenizer = [
-    "BertTokenizer"
+    "BertTokenizer",
+    "DistilBertTokenizer",
+    "MPNetTokenizer"
 ];
 
 const base_class = {
