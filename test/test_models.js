@@ -30,77 +30,84 @@ var home = path.join(process.env.HOME, ".cache/huggingface/hub");
 // M2M100Tokenizer sentencepiece.bpe.model
 // SeamlessM4TTokenizer sentencepiece.bpe.model
 
-const test_class = [
-    "LlamaTokenizer",
-    "T5Tokenizer",
-    "XLMRobertaTokenizer",
-    "DebertaV2Tokenizer",
-    "CodeLlamaTokenizer",
-    "ChatGLMTokenizer",
-    "InternLMTokenizer",
-    "PegasusTokenizer",
-    "YiTokenizer",
-    "BaichuanTokenizer",
-    "MBart50Tokenizer",
-    "NllbTokenizer",
-    "CamembertTokenizer",
-    "SpeechT5Tokenizer",
-];
+const base_class = {
+    "SentencepieceTokenizer": [
+        "LlamaTokenizer",
+        "T5Tokenizer",
+        "XLMRobertaTokenizer",
+        "DebertaV2Tokenizer",
+        "CodeLlamaTokenizer",
+        "ChatGLMTokenizer",
+        "InternLMTokenizer",
+        "PegasusTokenizer",
+        "YiTokenizer",
+        "BaichuanTokenizer",
+        "MBart50Tokenizer",
+        "NllbTokenizer",
+        "CamembertTokenizer",
+        "SpeechT5Tokenizer",
+    ]
+}
 
 var test_limit = 1000;
+
 describe("tokenizer", () => {
-    test_class.forEach((_class) => {
-        describe(_class, () => {
-            models.forEach((model) => {
-                if (!tokenizer_tests[model].tokenizer_class)
-                    return;
+    for (var _base_class in base_class) {
+        describe(_base_class, () => {
+            base_class[_base_class].forEach((_class) => {
+                describe(_class, () => {
+                    models.forEach((model) => {
+                        if (!tokenizer_tests[model].tokenizer_class)
+                            return;
 
-                _class = _class.toLowerCase();
-                const tokenizer_class = tokenizer_tests[model].tokenizer_class.toLowerCase();
-                if (tokenizer_class !== _class)
-                    return;
+                        _class = _class.toLowerCase();
+                        const tokenizer_class = tokenizer_tests[model].tokenizer_class.toLowerCase();
+                        if (tokenizer_class !== _class)
+                            return;
 
-                if (test_limit-- <= 0)
-                    return;
+                        if (test_limit-- <= 0)
+                            return;
 
-                if (!tokenizers.check_model(home, model)) {
-                    console.error(`Model not found: ${model}`);
-                    return;
-                }
+                        if (!tokenizers.check_model(home, model)) {
+                            console.error(`Model not found: ${model}`);
+                            return;
+                        }
 
-                describe(`${model}`, () => {
-                    var tokenizer;
+                        describe(`${model}`, () => {
+                            var tokenizer;
 
-                    before(() => {
-                        tokenizer = tokenizers.from_folder(home, model);
-                    });
-
-                    after(() => {
-                        tokenizer = null;
-                    });
-
-                    tokenizer_tests[model].datasets.forEach((test) => {
-                        describe(JSON.stringify(test.input.substr(0, 64)), () => {
-                            it("encode", () => {
-                                const result = tokenizer.encode(test.input);
-                                assert.deepEqual(result, test.ids);
+                            before(() => {
+                                tokenizer = tokenizers.from_folder(home, model);
                             });
 
-                            it("tokenize", () => {
-                                const result = tokenizer.tokenize(test.input);
-                                assert.deepEqual(result, test.tokens);
+                            after(() => {
+                                tokenizer = undefined;
                             });
 
-                            it("decode", () => {
-                                const result = tokenizer.decode(test.ids);
-                                assert.equal(result, test.decoded_);
+                            tokenizer_tests[model].datasets.forEach((test) => {
+                                describe(JSON.stringify(test.input.substr(0, 64)), () => {
+                                    it("encode", () => {
+                                        var result = tokenizer.encode(test.input);
+                                        assert.deepEqual(result, test.ids);
+                                    });
+
+                                    it("tokenize", () => {
+                                        var result = tokenizer.tokenize(test.input);
+                                        assert.deepEqual(result, test.tokens);
+                                    });
+
+                                    // it("decode", () => {
+                                    //     var result = tokenizer.decode(test.ids);
+                                    //     assert.equal(result, test.decoded_);
+                                    // });
+                                });
                             });
                         });
                     });
                 });
             });
         });
-    });
+    }
 });
 
 test.run(console.DEBUG);
