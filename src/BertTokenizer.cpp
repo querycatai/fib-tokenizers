@@ -240,23 +240,12 @@ bool JSBertTokenizer::RemoveTokenizeSpace(int64_t pre_token_id, int64_t new_toke
     auto pre_char = vocab_array[static_cast<size_t>(pre_token_id)].back();
     auto cur_char = vocab_array[static_cast<size_t>(new_token_id)][0];
 
-    // normal punctuation
-    if (cur_char == U'!' || cur_char == U'.' || cur_char == U'?' || cur_char == U',' || cur_char == '~' || cur_char == ':') {
-        return true;
-    }
-
-    // only remove left side space
-    if (cur_char == U'}' || cur_char == U']' || cur_char == U'>' || cur_char == ')') {
-        return true;
-    }
-
-    // only remove right side space
-    if (pre_char == U'{' || pre_char == U'[' || pre_char == U'<' || pre_char == '(' || pre_char == '$') {
+    if (cur_char == U'.' || cur_char == U',' || cur_char == U'?' || cur_char == U'!' || cur_char == U'\'') {
         return true;
     }
 
     // remove both side space
-    if (pre_char == U'-' || pre_char == U'\'' || pre_char == U'"' || pre_char == U'/' || pre_char == U'@' || pre_char == U'\\' || cur_char == U'-' || cur_char == U'\'' || cur_char == U'"' || cur_char == U'/' || cur_char == U'@' || cur_char == U'\\') {
+    if (pre_char == U'\'') {
         return true;
     }
 
@@ -277,6 +266,7 @@ Napi::Value JSBertTokenizer::decode(const Napi::CallbackInfo& info)
     std::vector<int64_t> ids = to_array<int64_t>(info[0]);
 
     bool skip_special_tokens = true;
+    bool clean_up_tokenization_spaces = true;
 
     std::u32string result;
     int64_t pre_token = -1;
@@ -300,7 +290,8 @@ Napi::Value JSBertTokenizer::decode(const Napi::CallbackInfo& info)
             continue;
         }
 
-        if (!(result.empty() || is_substr_[static_cast<size_t>(id)] || RemoveTokenizeSpace(pre_token, id))) {
+        if (!(result.empty() || is_substr_[static_cast<size_t>(id)]
+                || (clean_up_tokenization_spaces && RemoveTokenizeSpace(pre_token, id)))) {
             result.push_back(' ');
         }
 

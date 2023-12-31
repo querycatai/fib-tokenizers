@@ -32,7 +32,6 @@ TEST_DATA = {
         "<s>\n",
         " </s> test </s> ",
         "</s>test</s>",
-        "<s></s><unk><pad>",
         # Additional test-cases for the Llama tokenizer, adapted from
         # https://github.com/belladoreai/llama-tokenizer-js/blob/master/llama-tokenizer.js#L381-L452
         "grabbed",
@@ -65,23 +64,20 @@ TEST_DATA = {
     ]
 }
 
-try:
-    with open('tokenizer_tests.json', 'r', encoding='utf-8') as f:
-        tokenizer_tests = json.load(f)
-except Exception as e:
-    tokenizer_tests = dict()
-
-def generate_one(model):
-    if model in tokenizer_tests:
+def generate_one(model, likes):
+    model_file = "models--" + model.replace("/", "--") + ".json"
+    if os.path.exists(model_file):
         return
 
     try:
         print(f"Generating for {model}")
         tokenizer = AutoTokenizer.from_pretrained(model, trust_remote_code=True, use_fast=False)
         tokenizer_class = tokenizer.__class__.__name__.replace("Fast", "")
+        special_tokens=tokenizer.all_special_tokens
 
         datasets = []
-        shared_texts = TEST_DATA["shared"]
+        shared_texts = TEST_DATA["shared"].copy()
+        shared_texts += ["<s></s><unk><pad>" + ''.join(special_tokens) ]
 
         for text in shared_texts:
             ids = tokenizer.encode(text)
@@ -91,29 +87,28 @@ def generate_one(model):
                 tokens = [token.decode('utf-8', errors='ignore') for token in tokens]
 
             decoded = tokenizer.decode(ids, skip_special_tokens=True)
-            decoded_with_special = tokenizer.decode(ids, skip_special_tokens=False)
-            
+            # decoded_with_special = tokenizer.decode(ids, skip_special_tokens=False)
+
             datasets.append(dict(
                 input=text,
                 ids=ids,
                 tokens=tokens,
-                decoded_=decoded,
-                decoded_with_special=decoded_with_special
+                decoded=decoded,
+                # decoded_with_special=decoded_with_special
             ))
 
-        tokenizer_tests[model] = dict(
-            tokenizer_class=tokenizer_class,
-            datasets=datasets,
-        );
+        with open(model_file, "w", encoding="utf-8", errors='ignore') as fp:
+            json.dump(dict(
+                model=model,
+                tokenizer_class=tokenizer_class,
+                likes=likes,
+                special_tokens=special_tokens,
+                datasets=datasets,
+            ), fp, indent=4)
     except Exception as e:
-        tokenizer_tests[model] = dict()
         cache_dir = os.path.join(os.path.expanduser("~"), ".cache", "huggingface", "hub", "models--" + model.replace("/", "--"))
         shutil.rmtree(cache_dir, ignore_errors=True)
         print(f"\n{Fore.RED}===========> Failed to generate for {model}: {e}{Fore.RESET}\n")
-
-    with open("tokenizer_tests.json", "w", encoding="utf-8", errors='ignore') as fp:
-        json.dump(tokenizer_tests, fp)
-
 
 response = requests.get("https://huggingface.co/api/models", params={
     'sort': 'likes',
@@ -123,5 +118,5 @@ response = requests.get("https://huggingface.co/api/models", params={
 
 models = [model['modelId'] for model in response.json()]
 
-for model in models:
-    generate_one(model)
+for model in response.json():
+    generate_one(model['modelId'], model['likes'])
