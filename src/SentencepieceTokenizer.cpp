@@ -1,6 +1,16 @@
 #include "SentencepieceTokenizer.h"
 #include "sentencepiece.pb.h"
 
+Napi::Value JSSentencepieceTokenizer::get_all_special_tokens(const Napi::CallbackInfo& info)
+{
+    std::vector<std::string> tokens;
+
+    for (auto& token : special_tokens)
+        push_token(token.second, &tokens);
+
+    return to_value(info.Env(), tokens);
+}
+
 int JSSentencepieceTokenizer::convert_token_to_id(std::string_view token)
 {
     auto it = token_to_id.find(token);

@@ -4,7 +4,8 @@
 Napi::Function JSSentencepieceTokenizer::Init(Napi::Env env)
 {
     return DefineClass(env, "SentencepieceTokenizer",
-        { InstanceMethod("tokenize", &JSSentencepieceTokenizer::tokenize, napi_enumerable),
+        { InstanceAccessor<&JSSentencepieceTokenizer::get_all_special_tokens>("all_special_tokens"),
+            InstanceMethod("tokenize", &JSSentencepieceTokenizer::tokenize, napi_enumerable),
             InstanceMethod("encode", &JSSentencepieceTokenizer::encode, napi_enumerable),
             InstanceMethod("decode", &JSSentencepieceTokenizer::decode, napi_enumerable) });
 }

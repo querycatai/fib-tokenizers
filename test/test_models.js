@@ -5,10 +5,18 @@ const tokenizers = require("..");
 const test = require("test");
 test.setup();
 
-var models = fs.readdir(path.join(__dirname, "models"))
+var models = {};
+
+fs.readdir(path.join(__dirname, "models"))
     .filter(file => file.endsWith(".json"))
     .map(model => JSON.parse(fs.readFile(path.join(__dirname, "models", model), "utf-8")))
-    .sort((a, b) => b.likes - a.likes);
+    .sort((a, b) => b.likes - a.likes)
+    .forEach(model => {
+        const _class = model.tokenizer_class.toLowerCase();
+        if (!models[_class])
+            models[_class] = [];
+        models[_class].push(model);
+    });
 
 var home = path.join(process.env.HOME, ".cache/huggingface/hub");
 
@@ -84,67 +92,74 @@ const base_class = {
     TikTokenizer
 };
 
-var test_limit = 1000;
+function test_model(model) {
+    console.log(model);
+    if (typeof model === "string")
+        model = JSON.parse(fs.readFile(path.join(__dirname, "models", "models--" + model.replace(/\//g, "--") + ".json"), "utf-8"));
 
-describe("tokenizer", () => {
-    for (var _base_class in base_class) {
-        describe(_base_class, () => {
-            base_class[_base_class].forEach((_class) => {
-                const base_class = _base_class;
-                describe(_class, () => {
-                    models.forEach((model) => {
-                        if (!model.tokenizer_class)
-                            return;
+    if (!tokenizers.check_model(home, model.model)) {
+        console.error(`Model not found: ${model.model}`);
+        return;
+    }
 
-                        _class = _class.toLowerCase();
-                        const tokenizer_class = model.tokenizer_class.toLowerCase();
-                        if (tokenizer_class !== _class)
-                            return;
+    describe(`${model.model}`, () => {
+        var tokenizer;
 
-                        if (test_limit-- <= 0)
-                            return;
+        before(() => {
+            tokenizer = tokenizers.from_folder(home, model.model);
+        });
 
-                        if (!tokenizers.check_model(home, model.model)) {
-                            console.error(`Model not found: ${model.model}`);
-                            return;
-                        }
+        after(() => {
+            tokenizer = undefined;
+        });
 
-                        describe(`${model.model}`, () => {
-                            var tokenizer;
+        it("class name", () => {
+            assert.equal(tokenizer.constructor.name.toLowerCase(), model.tokenizer_class.toLowerCase());
+        });
 
-                            before(() => {
-                                tokenizer = tokenizers.from_folder(home, model.model);
-                            });
+        it("special tokens", () => {
+            const special_tokens = tokenizer.all_special_tokens;
+            if (special_tokens)
+                assert.deepEqual(special_tokens.sort(), model.special_tokens.sort());
+        });
 
-                            after(() => {
-                                tokenizer = undefined;
-                            });
-
-                            model.datasets.forEach((test) => {
-                                describe(JSON.stringify(test.input.substr(0, 64)), () => {
-                                    if (base_class != "TikTokenizer")
-                                        it("tokenize", () => {
-                                            var result = tokenizer.tokenize(test.input);
-                                            assert.deepEqual(result, test.tokens);
-                                        });
-
-                                    it("encode", () => {
-                                        var result = tokenizer.encode(test.input);
-                                        assert.deepEqual(result, test.ids);
-                                    });
-
-                                    it("decode", () => {
-                                        var result = tokenizer.decode(test.ids);
-                                        assert.equal(result, test.decoded);
-                                    });
-                                });
-                            });
+        describe("datasets", () => {
+            model.datasets.forEach((test) => {
+                describe(JSON.stringify(test.input.substr(0, 64)), () => {
+                    if (model.tokenizer_class != "QWenTokenizer")
+                        it("tokenize", () => {
+                            var result = tokenizer.tokenize(test.input);
+                            assert.deepEqual(result, test.tokens);
                         });
+
+                    it("encode", () => {
+                        var result = tokenizer.encode(test.input);
+                        assert.deepEqual(result, test.ids);
+                    });
+
+                    it("decode", () => {
+                        var result = tokenizer.decode(test.ids);
+                        assert.equal(result, test.decoded);
                     });
                 });
             });
         });
-    }
+    });
+}
+
+describe("tokenizer", () => {
+    for (var _base_class in base_class)
+        describe(_base_class, () =>
+            base_class[_base_class].forEach(_class =>
+                describe(_class, () =>
+                    models[_class.toLowerCase()].forEach(
+                        model => test_model(model)
+                    )
+                )
+            )
+        );
 });
+
+// test_model("mistralai/Mistral-7B-v0.1");
 
 test.run(console.DEBUG);

@@ -57,6 +57,7 @@ public:
     static Napi::Function Init(Napi::Env env);
 
 private:
+    Napi::Value get_all_special_tokens(const Napi::CallbackInfo& info);
     Napi::Value tokenize(const Napi::CallbackInfo& info);
     Napi::Value encode(const Napi::CallbackInfo& info);
     Napi::Value decode(const Napi::CallbackInfo& info);
