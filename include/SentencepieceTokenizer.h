@@ -88,6 +88,8 @@ private:
 
 private:
     sentencepiece::SentencePieceProcessor sentence_piece_;
+    int vacob_size;
+
     int32_t offset = 0;
 
     int unk_id;

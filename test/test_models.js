@@ -93,7 +93,6 @@ const base_class = {
 };
 
 function test_model(model) {
-    console.log(model);
     if (typeof model === "string")
         model = JSON.parse(fs.readFile(path.join(__dirname, "models", "models--" + model.replace(/\//g, "--") + ".json"), "utf-8"));
 
@@ -123,26 +122,29 @@ function test_model(model) {
                 assert.deepEqual(special_tokens.sort(), model.special_tokens.sort());
         });
 
-        describe("datasets", () => {
-            model.datasets.forEach((test) => {
-                describe(JSON.stringify(test.input.substr(0, 64)), () => {
-                    if (model.tokenizer_class != "QWenTokenizer")
-                        it("tokenize", () => {
-                            var result = tokenizer.tokenize(test.input);
-                            assert.deepEqual(result, test.tokens);
-                        });
-
-                    it("encode", () => {
-                        var result = tokenizer.encode(test.input);
-                        assert.deepEqual(result, test.ids);
+        function test_one(test) {
+            describe(JSON.stringify(test.input.substr(0, 64)), () => {
+                if (model.tokenizer_class != "QWenTokenizer")
+                    it("tokenize", () => {
+                        var result = tokenizer.tokenize(test.input);
+                        assert.deepEqual(result, test.tokens);
                     });
 
-                    it("decode", () => {
-                        var result = tokenizer.decode(test.ids);
-                        assert.equal(result, test.decoded);
-                    });
+                it("encode", () => {
+                    var result = tokenizer.encode(test.input);
+                    assert.deepEqual(result, test.ids);
+                });
+
+                it("decode", () => {
+                    var result = tokenizer.decode(test.ids);
+                    assert.equal(result, test.decoded);
                 });
             });
+        }
+
+        describe("datasets", () => {
+            model.datasets.forEach(test_one);
+            // test_one(model.datasets[model.datasets.length - 1]);
         });
     });
 }
@@ -160,6 +162,7 @@ describe("tokenizer", () => {
         );
 });
 
-// test_model("mistralai/Mistral-7B-v0.1");
+// test_model("berkeley-nest/Starling-LM-7B-alpha");
+// test_model("naver-clova-ix/donut-base");
 
 test.run(console.DEBUG);
