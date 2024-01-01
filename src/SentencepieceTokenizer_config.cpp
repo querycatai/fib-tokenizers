@@ -111,7 +111,7 @@ void JSSentencepieceTokenizer::config_special_tokens(const Napi::Config& opt)
     std::vector<std::string> additional_special_tokens;
     additional_special_tokens = opt.Get("additional_special_tokens", additional_special_tokens);
 
-    for (int32_t i = additional_special_tokens.size() - 1; i >= 0; i--) {
+    for (int32_t i = 0; i < additional_special_tokens.size(); i++) {
         SpecialToken token(additional_special_tokens[i]);
         add_token(token);
     }
