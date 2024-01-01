@@ -1,6 +1,7 @@
 import requests
 import json
 import os
+import glob
 import shutil
 from transformers import AutoTokenizer
 from colorama import Fore
@@ -64,6 +65,16 @@ TEST_DATA = {
     ]
 }
 
+def resolve_model(model):
+    home = os.path.join(os.environ['HOME'], ".cache/huggingface/hub")
+    model_home = os.path.join(home, "models--" + model.replace('/', '--'))
+    if os.path.exists(os.path.join(model_home, "refs")) and os.path.exists(os.path.join(model_home, "snapshots")):
+        with open(os.path.join(model_home, "refs", "main"), 'r') as file:
+            tag = file.read().replace('\n', '')
+        return os.path.join(model_home, "snapshots", tag)
+    else:
+        return model_home
+
 def generate_one(model, likes):
     model_file = "models--" + model.replace("/", "--") + ".json"
     if os.path.exists(model_file):
@@ -72,6 +83,14 @@ def generate_one(model, likes):
     try:
         print(f"Generating for {model}")
         tokenizer = AutoTokenizer.from_pretrained(model, trust_remote_code=True, use_fast=False)
+
+        model_home = resolve_model(model)
+        tokenizer_json = os.path.join(model_home, "tokenizer.json")
+        if os.path.isfile(tokenizer_json) and glob.glob(os.path.join(model_home, "*.model")):
+            os.remove(tokenizer_json)
+
+        tokenizer = AutoTokenizer.from_pretrained(model, trust_remote_code=True, use_fast=False, local_files_only=True)
+
         tokenizer_class = tokenizer.__class__.__name__.replace("Fast", "")
         special_tokens=tokenizer.all_special_tokens
 
