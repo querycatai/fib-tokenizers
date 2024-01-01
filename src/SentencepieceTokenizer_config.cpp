@@ -79,7 +79,10 @@ void JSSentencepieceTokenizer::config_basic_tokens(const Napi::Config& opt)
                 token.id = sentence_piece_.PieceToId(token.content);
 
                 if (i > 0 && token.id == _unk_id) {
-                    token.id = vacob_size++ + offset;
+                    do {
+                        token.id = vacob_size++ + offset;
+                    } while (id_to_token.find(token.id) != id_to_token.end());
+
                     auto it = id_to_token.emplace(token.id, token.content);
                     token_to_id[it.first->second] = token.id;
                 }
@@ -113,7 +116,10 @@ void JSSentencepieceTokenizer::config_special_tokens(const Napi::Config& opt)
             int id = convert_token_to_id(stoken);
 
             if (id == unk_id && stoken != "<unk>") {
-                id = vacob_size++ + offset;
+                do {
+                    id = vacob_size++ + offset;
+                } while (id_to_token.find(id) != id_to_token.end());
+
                 auto it = id_to_token.emplace(id, stoken);
                 token_to_id[it.first->second] = id;
 
@@ -131,9 +137,6 @@ void JSSentencepieceTokenizer::config_added_tokens(const Napi::Config& opt)
     for (auto& [key, value] : added_tokens_map) {
         auto it = id_to_token.emplace(value, key);
         token_to_id[it.first->second] = value;
-
-        if (value >= vacob_size)
-            vacob_size = value + 1;
 
         special_tokens.emplace(key, SpecialToken(key, value));
     }
@@ -220,8 +223,8 @@ JSSentencepieceTokenizer::JSSentencepieceTokenizer(const Napi::CallbackInfo& inf
     offset = opt.Get("offset", 0);
 
     config_tokens_decoder(opt);
-    config_special_tokens(opt);
     config_added_tokens(opt);
+    config_special_tokens(opt);
     config_basic_tokens(opt);
     config_prefix_suffix(opt);
     config_pattern(opt);

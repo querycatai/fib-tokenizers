@@ -149,17 +149,13 @@ function test_model(model) {
     });
 }
 
+function test_tokenizer(tokenizer_class) {
+    describe(tokenizer_class, () => models[tokenizer_class.toLowerCase()].forEach(test_model));
+}
+
 describe("tokenizer", () => {
     for (var _base_class in base_class)
-        describe(_base_class, () =>
-            base_class[_base_class].forEach(_class =>
-                describe(_class, () =>
-                    models[_class.toLowerCase()].forEach(
-                        model => test_model(model)
-                    )
-                )
-            )
-        );
+        describe(_base_class, () => base_class[_base_class].forEach(test_tokenizer));
 });
 
 // test_model("berkeley-nest/Starling-LM-7B-alpha");
