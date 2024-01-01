@@ -105,7 +105,11 @@ def generate_one(model, likes):
             if tokens and isinstance(tokens[0], bytes):
                 tokens = [token.decode('utf-8', errors='ignore') for token in tokens]
 
-            decoded = tokenizer.decode(ids, skip_special_tokens=True)
+            if tokenizer_class == "ChatGLMTokenizer":
+                decoded = tokenizer.decode(ids[2:], skip_special_tokens=True)
+            else:
+                decoded = tokenizer.decode(ids, skip_special_tokens=True)
+
             # decoded_with_special = tokenizer.decode(ids, skip_special_tokens=False)
 
             datasets.append(dict(

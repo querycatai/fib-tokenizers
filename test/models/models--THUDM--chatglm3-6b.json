@@ -16,7 +16,7 @@
                 "\u2581hello",
                 "\u2581world"
             ],
-            "decoded": "[gMASK]sop hello world"
+            "decoded": "hello world"
         },
         {
             "input": "Hello World",
@@ -30,7 +30,7 @@
                 "\u2581Hello",
                 "\u2581World"
             ],
-            "decoded": "[gMASK]sop Hello World"
+            "decoded": "Hello World"
         },
         {
             "input": "How are you doing?",
@@ -50,7 +50,7 @@
                 "\u2581doing",
                 "?"
             ],
-            "decoded": "[gMASK]sop How are you doing?"
+            "decoded": "How are you doing?"
         },
         {
             "input": "You should've done this",
@@ -72,7 +72,7 @@
                 "\u2581done",
                 "\u2581this"
             ],
-            "decoded": "[gMASK]sop You should've done this"
+            "decoded": "You should've done this"
         },
         {
             "input": "A\n'll !!to?'d''d of, can't.",
@@ -114,7 +114,7 @@
                 "t",
                 "."
             ],
-            "decoded": "[gMASK]sop A\n'll !!to?'d''d of, can't."
+            "decoded": "A\n'll !!to?'d''d of, can't."
         },
         {
             "input": "def main():\n\tpass",
@@ -136,7 +136,7 @@
                 "<0x09>",
                 "pass"
             ],
-            "decoded": "[gMASK]sop def main():\n\tpass"
+            "decoded": "def main():\n\tpass"
         },
         {
             "input": "This\n\nis\na\ntest.",
@@ -164,7 +164,7 @@
                 "test",
                 "."
             ],
-            "decoded": "[gMASK]sop This\n\nis\na\ntest."
+            "decoded": "This\n\nis\na\ntest."
         },
         {
             "input": "let a = obj.toString();\ntoString();",
@@ -194,7 +194,7 @@
                 "toString",
                 "();"
             ],
-            "decoded": "[gMASK]sop let a = obj.toString();\ntoString();"
+            "decoded": "let a = obj.toString();\ntoString();"
         },
         {
             "input": "Hi  Hello",
@@ -210,7 +210,7 @@
                 "\u2581\u2581",
                 "Hello"
             ],
-            "decoded": "[gMASK]sop Hi  Hello"
+            "decoded": "Hi  Hello"
         },
         {
             "input": "trailing space   ",
@@ -228,7 +228,7 @@
                 "\u2581space",
                 "\u2581\u2581\u2581"
             ],
-            "decoded": "[gMASK]sop trailing space   "
+            "decoded": "trailing space   "
         },
         {
             "input": "   leading space",
@@ -244,7 +244,7 @@
                 "leading",
                 "\u2581space"
             ],
-            "decoded": "[gMASK]sop    leading space"
+            "decoded": "   leading space"
         },
         {
             "input": "\u751f\u6d3b\u7684\u771f\u8c1b\u662f",
@@ -264,7 +264,7 @@
                 "\u8c1b",
                 "\u662f"
             ],
-            "decoded": "[gMASK]sop \u751f\u6d3b\u7684\u771f\u8c1b\u662f"
+            "decoded": "\u751f\u6d3b\u7684\u771f\u8c1b\u662f"
         },
         {
             "input": "The company was founded in 2016.",
@@ -296,7 +296,7 @@
                 "6",
                 "."
             ],
-            "decoded": "[gMASK]sop The company was founded in 2016."
+            "decoded": "The company was founded in 2016."
         },
         {
             "input": "test $1 R2 #3 \u20ac4 \u00a35 \u00a56 \u20a37 \u20b98 \u20b19 test",
@@ -362,7 +362,7 @@
                 "9",
                 "\u2581test"
             ],
-            "decoded": "[gMASK]sop test $1 R2 #3 \u20ac4 \u00a35 \u00a56 \u20a37 \u20b98 \u20b19 test"
+            "decoded": "test $1 R2 #3 \u20ac4 \u00a35 \u00a56 \u20a37 \u20b98 \u20b19 test"
         },
         {
             "input": "I bought an apple for $1.00 at the store.",
@@ -400,7 +400,7 @@
                 "\u2581store",
                 "."
             ],
-            "decoded": "[gMASK]sop I bought an apple for $1.00 at the store."
+            "decoded": "I bought an apple for $1.00 at the store."
         },
         {
             "input": "you\u2026  ",
@@ -416,7 +416,7 @@
                 "\u2026",
                 "\u2581\u2581"
             ],
-            "decoded": "[gMASK]sop you\u2026  "
+            "decoded": "you\u2026  "
         },
         {
             "input": "you\u2026\u00a0\u00a0",
@@ -432,7 +432,7 @@
                 "\u2026",
                 "\u00a0\u00a0"
             ],
-            "decoded": "[gMASK]sop you\u2026\u00a0\u00a0"
+            "decoded": "you\u2026\u00a0\u00a0"
         },
         {
             "input": "you\u2026\u00a0\u00a0you\u2026\u00a0\u00a0",
@@ -454,7 +454,7 @@
                 "\u2026",
                 "\u00a0\u00a0"
             ],
-            "decoded": "[gMASK]sop you\u2026\u00a0\u00a0you\u2026\u00a0\u00a0"
+            "decoded": "you\u2026\u00a0\u00a0you\u2026\u00a0\u00a0"
         },
         {
             "input": "\u2581This \u2581is \u2581a \u2581test \u2581.",
@@ -484,7 +484,7 @@
                 "\u2581\u2581",
                 "."
             ],
-            "decoded": "[gMASK]sop  This  is  a  test  ."
+            "decoded": " This  is  a  test  ."
         },
         {
             "input": "weird \uff5e edge \uff5e case",
@@ -508,7 +508,7 @@
                 "\uff5e",
                 "\u2581case"
             ],
-            "decoded": "[gMASK]sop weird \uff5e edge \uff5e case"
+            "decoded": "weird \uff5e edge \uff5e case"
         },
         {
             "input": "<s>\n",
@@ -526,7 +526,7 @@
                 ">",
                 "<0x0A>"
             ],
-            "decoded": "[gMASK]sop <s>\n"
+            "decoded": "<s>\n"
         },
         {
             "input": " </s> test </s> ",
@@ -554,7 +554,7 @@
                 ">",
                 "\u2581"
             ],
-            "decoded": "[gMASK]sop  </s> test </s> "
+            "decoded": " </s> test </s> "
         },
         {
             "input": "</s>test</s>",
@@ -578,7 +578,7 @@
                 "s",
                 ">"
             ],
-            "decoded": "[gMASK]sop </s>test</s>"
+            "decoded": "</s>test</s>"
         },
         {
             "input": "grabbed",
@@ -590,7 +590,7 @@
             "tokens": [
                 "\u2581grabbed"
             ],
-            "decoded": "[gMASK]sop grabbed"
+            "decoded": "grabbed"
         },
         {
             "input": " grabbed",
@@ -606,7 +606,7 @@
                 "gra",
                 "bbed"
             ],
-            "decoded": "[gMASK]sop  grabbed"
+            "decoded": " grabbed"
         },
         {
             "input": "           grabbed",
@@ -622,7 +622,7 @@
                 "gra",
                 "bbed"
             ],
-            "decoded": "[gMASK]sop            grabbed"
+            "decoded": "           grabbed"
         },
         {
             "input": "\n",
@@ -636,7 +636,7 @@
                 "\u2581",
                 "<0x0A>"
             ],
-            "decoded": "[gMASK]sop \n"
+            "decoded": "\n"
         },
         {
             "input": " \n",
@@ -650,7 +650,7 @@
                 "\u2581\u2581",
                 "<0x0A>"
             ],
-            "decoded": "[gMASK]sop  \n"
+            "decoded": " \n"
         },
         {
             "input": "\ttabs\t\t\t\tout here",
@@ -680,7 +680,7 @@
                 "out",
                 "\u2581here"
             ],
-            "decoded": "[gMASK]sop \ttabs\t\t\t\tout here"
+            "decoded": "\ttabs\t\t\t\tout here"
         },
         {
             "input": "\n\t\n",
@@ -698,7 +698,7 @@
                 "<0x09>",
                 "<0x0A>"
             ],
-            "decoded": "[gMASK]sop \n\t\n"
+            "decoded": "\n\t\n"
         },
         {
             "input": "ax\n####\nboo",
@@ -720,7 +720,7 @@
                 "b",
                 "oo"
             ],
-            "decoded": "[gMASK]sop ax\n####\nboo"
+            "decoded": "ax\n####\nboo"
         },
         {
             "input": "\u9547",
@@ -734,7 +734,7 @@
                 "\u2581",
                 "\u9547"
             ],
-            "decoded": "[gMASK]sop \u9547"
+            "decoded": "\u9547"
         },
         {
             "input": "\ud83e\udd99",
@@ -754,7 +754,7 @@
                 "<0xA6>",
                 "<0x99>"
             ],
-            "decoded": "[gMASK]sop \ud83e\udd99"
+            "decoded": "\ud83e\udd99"
         },
         {
             "input": "\ud83e\udd99\ua64a",
@@ -780,7 +780,7 @@
                 "<0x99>",
                 "<0x8A>"
             ],
-            "decoded": "[gMASK]sop \ud83e\udd99\ua64a"
+            "decoded": "\ud83e\udd99\ua64a"
         },
         {
             "input": "\ua64a\ud83e\udd99",
@@ -806,7 +806,7 @@
                 "<0xA6>",
                 "<0x99>"
             ],
-            "decoded": "[gMASK]sop \ua64a\ud83e\udd99"
+            "decoded": "\ua64a\ud83e\udd99"
         },
         {
             "input": "The llama (/\u02c8l\u0251\u02d0m\u0259/; \ud83e\udd99Spanish pronunciation: [\u02c8\u028eama]) (Lama glama) is a domesticated South American camelid, widely used as a meat and pack animal by Andean cultures since the Pre-Columbian era. Llamas are social animals and live with others as a herd. Their wool is soft and contains only a small amount of lanolin.[2] Llamas can learn simple tasks after a few repetitions. When using a pack, they can carry about 25 to 30% of their body weight for 8 to 13 km (5\u20138 miles).[3] The name llama (in the past also spelled \"lama\" or \"glama\") was adopted by European settlers from native Peruvians.[4] The ancestors of llamas are thought to have originated from the Great Plains of North America about 40 million years ago, and subsequently migrated to South America about three million years ago during the Great American Interchange. By the end of the last ice age (10,000\u201312,000 years ago), camelids were extinct in North America.[3] As of 2007, there were over seven million llamas and alpacas in South America and over 158,000 llamas and 100,000\ua64a\ud83e\udd99 alpacas, descended from progenitors imported late in the 20th century, in the United States and Canada.[5] In Aymara mythology, llamas are important beings. The Heavenly Llama is said to drink water from the ocean and urinates as it rains.[6] According to Aymara eschatology, llamas will return to the water springs and lagoons where they come from at the end of time.[6]",
@@ -1644,7 +1644,7 @@
                 "6",
                 "]"
             ],
-            "decoded": "[gMASK]sop The llama (/\u02c8l\u0251\u02d0m\u0259/; \ud83e\udd99Spanish pronunciation: [\u02c8\u028eama]) (Lama glama) is a domesticated South American camelid, widely used as a meat and pack animal by Andean cultures since the Pre-Columbian era. Llamas are social animals and live with others as a herd. Their wool is soft and contains only a small amount of lanolin.[2] Llamas can learn simple tasks after a few repetitions. When using a pack, they can carry about 25 to 30% of their body weight for 8 to 13 km (5\u20138 miles).[3] The name llama (in the past also spelled \"lama\" or \"glama\") was adopted by European settlers from native Peruvians.[4] The ancestors of llamas are thought to have originated from the Great Plains of North America about 40 million years ago, and subsequently migrated to South America about three million years ago during the Great American Interchange. By the end of the last ice age (10,000\u201312,000 years ago), camelids were extinct in North America.[3] As of 2007, there were over seven million llamas and alpacas in South America and over 158,000 llamas and 100,000\ua64a\ud83e\udd99 alpacas, descended from progenitors imported late in the 20th century, in the United States and Canada.[5] In Aymara mythology, llamas are important beings. The Heavenly Llama is said to drink water from the ocean and urinates as it rains.[6] According to Aymara eschatology, llamas will return to the water springs and lagoons where they come from at the end of time.[6]"
+            "decoded": "The llama (/\u02c8l\u0251\u02d0m\u0259/; \ud83e\udd99Spanish pronunciation: [\u02c8\u028eama]) (Lama glama) is a domesticated South American camelid, widely used as a meat and pack animal by Andean cultures since the Pre-Columbian era. Llamas are social animals and live with others as a herd. Their wool is soft and contains only a small amount of lanolin.[2] Llamas can learn simple tasks after a few repetitions. When using a pack, they can carry about 25 to 30% of their body weight for 8 to 13 km (5\u20138 miles).[3] The name llama (in the past also spelled \"lama\" or \"glama\") was adopted by European settlers from native Peruvians.[4] The ancestors of llamas are thought to have originated from the Great Plains of North America about 40 million years ago, and subsequently migrated to South America about three million years ago during the Great American Interchange. By the end of the last ice age (10,000\u201312,000 years ago), camelids were extinct in North America.[3] As of 2007, there were over seven million llamas and alpacas in South America and over 158,000 llamas and 100,000\ua64a\ud83e\udd99 alpacas, descended from progenitors imported late in the 20th century, in the United States and Canada.[5] In Aymara mythology, llamas are important beings. The Heavenly Llama is said to drink water from the ocean and urinates as it rains.[6] According to Aymara eschatology, llamas will return to the water springs and lagoons where they come from at the end of time.[6]"
         },
         {
             "input": "<s></s><unk><pad>",
@@ -1672,7 +1672,7 @@
                 "pad",
                 ">"
             ],
-            "decoded": "[gMASK]sop <s></s><unk><pad>"
+            "decoded": "<s></s><unk><pad>"
         }
     ]
 }
