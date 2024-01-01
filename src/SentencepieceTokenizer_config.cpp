@@ -59,11 +59,6 @@ void JSSentencepieceTokenizer::config_basic_tokens(const Napi::Config& opt)
             napi_valuetype special_type = special_value.Type();
             SpecialToken special_token = special_value;
 
-            if (token.content.length() > 0 && token.content != special_token.content) {
-                token.id = convert_token_to_id(token.content);
-                special_tokens.emplace(token.content, token);
-            }
-
             if (config_value_type == napi_undefined || config_value_type == napi_null
                 || config_value_type == napi_object || special_type != napi_string)
                 token = special_token;
@@ -78,7 +73,7 @@ void JSSentencepieceTokenizer::config_basic_tokens(const Napi::Config& opt)
             else {
                 token.id = sentence_piece_.PieceToId(token.content);
 
-                if (i > 0 && token.id == _unk_id) {
+                if (i > 0 && token.id == _unk_id && token.content != "<unk>") {
                     do {
                         token.id = vacob_size++ + offset;
                     } while (id_to_token.find(token.id) != id_to_token.end());
