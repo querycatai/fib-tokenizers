@@ -107,17 +107,22 @@ void JSSentencepieceTokenizer::config_special_tokens(const Napi::Config& opt)
     for (int32_t i = additional_special_tokens.size() - 1; i >= 0; i--) {
         std::string& stoken = additional_special_tokens[i];
         if (stoken.length() > 0) {
-            int id = convert_token_to_id(stoken);
+            int id;
 
-            if (id == unk_id && stoken != "<unk>") {
-                do {
-                    id = vacob_size++ + offset;
-                } while (id_to_token.find(id) != id_to_token.end());
+            auto it = token_to_id.find(stoken);
+            if (it == token_to_id.end()) {
+                id = sentence_piece_.PieceToId(stoken);
 
-                auto it = id_to_token.emplace(id, stoken);
-                token_to_id[it.first->second] = id;
+                if (id == unk_id && stoken != "<unk>") {
+                    do {
+                        id = vacob_size++ + offset;
+                    } while (id_to_token.find(id) != id_to_token.end());
 
-                special_tokens.emplace(stoken, SpecialToken(stoken, id));
+                    auto it = id_to_token.emplace(id, stoken);
+                    token_to_id[it.first->second] = id;
+
+                    special_tokens.emplace(stoken, SpecialToken(stoken, id));
+                }
             }
         }
     }
