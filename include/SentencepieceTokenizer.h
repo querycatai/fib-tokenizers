@@ -41,7 +41,7 @@ public:
     bool rstrip = false;
     bool single_word = false;
     bool special = false;
-    int id = 0;
+    int id = -1;
 };
 
 template <>
@@ -64,6 +64,7 @@ private:
 
 private:
     int convert_token_to_id(std::string_view token);
+    void add_token(SpecialToken& token);
 
     template <typename T>
     void encode(std::string& text, std::vector<T>* ids);
@@ -92,6 +93,7 @@ private:
 
     int32_t offset = 0;
 
+    int model_unk_id;
     int unk_id;
     int bos_id;
     int eos_id;

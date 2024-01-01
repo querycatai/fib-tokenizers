@@ -36,6 +36,31 @@ void JSSentencepieceTokenizer::config_tokens_decoder(const Napi::Config& opt)
     }
 }
 
+void JSSentencepieceTokenizer::add_token(SpecialToken& token)
+{
+    if (token.content.length() > 0) {
+        auto it = token_to_id.find(token.content);
+        if (it != token_to_id.end())
+            token.id = it->second;
+        else {
+            token.id = sentence_piece_.PieceToId(token.content);
+
+            if (token.id == model_unk_id && token.content != "<unk>") {
+                do {
+                    token.id = vacob_size++ + offset;
+                } while (id_to_token.find(token.id) != id_to_token.end());
+
+                auto it = id_to_token.emplace(token.id, token.content);
+                token_to_id[it.first->second] = token.id;
+            } else {
+                token.id += offset;
+            }
+        }
+
+        special_tokens.emplace(token.content, token);
+    }
+}
+
 void JSSentencepieceTokenizer::config_basic_tokens(const Napi::Config& opt)
 {
     static const char* special_token_keys[] = {
@@ -44,8 +69,6 @@ void JSSentencepieceTokenizer::config_basic_tokens(const Napi::Config& opt)
 
     std::unordered_map<std::string, Napi::Value> special_tokens_map;
     special_tokens_map = opt.Get("special_tokens_map", special_tokens_map);
-
-    int _unk_id = unk_id;
 
     for (int i = 0; i < sizeof(special_token_keys) / sizeof(special_token_keys[0]); i++) {
         Napi::Value config_value = opt.Get(special_token_keys[i], Napi::Value());
@@ -66,21 +89,7 @@ void JSSentencepieceTokenizer::config_basic_tokens(const Napi::Config& opt)
         }
 
         if (token.content.length() > 0) {
-            auto it = token_to_id.find(token.content);
-            if (it != token_to_id.end())
-                token.id = it->second;
-            else {
-                token.id = sentence_piece_.PieceToId(token.content);
-
-                if (i > 0 && token.id == _unk_id && token.content != "<unk>") {
-                    do {
-                        token.id = vacob_size++ + offset;
-                    } while (id_to_token.find(token.id) != id_to_token.end());
-
-                    auto it = id_to_token.emplace(token.id, token.content);
-                    token_to_id[it.first->second] = token.id;
-                }
-            }
+            add_token(token);
 
             switch (i) {
             case 0:
@@ -93,8 +102,6 @@ void JSSentencepieceTokenizer::config_basic_tokens(const Napi::Config& opt)
                 eos_id = token.id;
                 break;
             }
-
-            special_tokens.emplace(token.content, token);
         }
     }
 }
@@ -105,26 +112,8 @@ void JSSentencepieceTokenizer::config_special_tokens(const Napi::Config& opt)
     additional_special_tokens = opt.Get("additional_special_tokens", additional_special_tokens);
 
     for (int32_t i = additional_special_tokens.size() - 1; i >= 0; i--) {
-        std::string& stoken = additional_special_tokens[i];
-        if (stoken.length() > 0) {
-            int id;
-
-            auto it = token_to_id.find(stoken);
-            if (it == token_to_id.end()) {
-                id = sentence_piece_.PieceToId(stoken);
-
-                if (id == unk_id && stoken != "<unk>") {
-                    do {
-                        id = vacob_size++ + offset;
-                    } while (id_to_token.find(id) != id_to_token.end());
-
-                    auto it = id_to_token.emplace(id, stoken);
-                    token_to_id[it.first->second] = id;
-
-                    special_tokens.emplace(stoken, SpecialToken(stoken, id));
-                }
-            }
-        }
+        SpecialToken token(additional_special_tokens[i]);
+        add_token(token);
     }
 }
 
@@ -214,7 +203,7 @@ JSSentencepieceTokenizer::JSSentencepieceTokenizer(const Napi::CallbackInfo& inf
 
     bos_id = sentence_piece_.bos_id();
     eos_id = sentence_piece_.eos_id();
-    unk_id = sentence_piece_.unk_id();
+    model_unk_id = unk_id = sentence_piece_.unk_id();
 
     Napi::Config opt(info[1]);
 
