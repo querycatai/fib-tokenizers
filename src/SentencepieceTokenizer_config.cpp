@@ -31,8 +31,7 @@ void JSSentencepieceTokenizer::config_tokens_decoder(const Napi::Config& opt)
             token.id = id;
             token_to_id[it.first->second] = id;
 
-            if (token.special)
-                special_tokens.emplace(token.content, token);
+            special_tokens.emplace(token.content, token);
         }
     }
 }
@@ -40,7 +39,7 @@ void JSSentencepieceTokenizer::config_tokens_decoder(const Napi::Config& opt)
 void JSSentencepieceTokenizer::config_basic_tokens(const Napi::Config& opt)
 {
     static const char* special_token_keys[] = {
-        "unk_token", "bos_token", "eos_token", "pad_token", "mask_token", "sep_token"
+        "unk_token", "bos_token", "eos_token", "pad_token", "mask_token", "sep_token", "cls_token"
     };
 
     std::unordered_map<std::string, Napi::Value> special_tokens_map;
