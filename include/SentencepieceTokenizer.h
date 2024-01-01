@@ -89,9 +89,9 @@ private:
 
 private:
     sentencepiece::SentencePieceProcessor sentence_piece_;
-    int vacob_size;
 
     int32_t offset = 0;
+    int32_t special_token_offset;
 
     int model_unk_id;
     int unk_id;
