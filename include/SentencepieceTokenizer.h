@@ -11,7 +11,7 @@ public:
     {
     }
 
-    SpecialToken(std::string content_, int id_ = 0)
+    SpecialToken(std::string content_, int id_ = -1)
         : content(content_)
         , id(id_)
     {
@@ -97,6 +97,7 @@ private:
     int unk_id;
     int bos_id;
     int eos_id;
+    int pad_id;
 
     bool legacy;
 
