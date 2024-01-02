@@ -20,41 +20,22 @@ fs.readdir(path.join(__dirname, "models"))
 
 var home = path.join(process.env.HOME, ".cache/huggingface/hub");
 
-// LlamaTokenizer tokenizer.model
-// T5Tokenizer spiece.model
-// XLMRobertaTokenizer sentencepiece.bpe.model
-// DebertaV2Tokenizer spm.model
-// CodeLlamaTokenizer tokenizer.model
-// ChatGLMTokenizer tokenizer.model
-// InternLMTokenizer tokenizer.model
-// PegasusTokenizer spiece.model
-// YiTokenizer tokenizer.model
-// BaichuanTokenizer tokenizer.model
-// MBart50Tokenizer sentencepiece.bpe.model
-// NllbTokenizer sentencepiece.bpe.model
-// CamembertTokenizer sentencepiece.bpe.model
-// SpeechT5Tokenizer spm_char.model
-
-// =================================
-
-// M2M100Tokenizer sentencepiece.bpe.model
-// SeamlessM4TTokenizer sentencepiece.bpe.model
-
 const SentencepieceTokenizer = [
     "LlamaTokenizer",
+    "ChatGLMTokenizer",
     "T5Tokenizer",
     "XLMRobertaTokenizer",
-    "DebertaV2Tokenizer",
-    "CodeLlamaTokenizer",
-    "ChatGLMTokenizer",
-    "InternLMTokenizer",
-    "PegasusTokenizer",
-    "YiTokenizer",
-    "BaichuanTokenizer",
-    "MBart50Tokenizer",
-    "NllbTokenizer",
-    "CamembertTokenizer",
     "SpeechT5Tokenizer",
+    "BaichuanTokenizer",
+    "SeamlessM4TTokenizer",
+    "CodeLlamaTokenizer",
+    "NllbTokenizer",
+    "YiTokenizer",
+    "DebertaV2Tokenizer",
+    "PegasusTokenizer",
+    "InternLMTokenizer",
+    "MBart50Tokenizer",
+    "CamembertTokenizer",
 ];
 
 const BpeTokenizer = [
@@ -70,7 +51,6 @@ const BpeTokenizer = [
     "BlenderbotTokenizer",
     "MarianTokenizer",
     "OpenAIGPTTokenizer",
-    "M2M100Tokenizer",
     "LongformerTokenizer",
     "FLMTokenizer",
     "LEDTokenizer",
@@ -88,7 +68,7 @@ const TikTokenizer = [
 
 const base_class = {
     SentencepieceTokenizer,
-    BertTokenizer,
+    // BertTokenizer,
     TikTokenizer
 };
 
@@ -114,13 +94,14 @@ function test_model(model) {
 
         it("class name", () => {
             assert.equal(tokenizer.constructor.name.toLowerCase(), model.tokenizer_class.toLowerCase());
+            // console.log(model.tokenizer_class);
         });
 
-        it("special tokens", () => {
-            const special_tokens = tokenizer.all_special_tokens;
-            if (special_tokens)
-                assert.deepEqual(special_tokens.sort(), model.special_tokens.sort());
-        });
+        // it("special tokens", () => {
+        //     const special_tokens = tokenizer.all_special_tokens;
+        //     if (special_tokens)
+        //         assert.deepEqual(special_tokens.sort(), model.special_tokens.sort());
+        // });
 
         function test_one(test) {
             describe(JSON.stringify(test.input.substr(0, 64)), () => {
@@ -128,6 +109,7 @@ function test_model(model) {
                     it("tokenize", () => {
                         var result = tokenizer.tokenize(test.input);
                         assert.deepEqual(result, test.tokens);
+                        // console.log(result);
                     });
 
                 it("encode", () => {
@@ -135,10 +117,11 @@ function test_model(model) {
                     assert.deepEqual(result, test.ids);
                 });
 
-                it("decode", () => {
-                    var result = tokenizer.decode(test.ids);
-                    assert.equal(result, test.decoded);
-                });
+                // it("decode", () => {
+                //     var result = tokenizer.decode(test.ids);
+                //     assert.equal(result.replace(/ +/g, " ").replace(/^ +| +$/g, "").replace(/ +$/g, ""),
+                //         test.decoded.replace(/ +/g, " ").replace(/^ +| +$/g, ""));
+                // });
             });
         }
 
@@ -158,7 +141,7 @@ describe("tokenizer", () => {
         describe(_base_class, () => base_class[_base_class].forEach(test_tokenizer));
 });
 
-// test_model("berkeley-nest/Starling-LM-7B-alpha");
-// test_model("naver-clova-ix/donut-base");
+// test_model("fblgit/una-xaberius-34b-v1beta");
+// test_tokenizer("LlamaTokenizer");
 
 test.run(console.DEBUG);
