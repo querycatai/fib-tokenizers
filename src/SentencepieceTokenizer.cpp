@@ -60,10 +60,22 @@ template <typename T>
 void JSSentencepieceTokenizer::sentencepiece_encode(char* text, size_t size, std::vector<T>* ids, int32_t prefix_count)
 {
     int32_t start = 0;
-    if (!legacy && ids->size() > prefix_count) {
-        *--text = '-';
-        size++;
-        start = 1;
+    std::string temp_string;
+
+    if (!legacy) {
+        if (ids->size() > prefix_count) {
+            *--text = '-';
+
+            size++;
+            start = 1;
+        } else {
+            temp_string = "_ ";
+            temp_string.append(text, size);
+
+            text = temp_string.data();
+            size = temp_string.length();
+            start = 1;
+        }
     }
 
     sentencepiece::SentencePieceText spt;
