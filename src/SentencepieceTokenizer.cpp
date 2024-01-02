@@ -45,7 +45,10 @@ void JSSentencepieceTokenizer::push_token(const sentencepiece::SentencePieceText
 {
     int id = piece.id();
 
-    ids->push_back(id + offset);
+    if (id == model_unk_id)
+        ids->push_back(unk_id);
+    else
+        ids->push_back(id + offset);
 }
 
 void JSSentencepieceTokenizer::push_token(const sentencepiece::SentencePieceText_SentencePiece& piece, std::vector<std::string>* ids)
