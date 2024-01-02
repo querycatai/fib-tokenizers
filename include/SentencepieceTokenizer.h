@@ -64,7 +64,7 @@ private:
 
 private:
     int convert_token_to_id(std::string_view token);
-    void add_token(SpecialToken& token);
+    void add_token(SpecialToken& token, bool is_unk = false);
 
     template <typename T>
     void encode(std::string& text, std::vector<T>* ids);

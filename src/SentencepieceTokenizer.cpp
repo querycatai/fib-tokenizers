@@ -89,16 +89,21 @@ void JSSentencepieceTokenizer::encode(std::string& text, std::vector<T>* ids)
         std::string::const_iterator searchStart(text.cbegin());
 
         while (std::regex_search(searchStart, text.cend(), m, pattern)) {
-            const SpecialToken& token = special_tokens[m[2]];
+            auto it = special_tokens.find(m[2]);
+            if (it == special_tokens.end()) {
+                searchStart = m[2].first + 1;
+            } else {
+                const SpecialToken& token = it->second;
 
-            size_t pos = (token.lstrip ? m[0].first : m[2].first) - text.cbegin();
-            if (pos != lastPos)
-                sentencepiece_encode(text.data() + lastPos, pos - lastPos, ids, prefix_count);
+                size_t pos = (token.lstrip ? m[0].first : m[2].first) - text.cbegin();
+                if (pos != lastPos)
+                    sentencepiece_encode(text.data() + lastPos, pos - lastPos, ids, prefix_count);
 
-            push_token(token, ids);
+                push_token(token, ids);
 
-            searchStart = token.rstrip ? m[0].first + m[0].length() : m[2].first + m[2].length();
-            lastPos = searchStart - text.cbegin();
+                searchStart = token.rstrip ? m[0].first + m[0].length() : m[2].first + m[2].length();
+                lastPos = searchStart - text.cbegin();
+            }
         }
     }
 

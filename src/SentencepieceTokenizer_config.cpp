@@ -14,8 +14,11 @@ std::string escapeRegex(const std::string& str)
 {
     static const std::regex escape(R"([.^$|()\[\]{}*+?\\])");
     static const std::string format(R"(\\&)");
+    static const std::regex escape_digest(R"(\d+)");
 
-    return std::regex_replace(str, escape, format, std::regex_constants::format_sed);
+    return std::regex_replace(
+        std::regex_replace(str, escape, format, std::regex_constants::format_sed),
+        escape_digest, R"(\d+)");
 }
 
 void JSSentencepieceTokenizer::config_tokens_decoder(const Napi::Config& opt)
@@ -29,8 +32,10 @@ void JSSentencepieceTokenizer::config_tokens_decoder(const Napi::Config& opt)
     }
 }
 
-void JSSentencepieceTokenizer::add_token(SpecialToken& token)
+void JSSentencepieceTokenizer::add_token(SpecialToken& token, bool is_unk)
 {
+    // printf("add_token: %s[%d]\n", token.content.c_str(), token.id);
+
     if (token.content.length() > 0) {
         if (token.id == -1) {
             auto it = token_to_id.find(token.content);
@@ -39,11 +44,10 @@ void JSSentencepieceTokenizer::add_token(SpecialToken& token)
             else {
                 token.id = sentence_piece_.PieceToId(token.content);
 
-                if (token.id == model_unk_id && token.content != "<unk>") {
+                if (token.id == model_unk_id && !is_unk && token.content != "<unk>") {
                     do {
                         token.id = special_token_offset++;
                     } while (id_to_token.find(token.id) != id_to_token.end());
-
                 } else {
                     token.id += offset;
                 }
@@ -78,7 +82,7 @@ void JSSentencepieceTokenizer::config_basic_tokens(const Napi::Config& opt)
         }
 
         if (token.content.length() > 0) {
-            add_token(token);
+            add_token(token, i == 0);
 
             switch (i) {
             case 0:
@@ -158,6 +162,16 @@ void JSSentencepieceTokenizer::config_pattern(const Napi::Config& opt)
         for (auto& [key, value] : special_tokens)
             keys.emplace_back(key);
 
+        std::set<std::string> res;
+        for (auto& key : keys)
+            res.emplace(escapeRegex(std::string(key)));
+
+        keys.clear();
+
+        for (auto& token : res) {
+            keys.emplace_back(token);
+        }
+
         std::sort(keys.begin(), keys.end(), [](const std::string& a, const std::string& b) {
             return a.length() > b.length();
         });
@@ -165,7 +179,7 @@ void JSSentencepieceTokenizer::config_pattern(const Napi::Config& opt)
         for (auto& key : keys) {
             if (pattern_str.length() > 0)
                 pattern_str += "|";
-            pattern_str += escapeRegex(std::string(key));
+            pattern_str += key;
         }
 
         std::string space_str;
