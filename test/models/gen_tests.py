@@ -1,6 +1,7 @@
 import requests
 import json
 import os
+import re
 import glob
 import shutil
 from transformers import AutoTokenizer
@@ -81,7 +82,7 @@ def generate_one(model, likes):
         return
 
     try:
-        print(f"Generating for {model}")
+        print(f"{Fore.GREEN}Generating for {model}{Fore.RESET}")
         tokenizer = AutoTokenizer.from_pretrained(model, trust_remote_code=True, use_fast=False)
 
         model_home = resolve_model(model)
@@ -132,6 +133,20 @@ def generate_one(model, likes):
         cache_dir = os.path.join(os.path.expanduser("~"), ".cache", "huggingface", "hub", "models--" + model.replace("/", "--"))
         shutil.rmtree(cache_dir, ignore_errors=True)
         print(f"\n{Fore.RED}===========> Failed to generate for {model}: {e}{Fore.RESET}\n")
+
+def renew_model(model):
+    model = re.search(r'models--(.*).json', model)[1].replace('--', '/')
+    try:
+        print(f"{Fore.GREEN}Renew for {model}{Fore.RESET}")
+        tokenizer = AutoTokenizer.from_pretrained(model, trust_remote_code=True, use_fast=False)
+    except Exception as e:
+        cache_dir = os.path.join(os.path.expanduser("~"), ".cache", "huggingface", "hub", "models--" + model.replace("/", "--"))
+        shutil.rmtree(cache_dir, ignore_errors=True)
+        print(f"\n{Fore.RED}===========> Failed to generate for {model}: {e}{Fore.RESET}\n")
+
+local_models = glob.glob(os.path.join("./", "models--*.json"))
+for model in local_models:
+    renew_model(model)
 
 response = requests.get("https://huggingface.co/api/models", params={
     'sort': 'likes',
