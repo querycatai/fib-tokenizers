@@ -153,7 +153,7 @@ Napi::Value JSSentencepieceTokenizer::decode(const Napi::CallbackInfo& info)
     std::vector<int> ids = to_array<int>(info[0]);
     std::string text;
 
-    std::vector<std::string> pieces;
+    std::vector<absl::string_view> pieces;
     const int num_pieces = sentence_piece_.GetPieceSize();
     pieces.reserve(ids.size());
 
