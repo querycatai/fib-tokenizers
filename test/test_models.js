@@ -20,6 +20,9 @@ fs.readdir(path.join(__dirname, "models"))
 
 var home = path.join(process.env.HOME, ".cache/huggingface/hub");
 
+// M2M100Tokenizer sentencepiece.bpe.model
+// AlbertTokenizer spiece.model
+
 const SentencepieceTokenizer = [
     "LlamaTokenizer",
     "ChatGLMTokenizer",
@@ -36,6 +39,9 @@ const SentencepieceTokenizer = [
     "InternLMTokenizer",
     "MBart50Tokenizer",
     "CamembertTokenizer",
+    "PlamoTokenizer",
+    "MBartTokenizer",
+    "SkyworkTokenizer",
 ];
 
 const BpeTokenizer = [
@@ -142,6 +148,6 @@ describe("tokenizer", () => {
 });
 
 // test_model("fblgit/una-xaberius-34b-v1beta");
-// test_tokenizer("LlamaTokenizer");
+// test_tokenizer("SkyworkTokenizer");
 
-test.run(console.DEBUG);
+test.run();
