@@ -94,10 +94,10 @@ private:
     int32_t special_token_offset;
 
     int model_unk_id;
-    int unk_id;
-    int bos_id;
-    int eos_id;
-    int pad_id;
+    int unk_id = 0;
+    int bos_id = 0;
+    int eos_id = 0;
+    int pad_id = 0;
 
     bool legacy;
 

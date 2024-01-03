@@ -69,6 +69,10 @@ void JSSentencepieceTokenizer::config_basic_tokens(const Napi::Config& opt)
     std::unordered_map<std::string, Napi::Value> special_tokens_map;
     special_tokens_map = opt.Get("special_tokens_map", special_tokens_map);
 
+    int* special_token_ids[] = {
+        &unk_id, &bos_id, &eos_id, &pad_id
+    };
+
     for (int i = 0; i < sizeof(special_token_keys) / sizeof(special_token_keys[0]); i++) {
         Napi::Value config_value = opt.Get(special_token_keys[i], Napi::Value());
         napi_valuetype config_value_type = config_value.Type();
@@ -84,17 +88,8 @@ void JSSentencepieceTokenizer::config_basic_tokens(const Napi::Config& opt)
         if (token.content.length() > 0) {
             add_token(token, i == 0);
 
-            switch (i) {
-            case 0:
-                unk_id = token.id;
-                break;
-            case 1:
-                bos_id = token.id;
-                break;
-            case 2:
-                eos_id = token.id;
-                break;
-            }
+            if (i < sizeof(special_token_ids) / sizeof(special_token_ids[0]))
+                *special_token_ids[i] = token.id;
         }
     }
 }
@@ -202,9 +197,7 @@ JSSentencepieceTokenizer::JSSentencepieceTokenizer(const Napi::CallbackInfo& inf
     sentence_piece_.LoadFromSerializedProto(from_value<std::string_view>(info[0]));
     special_token_offset = sentence_piece_.GetPieceSize();
 
-    bos_id = sentence_piece_.bos_id();
-    eos_id = sentence_piece_.eos_id();
-    model_unk_id = unk_id = sentence_piece_.unk_id();
+    model_unk_id = sentence_piece_.unk_id();
 
     Napi::Config opt(info[1]);
 
