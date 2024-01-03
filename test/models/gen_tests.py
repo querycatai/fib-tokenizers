@@ -151,7 +151,7 @@ for model in local_models:
 response = requests.get("https://huggingface.co/api/models", params={
     'sort': 'likes',
     'direction': -1,
-    'limit': 1000
+    'limit': 1500
 })
 
 models = [model['modelId'] for model in response.json()]

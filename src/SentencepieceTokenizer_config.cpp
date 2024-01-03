@@ -46,7 +46,7 @@ void JSSentencepieceTokenizer::add_token(SpecialToken& token, bool is_unk)
 
                 if (token.id == model_unk_id && !is_unk && token.content != "<unk>") {
                     do {
-                        token.id = special_token_offset++;
+                        token.id = special_token_offset++ + offset;
                     } while (id_to_token.find(token.id) != id_to_token.end());
                 } else {
                     token.id += offset;
@@ -200,6 +200,7 @@ JSSentencepieceTokenizer::JSSentencepieceTokenizer(const Napi::CallbackInfo& inf
     : Napi::ObjectWrap<JSSentencepieceTokenizer>(info)
 {
     sentence_piece_.LoadFromSerializedProto(from_value<std::string_view>(info[0]));
+    special_token_offset = sentence_piece_.GetPieceSize();
 
     bos_id = sentence_piece_.bos_id();
     eos_id = sentence_piece_.eos_id();
@@ -209,7 +210,6 @@ JSSentencepieceTokenizer::JSSentencepieceTokenizer(const Napi::CallbackInfo& inf
 
     legacy = opt.Get("legacy", true);
     offset = opt.Get("offset", 0);
-    special_token_offset = sentence_piece_.GetPieceSize() + offset;
 
     config_tokens_decoder(opt);
     config_added_tokens(opt);
