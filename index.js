@@ -31,7 +31,7 @@ tokenizers.from_folder = function (home, model) {
 
     const special_tokens_map = get_json(path.join(model_path, "special_tokens_map.json"));
     if (special_tokens_map)
-        model_config.special_tokens_map = special_tokens_map;
+        Object.assign(model_config, special_tokens_map);
 
     const tokenizer_class = tokenizers_index[model_config.tokenizer_class.toLowerCase()];
     const vocabs = tokenizer_class.vocabs.map(vocab => fs.readFileSync(path.join(model_path, vocab)));

@@ -66,24 +66,13 @@ void JSSentencepieceTokenizer::config_basic_tokens(const Napi::Config& opt)
         "unk_token", "bos_token", "eos_token", "pad_token", "mask_token", "sep_token", "cls_token"
     };
 
-    std::unordered_map<std::string, Napi::Value> special_tokens_map;
-    special_tokens_map = opt.Get("special_tokens_map", special_tokens_map);
-
     int* special_token_ids[] = {
         &unk_id, &bos_id, &eos_id, &pad_id
     };
 
     for (int i = 0; i < sizeof(special_token_keys) / sizeof(special_token_keys[0]); i++) {
         Napi::Value config_value = opt.Get(special_token_keys[i], Napi::Value());
-        napi_valuetype config_value_type = config_value.Type();
-
         SpecialToken token = config_value;
-        auto it = special_tokens_map.find(special_token_keys[i]);
-        if (it != special_tokens_map.end()) {
-            Napi::Value& special_value = it->second;
-            if (special_value.Type() != napi_undefined)
-                token = special_value;
-        }
 
         if (token.content.length() > 0) {
             add_token(token, i == 0);
