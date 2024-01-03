@@ -12,6 +12,22 @@ Napi::Function JSBertTokenizer::Init(Napi::Env env)
 JSBertTokenizer::JSBertTokenizer(const Napi::CallbackInfo& info)
     : Napi::ObjectWrap<JSBertTokenizer>(info)
 {
+    static const char* special_token_keys[] = {
+        "unk_token", "pad_token", "mask_token", "sep_token", "cls_token"
+    };
+
+    static const char* special_token_values[] = {
+        "[UNK]", "[PAD]", "[MASK]", "[SEP]", "[CLS]"
+    };
+
+    std::u32string* special_tokens[] = {
+        &unk_token_, &pad_token_, &mask_token_, &sep_token_, &cls_token_
+    };
+
+    int32_t* special_token_ids[] = {
+        &unk_token_id_, &pad_token_id_, &mask_token_id_, &sep_token_id_, &cls_token_id_
+    };
+
     std::string_view vocab_data = from_value<std::string_view>(info[0]);
     split_vocab(vocab_data, vocab_array);
 
@@ -36,20 +52,14 @@ JSBertTokenizer::JSBertTokenizer(const Napi::CallbackInfo& info)
         }
     }
 
-    unk_token_ = opt.Get("unk_token", std::u32string(U"[UNK]"));
-    FindTokenId(unk_token_, unk_token_id_);
+    for (int32_t i = 0; i < sizeof(special_token_keys) / sizeof(special_token_keys[0]); i++) {
+        SpecialToken token(special_token_values[i]);
 
-    sep_token_ = opt.Get("sep_token", std::u32string(U"[SEP]"));
-    FindTokenId(sep_token_, sep_token_id_);
-
-    pad_token_ = opt.Get("pad_token", std::u32string(U"[PAD]"));
-    FindTokenId(pad_token_, pad_token_id_);
-
-    cls_token_ = opt.Get("cls_token", std::u32string(U"[CLS]"));
-    FindTokenId(cls_token_, cls_token_id_);
-
-    mask_token_ = opt.Get("mask_token", std::u32string(U"[MASK]"));
-    FindTokenId(mask_token_, mask_token_id_);
+        token = opt.Get(special_token_keys[i], token);
+        puts(token.content.c_str());
+        utf8::convert(token.content, *special_tokens[i]);
+        FindTokenId(*special_tokens[i], *special_token_ids[i]);
+    }
 }
 
 bool JSBertTokenizer::FindTokenId(const std::u32string& token, int32_t& token_id)

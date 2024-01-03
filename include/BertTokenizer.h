@@ -4,6 +4,7 @@
 #include <node_api.h>
 #include <memory>
 #include <list>
+#include "SpecialToken.h"
 
 class JSBertTokenizer : public Napi::ObjectWrap<JSBertTokenizer> {
 private:
