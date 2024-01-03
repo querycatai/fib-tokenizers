@@ -20,16 +20,12 @@ fs.readdir(path.join(__dirname, "models"))
 
 var home = path.join(process.env.HOME, ".cache/huggingface/hub");
 
-// M2M100Tokenizer sentencepiece.bpe.model
-// AlbertTokenizer spiece.model
-
 const SentencepieceTokenizer = [
     "LlamaTokenizer",
     "ChatGLMTokenizer",
     "T5Tokenizer",
     "XLMRobertaTokenizer",
     "SpeechT5Tokenizer",
-    "BaichuanTokenizer",
     "SeamlessM4TTokenizer",
     "CodeLlamaTokenizer",
     "NllbTokenizer",
@@ -42,6 +38,12 @@ const SentencepieceTokenizer = [
     "PlamoTokenizer",
     "MBartTokenizer",
     "SkyworkTokenizer",
+    "XGLMTokenizer",
+    "BigBirdTokenizer",
+
+    // "BaichuanTokenizer",
+    // "XLNetTokenizer",
+    // "Midm_bitext_Tokenizer",
 ];
 
 const BpeTokenizer = [
@@ -147,7 +149,7 @@ describe("tokenizer", () => {
         describe(_base_class, () => base_class[_base_class].forEach(test_tokenizer));
 });
 
-// test_model("fblgit/una-xaberius-34b-v1beta");
-// test_tokenizer("SkyworkTokenizer");
+// test_model("iarfmoose/t5-base-question-generator");
+// test_tokenizer("BigBirdTokenizer");
 
 test.run();
