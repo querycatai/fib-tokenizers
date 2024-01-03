@@ -4,9 +4,9 @@
 Napi::Function JSBertTokenizer::Init(Napi::Env env)
 {
     return DefineClass(env, "BertTokenizer",
-        { InstanceMethod("tokenize", &JSBertTokenizer::tokenize, napi_enumerable),
-            InstanceMethod("encode", &JSBertTokenizer::encode, napi_enumerable),
-            InstanceMethod("decode", &JSBertTokenizer::decode, napi_enumerable) });
+        { InstanceMethod("tokenize", &JSBertTokenizer::tokenize, napi_default_jsproperty),
+            InstanceMethod("encode", &JSBertTokenizer::encode, napi_default_jsproperty),
+            InstanceMethod("decode", &JSBertTokenizer::decode, napi_default_jsproperty) });
 }
 
 JSBertTokenizer::JSBertTokenizer(const Napi::CallbackInfo& info)

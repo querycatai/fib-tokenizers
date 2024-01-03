@@ -5,9 +5,9 @@ Napi::Function JSSentencepieceTokenizer::Init(Napi::Env env)
 {
     return DefineClass(env, "SentencepieceTokenizer",
         { InstanceAccessor<&JSSentencepieceTokenizer::get_all_special_tokens>("all_special_tokens"),
-            InstanceMethod("tokenize", &JSSentencepieceTokenizer::tokenize, napi_enumerable),
-            InstanceMethod("encode", &JSSentencepieceTokenizer::encode, napi_enumerable),
-            InstanceMethod("decode", &JSSentencepieceTokenizer::decode, napi_enumerable) });
+            InstanceMethod("tokenize", &JSSentencepieceTokenizer::tokenize, napi_default_jsproperty),
+            InstanceMethod("encode", &JSSentencepieceTokenizer::encode, napi_default_jsproperty),
+            InstanceMethod("decode", &JSSentencepieceTokenizer::decode, napi_default_jsproperty) });
 }
 
 std::string escapeRegex(const std::string& str)

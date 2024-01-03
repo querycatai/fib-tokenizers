@@ -5,8 +5,8 @@
 Napi::Function JSTikTokenizer::Init(Napi::Env env)
 {
     return DefineClass(env, "TikTokenizer",
-        { InstanceMethod("encode", &JSTikTokenizer::encode, napi_enumerable),
-            InstanceMethod("decode", &JSTikTokenizer::decode, napi_enumerable) });
+        { InstanceMethod("encode", &JSTikTokenizer::encode, napi_default_jsproperty),
+            InstanceMethod("decode", &JSTikTokenizer::decode, napi_default_jsproperty) });
 }
 
 class LinesReader : public IResourceReader {
