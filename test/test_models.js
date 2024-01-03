@@ -80,6 +80,15 @@ const base_class = {
     TikTokenizer
 };
 
+function fix_text(text) {
+    return text.replace(/<\/s>|<s>|<unk>|<pad>|\r|\n|\t/g, " ")
+        .replace(/ +/g, " ")
+        .replace(/^ +| +$/g, "")
+        .replace(/ +$/g, "")
+        .replace(/ +\./g, ".")
+        .replace(/ +!/g, "!");
+}
+
 function test_model(model) {
     if (typeof model === "string")
         model = JSON.parse(fs.readFile(path.join(__dirname, "models", "models--" + model.replace(/\//g, "--") + ".json"), "utf-8"));
@@ -127,8 +136,7 @@ function test_model(model) {
 
                 // it("decode", () => {
                 //     var result = tokenizer.decode(test.ids);
-                //     assert.equal(result.replace(/ +/g, " ").replace(/^ +| +$/g, "").replace(/ +$/g, ""),
-                //         test.decoded.replace(/ +/g, " ").replace(/^ +| +$/g, ""));
+                //     assert.equal(fix_text(result), fix_text(test.decoded));
                 // });
             });
         }
