@@ -41,9 +41,9 @@ const SentencepieceTokenizer = [
     "XGLMTokenizer",
     "BigBirdTokenizer",
 
-    // "BaichuanTokenizer",
     // "XLNetTokenizer",
-    // "Midm_bitext_Tokenizer",
+    // "BaichuanTokenizer", // custom implementation
+    // "Midm_bitext_Tokenizer", // custom implementation
 ];
 
 const BpeTokenizer = [
@@ -122,12 +122,12 @@ function test_model(model) {
 
         function test_one(test) {
             describe(JSON.stringify(test.input.substr(0, 64)), () => {
-                if (model.tokenizer_class != "QWenTokenizer")
-                    it("tokenize", () => {
-                        var result = tokenizer.tokenize(test.input);
-                        assert.deepEqual(result, test.tokens);
-                        // console.log(result);
-                    });
+                it("tokenize", () => {
+                    var result = tokenizer.tokenize(test.input);
+                    result = result.map(token => token.replace(/�/g, ""));
+                    assert.deepEqual(result, test.tokens);
+                    // console.log(result);
+                });
 
                 it("encode", () => {
                     var result = tokenizer.encode(test.input);
@@ -157,7 +157,7 @@ describe("tokenizer", () => {
         describe(_base_class, () => base_class[_base_class].forEach(test_tokenizer));
 });
 
-// test_model("iarfmoose/t5-base-question-generator");
-// test_tokenizer("BigBirdTokenizer");
+// test_model("bert-base-uncased");
+// test_tokenizer("QWenTokenizer");
 
-test.run();
+test.run(console.DEBUG);

@@ -5,7 +5,8 @@
 Napi::Function JSTikTokenizer::Init(Napi::Env env)
 {
     return DefineClass(env, "TikTokenizer",
-        { InstanceMethod("encode", &JSTikTokenizer::encode, napi_default_jsproperty),
+        { InstanceMethod("tokenize", &JSTikTokenizer::tokenize, napi_default_jsproperty),
+            InstanceMethod("encode", &JSTikTokenizer::encode, napi_default_jsproperty),
             InstanceMethod("decode", &JSTikTokenizer::decode, napi_default_jsproperty) });
 }
 
@@ -54,6 +55,14 @@ Napi::Value JSTikTokenizer::encode(const Napi::CallbackInfo& info)
 {
     std::string text = info[0].As<Napi::String>();
     std::vector<int> tokens = encoder_->encode(text);
+
+    return to_value(info.Env(), tokens);
+}
+
+Napi::Value JSTikTokenizer::tokenize(const Napi::CallbackInfo& info)
+{
+    std::string text = info[0].As<Napi::String>();
+    std::vector<std::string> tokens = encoder_->tokenize(text);
 
     return to_value(info.Env(), tokens);
 }
