@@ -138,7 +138,7 @@ Napi::Value JSSentencepieceTokenizer::encode(const Napi::CallbackInfo& info)
 
     encode(text, &ids);
 
-    if (offset == 0 && add_eos_token && ids.size() > 0 && ids[ids.size() - 1] == eos_id)
+    if (add_eos_if_not_present && add_eos_token && ids.size() > 0 && ids[ids.size() - 1] == eos_id)
         for (int i = 1; i < suffix_tokens.size(); i++)
             push_token(suffix_tokens[i], &ids);
     else

@@ -137,6 +137,8 @@ void JSSentencepieceTokenizer::config_prefix_suffix(const Napi::Config& opt)
     config_tokens = opt.Get("suffix_tokens", config_tokens);
     for (auto& token : config_tokens)
         suffix_tokens.emplace_back(convert_token_to_id(token));
+
+    add_eos_if_not_present = opt.Get("add_eos_if_not_present", false);
 }
 
 void JSSentencepieceTokenizer::config_pattern(const Napi::Config& opt)

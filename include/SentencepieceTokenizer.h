@@ -108,6 +108,7 @@ private:
 
     bool add_bos_token;
     bool add_eos_token;
+    bool add_eos_if_not_present;
 
     std::vector<int> prefix_tokens;
     std::vector<int> suffix_tokens;
