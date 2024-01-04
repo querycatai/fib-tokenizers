@@ -2,14 +2,6 @@
 #include "string_util.h"
 #include "emdedded_resource_reader.h"
 
-Napi::Function JSTikTokenizer::Init(Napi::Env env)
-{
-    return DefineClass(env, "TikTokenizer",
-        { InstanceMethod("tokenize", &JSTikTokenizer::tokenize, napi_default_jsproperty),
-            InstanceMethod("encode", &JSTikTokenizer::encode, napi_default_jsproperty),
-            InstanceMethod("decode", &JSTikTokenizer::decode, napi_default_jsproperty) });
-}
-
 class LinesReader : public IResourceReader {
 public:
     LinesReader(std::vector<std::string>& lines_)
@@ -26,8 +18,8 @@ private:
     std::vector<std::string>& lines;
 };
 
-JSTikTokenizer::JSTikTokenizer(const Napi::CallbackInfo& info)
-    : Napi::ObjectWrap<JSTikTokenizer>(info)
+TikTokenizer::TikTokenizer(const Napi::CallbackInfo& info)
+    : Napi::ObjectWrap<TikTokenizer>(info)
 {
     Napi::Config opt(info[1]);
     LanguageModel base_model = LanguageModel::CL100K_BASE;
@@ -49,28 +41,39 @@ JSTikTokenizer::JSTikTokenizer(const Napi::CallbackInfo& info)
 
     LinesReader lines_reader(lines);
     encoder_ = GptEncoding::get_encoding(base_model, &lines_reader);
+
+    Tokenizer::init(opt, encoder_->byte_pair_encoding_core_processor_.byte_pair_ranks_.size(), 0);
 }
 
-Napi::Value JSTikTokenizer::encode(const Napi::CallbackInfo& info)
+int32_t TikTokenizer::model_token_to_id(std::string_view token)
 {
-    std::string text = info[0].As<Napi::String>();
-    std::vector<int> tokens = encoder_->encode(text);
+    std::vector<uint8_t> utf8_encoded(token.begin(), token.end());
+    auto rank_iter = encoder_->byte_pair_encoding_core_processor_.byte_pair_ranks_.find(utf8_encoded);
+    if (rank_iter != encoder_->byte_pair_encoding_core_processor_.byte_pair_ranks_.end())
+        return rank_iter->second;
 
-    return to_value(info.Env(), tokens);
+    return 0;
 }
 
-Napi::Value JSTikTokenizer::tokenize(const Napi::CallbackInfo& info)
+void TikTokenizer::encode(std::string_view text, const std::function<void(int32_t, int32_t)>& push_back)
 {
-    std::string text = info[0].As<Napi::String>();
-    std::vector<std::string> tokens = encoder_->tokenize(text);
+    std::string text_str(text);
+    std::vector<int32_t> tokens = encoder_->encode(text_str);
 
-    return to_value(info.Env(), tokens);
+    for (int32_t i = 0; i < tokens.size(); i++)
+        put_token(tokens[i], i, push_back);
 }
 
-Napi::Value JSTikTokenizer::decode(const Napi::CallbackInfo& info)
+void TikTokenizer::encode(std::string_view text, const std::function<void(const std::string&, int32_t)>& push_back)
 {
-    std::vector<int> ids = to_array<int>(info[0]);
-    std::string text = encoder_->decode(ids);
+    std::string text_str(text);
+    std::vector<std::string> tokens = encoder_->tokenize(text_str);
 
-    return to_value(info.Env(), text);
+    for (int32_t i = 0; i < tokens.size(); i++)
+        put_token(tokens[i], i, push_back);
+}
+
+void TikTokenizer::decode(const std::vector<int32_t>& ids, std::string& text)
+{
+    text = encoder_->decode(ids);
 }

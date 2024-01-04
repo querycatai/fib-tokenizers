@@ -11,6 +11,7 @@
 class PCRERegex;
 
 class BytePairEncodingCore {
+public:
     std::unordered_map<std::vector<uint8_t>, int, VectorHash> byte_pair_ranks_;
     std::unordered_map<std::string, int> special_token_mappings_;
     std::shared_ptr<PCRERegex> pattern_string_;
@@ -38,6 +39,7 @@ public:
 class IResourceReader;
 
 class GptEncoding {
+public:
     int max_token_value_;
     std::unordered_map<std::string, int> special_token_mappings_;
     BytePairEncodingCore byte_pair_encoding_core_processor_;

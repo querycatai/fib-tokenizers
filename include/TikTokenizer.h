@@ -1,19 +1,20 @@
 #pragma once
 
-#include "napi_value.h"
+#include "Tokenizer.h"
 #include "tik_tokenize.h"
 
-class JSTikTokenizer : public Napi::ObjectWrap<JSTikTokenizer> {
+class TikTokenizer : public Napi::ObjectWrap<TikTokenizer>,
+                     public Tokenizer {
 public:
-    JSTikTokenizer(const Napi::CallbackInfo& info);
+    TikTokenizer(const Napi::CallbackInfo& info);
 
-public:
-    static Napi::Function Init(Napi::Env env);
+    DECLARE_CLASS(TikTokenizer);
 
 private:
-    Napi::Value tokenize(const Napi::CallbackInfo& info);
-    Napi::Value encode(const Napi::CallbackInfo& info);
-    Napi::Value decode(const Napi::CallbackInfo& info);
+    virtual int32_t model_token_to_id(std::string_view token);
+    virtual void encode(std::string_view text, const std::function<void(int32_t, int32_t)>& push_back);
+    virtual void encode(std::string_view text, const std::function<void(const std::string&, int32_t)>& push_back);
+    virtual void decode(const std::vector<int32_t>& ids, std::string& text);
 
 private:
     std::shared_ptr<GptEncoding> encoder_;

@@ -1,8 +1,5 @@
 #pragma once
 
-#include <regex>
-#include <string_view>
-#include "napi_value.h"
 #include "Tokenizer.h"
 #include "sentencepiece_processor.h"
 
@@ -16,7 +13,7 @@ public:
         Tokenizer::init(info[1], sentence_piece_.GetPieceSize(), sentence_piece_.unk_id());
     }
 
-    DECLARE_CLASS(SentencepieceTokenizer)
+    DECLARE_CLASS(SentencepieceTokenizer);
 
 private:
     virtual int32_t model_token_to_id(std::string_view token);
