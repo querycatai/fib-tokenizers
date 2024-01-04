@@ -249,7 +249,7 @@
             "decoded": "leading space"
         },
         {
-            "input": "\u751f\u6d3b\u7684\u771f\u8c1b\u662f",
+            "input": "生活的真谛是",
             "ids": [
                 1,
                 21,
@@ -261,14 +261,14 @@
                 2
             ],
             "tokens": [
-                "\u751f",
-                "\u6d3b",
-                "\u7684",
-                "\u771f",
-                "\u8c1b",
-                "\u662f"
+                "生",
+                "活",
+                "的",
+                "真",
+                "谛",
+                "是"
             ],
-            "decoded": "\u751f \u6d3b \u7684 \u771f \u8c1b \u662f"
+            "decoded": "生 活 的 真 谛 是"
         },
         {
             "input": "The company was founded in 2016.",
@@ -297,7 +297,7 @@
             "decoded": "the company was founded in 2016."
         },
         {
-            "input": "test $1 R2 #3 \u20ac4 \u00a35 \u00a56 \u20a37 \u20b98 \u20b19 test",
+            "input": "test $1 R2 #3 €4 £5 ¥6 ₣7 ₹8 ₱9 test",
             "ids": [
                 1,
                 6943,
@@ -327,20 +327,20 @@
                 "r2",
                 "#",
                 "3",
-                "\u20ac",
+                "€",
                 "##4",
-                "\u00a3",
+                "£",
                 "##5",
-                "\u00a5",
+                "¥",
                 "##6",
                 "[UNK]",
-                "\u20b9",
+                "₹",
                 "##8",
-                "\u20b1",
+                "₱",
                 "##9",
                 "test"
             ],
-            "decoded": "test $ 1 r2 # 3 \u20ac4 \u00a35 \u00a56 \u20b98 \u20b19 test"
+            "decoded": "test $ 1 r2 # 3 €4 £5 ¥6 ₹8 ₱9 test"
         },
         {
             "input": "I bought an apple for $1.00 at the store.",
@@ -379,7 +379,7 @@
             "decoded": "i bought an apple for $ 1. 00 at the store."
         },
         {
-            "input": "you\u2026  ",
+            "input": "you…  ",
             "ids": [
                 1,
                 2072,
@@ -388,12 +388,12 @@
             ],
             "tokens": [
                 "you",
-                "\u2026"
+                "…"
             ],
-            "decoded": "you \u2026"
+            "decoded": "you …"
         },
         {
-            "input": "you\u2026\u00a0\u00a0",
+            "input": "you…  ",
             "ids": [
                 1,
                 2072,
@@ -402,12 +402,12 @@
             ],
             "tokens": [
                 "you",
-                "\u2026"
+                "…"
             ],
-            "decoded": "you \u2026"
+            "decoded": "you …"
         },
         {
-            "input": "you\u2026\u00a0\u00a0you\u2026\u00a0\u00a0",
+            "input": "you…  you…  ",
             "ids": [
                 1,
                 2072,
@@ -418,14 +418,14 @@
             ],
             "tokens": [
                 "you",
-                "\u2026",
+                "…",
                 "you",
-                "\u2026"
+                "…"
             ],
-            "decoded": "you \u2026 you \u2026"
+            "decoded": "you … you …"
         },
         {
-            "input": "\u2581This \u2581is \u2581a \u2581test \u2581.",
+            "input": "▁This ▁is ▁a ▁test ▁.",
             "ids": [
                 1,
                 28904,
@@ -442,22 +442,22 @@
                 2
             ],
             "tokens": [
-                "\u2581",
+                "▁",
                 "##th",
                 "##is",
-                "\u2581",
+                "▁",
                 "##is",
-                "\u2581",
+                "▁",
                 "##a",
-                "\u2581",
+                "▁",
                 "##test",
-                "\u2581",
+                "▁",
                 "."
             ],
-            "decoded": "\u2581this \u2581is \u2581a \u2581test \u2581."
+            "decoded": "▁this ▁is ▁a ▁test ▁."
         },
         {
-            "input": "weird \uff5e edge \uff5e case",
+            "input": "weird ～ edge ～ case",
             "ids": [
                 1,
                 6979,
@@ -471,12 +471,12 @@
             "tokens": [
                 "wei",
                 "##rd",
-                "\uff5e",
+                "～",
                 "edge",
-                "\uff5e",
+                "～",
                 "case"
             ],
-            "decoded": "weird \uff5e edge \uff5e case"
+            "decoded": "weird ～ edge ～ case"
         },
         {
             "input": "<s>\n",
@@ -666,19 +666,19 @@
             "decoded": "ax # # # # boo"
         },
         {
-            "input": "\u9547",
+            "input": "镇",
             "ids": [
                 1,
                 484,
                 2
             ],
             "tokens": [
-                "\u9547"
+                "镇"
             ],
-            "decoded": "\u9547"
+            "decoded": "镇"
         },
         {
-            "input": "\ud83e\udd99",
+            "input": "🦙",
             "ids": [
                 1,
                 39978,
@@ -690,7 +690,7 @@
             "decoded": ""
         },
         {
-            "input": "\ud83e\udd99\ua64a",
+            "input": "🦙Ꙋ",
             "ids": [
                 1,
                 39978,
@@ -702,7 +702,7 @@
             "decoded": ""
         },
         {
-            "input": "\ua64a\ud83e\udd99",
+            "input": "Ꙋ🦙",
             "ids": [
                 1,
                 39978,
@@ -714,7 +714,7 @@
             "decoded": ""
         },
         {
-            "input": "The llama (/\u02c8l\u0251\u02d0m\u0259/; \ud83e\udd99Spanish pronunciation: [\u02c8\u028eama]) (Lama glama) is a domesticated South American camelid, widely used as a meat and pack animal by Andean cultures since the Pre-Columbian era. Llamas are social animals and live with others as a herd. Their wool is soft and contains only a small amount of lanolin.[2] Llamas can learn simple tasks after a few repetitions. When using a pack, they can carry about 25 to 30% of their body weight for 8 to 13 km (5\u20138 miles).[3] The name llama (in the past also spelled \"lama\" or \"glama\") was adopted by European settlers from native Peruvians.[4] The ancestors of llamas are thought to have originated from the Great Plains of North America about 40 million years ago, and subsequently migrated to South America about three million years ago during the Great American Interchange. By the end of the last ice age (10,000\u201312,000 years ago), camelids were extinct in North America.[3] As of 2007, there were over seven million llamas and alpacas in South America and over 158,000 llamas and 100,000\ua64a\ud83e\udd99 alpacas, descended from progenitors imported late in the 20th century, in the United States and Canada.[5] In Aymara mythology, llamas are important beings. The Heavenly Llama is said to drink water from the ocean and urinates as it rains.[6] According to Aymara eschatology, llamas will return to the water springs and lagoons where they come from at the end of time.[6]",
+            "input": "The llama (/ˈlɑːmə/; 🦙Spanish pronunciation: [ˈʎama]) (Lama glama) is a domesticated South American camelid, widely used as a meat and pack animal by Andean cultures since the Pre-Columbian era. Llamas are social animals and live with others as a herd. Their wool is soft and contains only a small amount of lanolin.[2] Llamas can learn simple tasks after a few repetitions. When using a pack, they can carry about 25 to 30% of their body weight for 8 to 13 km (5–8 miles).[3] The name llama (in the past also spelled \"lama\" or \"glama\") was adopted by European settlers from native Peruvians.[4] The ancestors of llamas are thought to have originated from the Great Plains of North America about 40 million years ago, and subsequently migrated to South America about three million years ago during the Great American Interchange. By the end of the last ice age (10,000–12,000 years ago), camelids were extinct in North America.[3] As of 2007, there were over seven million llamas and alpacas in South America and over 158,000 llamas and 100,000Ꙋ🦙 alpacas, descended from progenitors imported late in the 20th century, in the United States and Canada.[5] In Aymara mythology, llamas are important beings. The Heavenly Llama is said to drink water from the ocean and urinates as it rains.[6] According to Aymara eschatology, llamas will return to the water springs and lagoons where they come from at the end of time.[6]",
             "ids": [
                 1,
                 1499,
@@ -722,16 +722,19 @@
                 10796,
                 12052,
                 12054,
-                39979,
+                18109,
+                9498,
+                39978,
                 12054,
                 12050,
-                39979,
+                39978,
                 33723,
                 35098,
                 36773,
                 12049,
                 9475,
-                39979,
+                18109,
+                39978,
                 12068,
                 12053,
                 12052,
@@ -1004,7 +1007,8 @@
                 1662,
                 999,
                 30,
-                39979,
+                2721,
+                39978,
                 37556,
                 9892,
                 9618,
@@ -1118,6 +1122,8 @@
                 "##ama",
                 "(",
                 "/",
+                "ˈ",
+                "##l",
                 "[UNK]",
                 "/",
                 ";",
@@ -1127,6 +1133,7 @@
                 "##iation",
                 ":",
                 "[",
+                "ˈ",
                 "[UNK]",
                 "]",
                 ")",
@@ -1239,7 +1246,7 @@
                 "km",
                 "(",
                 "5",
-                "\u2013",
+                "–",
                 "8",
                 "miles",
                 ")",
@@ -1349,7 +1356,7 @@
                 "10",
                 ",",
                 "000",
-                "\u2013",
+                "–",
                 "12",
                 ",",
                 "000",
@@ -1400,6 +1407,7 @@
                 "and",
                 "100",
                 ",",
+                "000",
                 "[UNK]",
                 "alp",
                 "##ac",
@@ -1507,7 +1515,7 @@
                 "6",
                 "]"
             ],
-            "decoded": "the llama ( / / ; pronunciation : [ ] ) ( lama glama ) is a domesticated south american camelid, widely used as a meat and pack animal by andean cultures since the pre - columbian era. llamas are social animals and live with others as a herd. their wool is soft and contains only a small amount of lanolin. [ 2 ] llamas can learn simple tasks after a few repetitions. when using a pack, they can carry about 25 to 30 % of their body weight for 8 to 13 km ( 5 \u2013 8 miles ). [ 3 ] the name llama ( in the past also spelled \" lama \" or \" glama \" ) was adopted by european settlers from native peruvians. [ 4 ] the ancestors of llamas are thought to have originated from the great plains of north america about 40 million years ago, and subsequently migrated to south america about three million years ago during the great american interchange. by the end of the last ice age ( 10, 000 \u2013 12, 000 years ago ), camelids were extinct in north america. [ 3 ] as of 2007, there were over seven million llamas and alpacas in south america and over 158, 000 llamas and 100, alpacas, descended from progenitors imported late in the 20th century, in the united states and canada. [ 5 ] in aymara mythology, llamas are important beings. the heavenly llama is said to drink water from the ocean and urinates as it rains. [ 6 ] according to aymara eschatology, llamas will return to the water springs and lagoons where they come from at the end of time. [ 6 ]"
+            "decoded": "the llama ( / / ; pronunciation : [ ] ) ( lama glama ) is a domesticated south american camelid, widely used as a meat and pack animal by andean cultures since the pre - columbian era. llamas are social animals and live with others as a herd. their wool is soft and contains only a small amount of lanolin. [ 2 ] llamas can learn simple tasks after a few repetitions. when using a pack, they can carry about 25 to 30 % of their body weight for 8 to 13 km ( 5 – 8 miles ). [ 3 ] the name llama ( in the past also spelled \" lama \" or \" glama \" ) was adopted by european settlers from native peruvians. [ 4 ] the ancestors of llamas are thought to have originated from the great plains of north america about 40 million years ago, and subsequently migrated to south america about three million years ago during the great american interchange. by the end of the last ice age ( 10, 000 – 12, 000 years ago ), camelids were extinct in north america. [ 3 ] as of 2007, there were over seven million llamas and alpacas in south america and over 158, 000 llamas and 100, alpacas, descended from progenitors imported late in the 20th century, in the united states and canada. [ 5 ] in aymara mythology, llamas are important beings. the heavenly llama is said to drink water from the ocean and urinates as it rains. [ 6 ] according to aymara eschatology, llamas will return to the water springs and lagoons where they come from at the end of time. [ 6 ]"
         },
         {
             "input": "<s></s><unk><pad>[UNK][SEP][PAD][CLS][MASK]",
