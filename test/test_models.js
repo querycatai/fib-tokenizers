@@ -67,7 +67,8 @@ const BpeTokenizer = [
 const BertTokenizer = [
     "BertTokenizer",
     "DistilBertTokenizer",
-    "MPNetTokenizer"
+    "MPNetTokenizer",
+    "ElectraTokenizer"
 ];
 
 const TikTokenizer = [
@@ -109,6 +110,7 @@ function test_model(model) {
         });
 
         after(() => {
+            // fs.writeFile(path.join(__dirname, "models", "models--" + model.model.replace(/\//g, "--") + ".json"), JSON.stringify(model, null, 4));
             tokenizer = undefined;
         });
 
@@ -127,16 +129,19 @@ function test_model(model) {
             it(`tokenize - ${JSON.stringify(test.input.substr(0, 64))}`, () => {
                 var result = tokenizer.tokenize(test.input);
                 result = result.map(token => token.replace(/�/g, ""));
+                // test.tokens = result;
                 assert.deepEqual(result, test.tokens);
             });
 
             it(`encode - ${JSON.stringify(test.input.substr(0, 64))}`, () => {
                 var result = tokenizer.encode(test.input);
+                // test.ids = result;
                 assert.deepEqual(result, test.ids);
             });
 
             it(`decode - ${JSON.stringify(test.input.substr(0, 64))}`, () => {
                 var result = tokenizer.decode(test.ids);
+                // test.decoded = result;
                 assert.equal(result, test.decoded);
             });
         }
@@ -150,13 +155,11 @@ function test_tokenizer(tokenizer_class) {
     describe(tokenizer_class, () => models[tokenizer_class.toLowerCase()].forEach(test_model));
 }
 
-describe("tokenizer", () => {
-    for (var _base_class in base_class)
-        describe(_base_class, () => base_class[_base_class].forEach(test_tokenizer));
-});
+for (var _base_class in base_class)
+    describe(_base_class, () => base_class[_base_class].forEach(test_tokenizer));
 
 // test_model("shibing624/text2vec-base-chinese-sentence");
-// test_tokenizer("BaichuanTokenizer");
+// test_tokenizer("ElectraTokenizer");
 
 test.run();
 // test.run(console.DEBUG);
