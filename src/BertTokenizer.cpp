@@ -18,7 +18,7 @@ BertTokenizer::BertTokenizer(const Napi::CallbackInfo& info)
 
     for (int i = 0; i < vocab_array.size(); i++) {
         auto& token = vocab_array[i];
-        vocab_.emplace(token, i);
+        vocab_.insert_or_assign(token, i);
 
         if (token.rfind(suffix_indicator_, 0) == 0) {
             vocab_array[i] = token.substr(suffix_indicator_.size(), token.size() - suffix_indicator_.size());
@@ -28,8 +28,7 @@ BertTokenizer::BertTokenizer(const Napi::CallbackInfo& info)
         }
     }
 
-    unk_token_ = U"[UNK]";
-    unk_token_ = opt.Get("unk_token", unk_token_);
+    unk_token_ = opt.Get("unk_token", std::u32string(U"[UNK]"));
     FindTokenId(unk_token_, unk_token_id_);
 
     Tokenizer::init(opt, vocab_array.size(), unk_token_id_);
