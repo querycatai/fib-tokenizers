@@ -40,7 +40,7 @@
                 "W",
                 "[UNK]"
             ],
-            "decoded": ""
+            "decoded": "H W"
         },
         {
             "input": "How are you doing?",
@@ -62,7 +62,7 @@
                 "[UNK]",
                 "[UNK]"
             ],
-            "decoded": ""
+            "decoded": "H"
         },
         {
             "input": "You should've done this",
@@ -86,7 +86,7 @@
                 "[UNK]",
                 "[UNK]"
             ],
-            "decoded": ""
+            "decoded": "Y"
         },
         {
             "input": "A\n'll !!to?'d''d of, can't.",
@@ -176,7 +176,7 @@
                 "[UNK]",
                 "[UNK]"
             ],
-            "decoded": ""
+            "decoded": "T"
         },
         {
             "input": "let a = obj.toString();\ntoString();",
@@ -230,7 +230,7 @@
                 "H",
                 "[UNK]"
             ],
-            "decoded": ""
+            "decoded": "H H"
         },
         {
             "input": "trailing space   ",
@@ -306,7 +306,7 @@
                 "[UNK]",
                 "[UNK]"
             ],
-            "decoded": ""
+            "decoded": "T"
         },
         {
             "input": "test $1 R2 #3 €4 £5 ¥6 ₣7 ₹8 ₱9 test",
@@ -344,7 +344,7 @@
                 "[UNK]",
                 "[UNK]"
             ],
-            "decoded": ""
+            "decoded": "R"
         },
         {
             "input": "I bought an apple for $1.00 at the store.",
@@ -1407,7 +1407,7 @@
                 "[UNK]",
                 "[UNK]"
             ],
-            "decoded": ""
+            "decoded": "T L S A A P C L T L W T E P T G P N A S A G A I B N A A S A U S C I A T H L A A"
         },
         {
             "input": "<s></s><unk><pad>[UNK][SEP][PAD][CLS][MASK]",

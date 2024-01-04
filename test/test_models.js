@@ -40,9 +40,9 @@ const SentencepieceTokenizer = [
     "SkyworkTokenizer",
     "XGLMTokenizer",
     "BigBirdTokenizer",
+    "BaichuanTokenizer",
 
     // "XLNetTokenizer",
-    // "BaichuanTokenizer", // custom implementation
     // "Midm_bitext_Tokenizer", // custom implementation
 ];
 
@@ -76,22 +76,20 @@ const TikTokenizer = [
 
 const base_class = {
     SentencepieceTokenizer,
-    // BertTokenizer,
+    BertTokenizer,
     TikTokenizer
 };
 
 function fix_text(text) {
-    text = text.replace(/^\s+|\s+$/g, "")
+    text = text
+        .replace(/<s>|<\/s>|<pad>/g, "")
+        .replace(/^\s+|\s+$/g, "")
+        .replace(/\s*'\s*/g, "'")
         .replace(/\s+/g, " ")
-        .replace(/\s+\./g, ".")
-        .replace(/\s+!/g, "!");
+        .replace(/\s+!/g, "!")
+        .replace(/\s*\.\s*/g, ".")
 
     return text;
-    return text.replace(/<\/s>|<s>|<unk>|\[UNK\]|<pad>|\r|\n|\t/g, " ")
-        .replace(/ +/g, " ")
-        .replace(/^ +| +$/g, "")
-        .replace(/ +\./g, ".")
-        .replace(/ +!/g, "!");
 }
 
 function test_model(model) {
@@ -131,7 +129,6 @@ function test_model(model) {
                     var result = tokenizer.tokenize(test.input);
                     result = result.map(token => token.replace(/�/g, ""));
                     assert.deepEqual(result, test.tokens);
-                    // console.log(result);
                 });
 
                 it("encode", () => {
@@ -141,7 +138,7 @@ function test_model(model) {
 
                 it("decode", () => {
                     var result = tokenizer.decode(test.ids);
-                    assert.equal(fix_text(result), fix_text(test.decoded));
+                    assert.equal(result, test.decoded);
                 });
             });
         }
@@ -162,8 +159,8 @@ describe("tokenizer", () => {
         describe(_base_class, () => base_class[_base_class].forEach(test_tokenizer));
 });
 
-// test_model("codellama/CodeLlama-13b-hf");
-// test_tokenizer("QWenTokenizer");
+// test_model("shibing624/text2vec-base-chinese-sentence");
+// test_tokenizer("BaichuanTokenizer");
 
 test.run();
 // test.run(console.DEBUG);
