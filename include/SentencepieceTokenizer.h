@@ -3,82 +3,27 @@
 #include <regex>
 #include <string_view>
 #include "napi_value.h"
+#include "Tokenizer.h"
 #include "sentencepiece_processor.h"
-#include "SpecialToken.h"
 
-template <>
-inline SpecialToken from_value<SpecialToken>(const Napi::Value& value)
-{
-    return SpecialToken(value);
-}
-class JSSentencepieceTokenizer : public Napi::ObjectWrap<JSSentencepieceTokenizer> {
+class SentencepieceTokenizer : public Napi::ObjectWrap<SentencepieceTokenizer>,
+                               public Tokenizer {
 public:
-    JSSentencepieceTokenizer(const Napi::CallbackInfo& info);
+    SentencepieceTokenizer(const Napi::CallbackInfo& info)
+        : Napi::ObjectWrap<SentencepieceTokenizer>(info)
+    {
+        sentence_piece_.LoadFromSerializedProto(from_value<std::string_view>(info[0]));
+        Tokenizer::init(info[1], sentence_piece_.GetPieceSize(), sentence_piece_.unk_id());
+    }
 
-public:
-    static Napi::Function Init(Napi::Env env);
-
-private:
-    Napi::Value get_all_special_tokens(const Napi::CallbackInfo& info);
-    Napi::Value tokenize(const Napi::CallbackInfo& info);
-    Napi::Value encode(const Napi::CallbackInfo& info);
-    Napi::Value decode(const Napi::CallbackInfo& info);
+    DECLARE_CLASS(SentencepieceTokenizer)
 
 private:
-    int convert_token_to_id(std::string_view token);
-    void add_token(SpecialToken& token, bool is_unk = false);
-
-    template <typename T>
-    void encode(std::string& text, std::vector<T>* ids);
-
-    template <typename T>
-    void legacy_encode(std::string_view text, std::vector<T>* ids, int32_t prefix_count);
-
-private:
-    void config_tokens_decoder(const Napi::Config& opt);
-    void config_basic_tokens(const Napi::Config& opt);
-    void config_special_tokens(const Napi::Config& opt);
-    void config_added_tokens(const Napi::Config& opt);
-    void config_prefix_suffix(const Napi::Config& opt);
-    void config_pattern(const Napi::Config& opt);
-
-private:
-    void put_token(int token, int32_t index, const std::function<void(int, int)>& push_back);
-    void put_token(const std::string& token, int32_t index, const std::function<void(const std::string&, int)>& push_back);
-
-    void encode(std::string_view text, const std::function<void(int, int)>& push_back);
-    void encode(std::string_view text, const std::function<void(const std::string&, int)>& push_back);
+    virtual int32_t model_token_to_id(std::string_view token);
+    virtual void encode(std::string_view text, const std::function<void(int32_t, int32_t)>& push_back);
+    virtual void encode(std::string_view text, const std::function<void(const std::string&, int32_t)>& push_back);
+    virtual void decode(const std::vector<int32_t>& ids, std::string& text);
 
 private:
     sentencepiece::SentencePieceProcessor sentence_piece_;
-
-    int32_t offset = 0;
-    int32_t special_token_offset;
-
-    int model_unk_id;
-    int unk_id = 0;
-    int bos_id = 0;
-    int eos_id = 0;
-    int pad_id = 0;
-
-    bool legacy;
-
-    std::unordered_map<std::string_view, int> token_to_id;
-    std::unordered_map<int, std::string> id_to_token;
-
-    std::unordered_map<std::string, SpecialToken> special_tokens;
-
-    bool add_bos_token;
-    bool add_eos_token;
-    bool add_eos_if_not_present;
-
-    std::vector<int> prefix_tokens;
-    std::vector<int> suffix_tokens;
-
-    std::regex pattern;
-    bool has_pattern = false;
-
-public:
-    napi_env env_;
-    napi_ref wrapper_;
 };

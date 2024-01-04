@@ -51,3 +51,9 @@ public:
     bool special = false;
     int id = -1;
 };
+
+template <>
+inline SpecialToken from_value<SpecialToken>(const Napi::Value& value)
+{
+    return SpecialToken(value);
+}

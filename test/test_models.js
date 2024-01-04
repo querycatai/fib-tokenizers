@@ -81,10 +81,15 @@ const base_class = {
 };
 
 function fix_text(text) {
-    return text.replace(/<\/s>|<s>|<unk>|<pad>|\r|\n|\t/g, " ")
+    text = text.replace(/^\s+|\s+$/g, "")
+        .replace(/\s+/g, " ")
+        .replace(/\s+\./g, ".")
+        .replace(/\s+!/g, "!");
+
+    return text;
+    return text.replace(/<\/s>|<s>|<unk>|\[UNK\]|<pad>|\r|\n|\t/g, " ")
         .replace(/ +/g, " ")
         .replace(/^ +| +$/g, "")
-        .replace(/ +$/g, "")
         .replace(/ +\./g, ".")
         .replace(/ +!/g, "!");
 }
@@ -134,10 +139,10 @@ function test_model(model) {
                     assert.deepEqual(result, test.ids);
                 });
 
-                // it("decode", () => {
-                //     var result = tokenizer.decode(test.ids);
-                //     assert.equal(fix_text(result), fix_text(test.decoded));
-                // });
+                it("decode", () => {
+                    var result = tokenizer.decode(test.ids);
+                    assert.equal(fix_text(result), fix_text(test.decoded));
+                });
             });
         }
 
@@ -157,7 +162,8 @@ describe("tokenizer", () => {
         describe(_base_class, () => base_class[_base_class].forEach(test_tokenizer));
 });
 
-// test_model("bert-base-uncased");
+// test_model("codellama/CodeLlama-13b-hf");
 // test_tokenizer("QWenTokenizer");
 
-test.run(console.DEBUG);
+test.run();
+// test.run(console.DEBUG);

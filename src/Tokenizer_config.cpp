@@ -1,14 +1,5 @@
-#include "SentencepieceTokenizer.h"
-#include "sentencepiece.pb.h"
-
-Napi::Function JSSentencepieceTokenizer::Init(Napi::Env env)
-{
-    return DefineClass(env, "SentencepieceTokenizer",
-        { InstanceAccessor<&JSSentencepieceTokenizer::get_all_special_tokens>("all_special_tokens"),
-            InstanceMethod("tokenize", &JSSentencepieceTokenizer::tokenize, napi_default_jsproperty),
-            InstanceMethod("encode", &JSSentencepieceTokenizer::encode, napi_default_jsproperty),
-            InstanceMethod("decode", &JSSentencepieceTokenizer::decode, napi_default_jsproperty) });
-}
+#include "Tokenizer.h"
+#include <set>
 
 std::string escapeRegex(const std::string& str)
 {
@@ -21,7 +12,7 @@ std::string escapeRegex(const std::string& str)
         escape_digest, R"(\d+)");
 }
 
-void JSSentencepieceTokenizer::config_tokens_decoder(const Napi::Config& opt)
+void Tokenizer::config_tokens_decoder(const Napi::Config& opt)
 {
     std::unordered_map<std::string, SpecialToken> added_tokens_decoder;
     added_tokens_decoder = opt.Get("added_tokens_decoder", added_tokens_decoder);
@@ -32,17 +23,17 @@ void JSSentencepieceTokenizer::config_tokens_decoder(const Napi::Config& opt)
     }
 }
 
-void JSSentencepieceTokenizer::add_token(SpecialToken& token, bool is_unk)
+void Tokenizer::add_token(SpecialToken& token, bool is_unk)
 {
     // printf("add_token: %s[%d]\n", token.content.c_str(), token.id);
 
     if (token.content.length() > 0) {
         if (token.id == -1) {
-            auto it = token_to_id.find(token.content);
-            if (it != token_to_id.end())
-                token.id = it->second;
+            auto it = special_tokens.find(token.content);
+            if (it != special_tokens.end())
+                token.id = it->second.id;
             else {
-                token.id = sentence_piece_.PieceToId(token.content);
+                token.id = model_token_to_id(token.content);
 
                 if (token.id == model_unk_id && !is_unk && token.content != "<unk>") {
                     do {
@@ -55,22 +46,21 @@ void JSSentencepieceTokenizer::add_token(SpecialToken& token, bool is_unk)
         }
 
         auto it = id_to_token.emplace(token.id, token.content);
-        token_to_id.emplace(it.first->second, token.id);
-        special_tokens.emplace(token.content, token);
+        special_tokens.emplace(it.first->second, token);
     }
 }
 
-void JSSentencepieceTokenizer::config_basic_tokens(const Napi::Config& opt)
+void Tokenizer::config_basic_tokens(const Napi::Config& opt)
 {
     static const char* special_token_keys[] = {
         "unk_token", "bos_token", "eos_token", "pad_token", "mask_token", "sep_token", "cls_token"
     };
 
-    int* special_token_ids[] = {
+    int32_t* special_token_ids[] = {
         &unk_id, &bos_id, &eos_id, &pad_id
     };
 
-    for (int i = 0; i < sizeof(special_token_keys) / sizeof(special_token_keys[0]); i++) {
+    for (int32_t i = 0; i < sizeof(special_token_keys) / sizeof(special_token_keys[0]); i++) {
         Napi::Value config_value = opt.Get(special_token_keys[i], Napi::Value());
         SpecialToken token = config_value;
 
@@ -83,7 +73,7 @@ void JSSentencepieceTokenizer::config_basic_tokens(const Napi::Config& opt)
     }
 }
 
-void JSSentencepieceTokenizer::config_special_tokens(const Napi::Config& opt)
+void Tokenizer::config_special_tokens(const Napi::Config& opt)
 {
     std::vector<std::string> additional_special_tokens;
     additional_special_tokens = opt.Get("additional_special_tokens", additional_special_tokens);
@@ -94,9 +84,9 @@ void JSSentencepieceTokenizer::config_special_tokens(const Napi::Config& opt)
     }
 }
 
-void JSSentencepieceTokenizer::config_added_tokens(const Napi::Config& opt)
+void Tokenizer::config_added_tokens(const Napi::Config& opt)
 {
-    std::unordered_map<std::string, int> added_tokens_map;
+    std::unordered_map<std::string, int32_t> added_tokens_map;
     added_tokens_map = opt.Get("added_tokens", added_tokens_map);
 
     for (auto& [key, value] : added_tokens_map) {
@@ -105,7 +95,7 @@ void JSSentencepieceTokenizer::config_added_tokens(const Napi::Config& opt)
     }
 }
 
-void JSSentencepieceTokenizer::config_prefix_suffix(const Napi::Config& opt)
+void Tokenizer::config_prefix_suffix(const Napi::Config& opt)
 {
     std::vector<std::string> config_tokens;
 
@@ -130,7 +120,7 @@ void JSSentencepieceTokenizer::config_prefix_suffix(const Napi::Config& opt)
     add_eos_if_not_present = opt.Get("add_eos_if_not_present", false);
 }
 
-void JSSentencepieceTokenizer::config_pattern(const Napi::Config& opt)
+void Tokenizer::config_pattern(const Napi::Config& opt)
 {
     static const char* space_tokens[] = {
         " ",
@@ -180,25 +170,4 @@ void JSSentencepieceTokenizer::config_pattern(const Napi::Config& opt)
         has_pattern = true;
         pattern = std::regex("(" + space_str + ")?(" + pattern_str + ")(" + space_str + ")?");
     }
-}
-
-JSSentencepieceTokenizer::JSSentencepieceTokenizer(const Napi::CallbackInfo& info)
-    : Napi::ObjectWrap<JSSentencepieceTokenizer>(info)
-{
-    sentence_piece_.LoadFromSerializedProto(from_value<std::string_view>(info[0]));
-    special_token_offset = sentence_piece_.GetPieceSize();
-
-    model_unk_id = sentence_piece_.unk_id();
-
-    Napi::Config opt(info[1]);
-
-    legacy = opt.Get("legacy", true);
-    offset = opt.Get("offset", 0);
-
-    config_tokens_decoder(opt);
-    config_added_tokens(opt);
-    config_special_tokens(opt);
-    config_basic_tokens(opt);
-    config_prefix_suffix(opt);
-    config_pattern(opt);
 }
