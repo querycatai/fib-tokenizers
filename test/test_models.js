@@ -124,29 +124,25 @@ function test_model(model) {
         // });
 
         function test_one(test) {
-            describe(JSON.stringify(test.input.substr(0, 64)), () => {
-                it("tokenize", () => {
-                    var result = tokenizer.tokenize(test.input);
-                    result = result.map(token => token.replace(/�/g, ""));
-                    assert.deepEqual(result, test.tokens);
-                });
+            it(`tokenize - ${JSON.stringify(test.input.substr(0, 64))}`, () => {
+                var result = tokenizer.tokenize(test.input);
+                result = result.map(token => token.replace(/�/g, ""));
+                assert.deepEqual(result, test.tokens);
+            });
 
-                it("encode", () => {
-                    var result = tokenizer.encode(test.input);
-                    assert.deepEqual(result, test.ids);
-                });
+            it(`encode - ${JSON.stringify(test.input.substr(0, 64))}`, () => {
+                var result = tokenizer.encode(test.input);
+                assert.deepEqual(result, test.ids);
+            });
 
-                it("decode", () => {
-                    var result = tokenizer.decode(test.ids);
-                    assert.equal(result, test.decoded);
-                });
+            it(`decode - ${JSON.stringify(test.input.substr(0, 64))}`, () => {
+                var result = tokenizer.decode(test.ids);
+                assert.equal(result, test.decoded);
             });
         }
 
-        describe("datasets", () => {
-            model.datasets.forEach(test_one);
-            // test_one(model.datasets[model.datasets.length - 1]);
-        });
+        model.datasets.forEach(test_one);
+        // test_one(model.datasets[model.datasets.length - 1]);
     });
 }
 
