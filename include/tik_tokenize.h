@@ -16,6 +16,7 @@ public:
     std::unordered_map<std::string, int> special_token_mappings_;
     std::shared_ptr<PCRERegex> pattern_string_;
 
+private:
     static std::vector<int> byte_pair_merge(const std::vector<uint8_t>& piece,
         const std::unordered_map<std::vector<uint8_t>, int, VectorHash>& ranks,
         const std::function<int(int, int)>& f);
