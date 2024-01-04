@@ -73,6 +73,13 @@ void Tokenizer::encode(std::string& text, std::vector<T>* ids)
             }
 
             const SpecialToken& token = it->second;
+            if (token.single_word) {
+                if ((m[0].first == m[2].first && m[0].first != text.cbegin())
+                    || (m[0].second == m[2].second && m[0].second != text.cend())) {
+                    searchStart = m[2].first + 1;
+                    continue;
+                }
+            }
 
             size_t pos = (token.lstrip ? m[0].first : m[2].first) - text.cbegin();
             if (pos != lastPos)
