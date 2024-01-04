@@ -32,7 +32,7 @@ private:
     void encode(std::string& text, std::vector<T>* ids);
 
     template <typename T>
-    void sentencepiece_encode(char* text, size_t size, std::vector<T>* ids, int32_t prefix_count);
+    void legacy_encode(std::string_view text, std::vector<T>* ids, int32_t prefix_count);
 
 private:
     void config_tokens_decoder(const Napi::Config& opt);
@@ -43,11 +43,11 @@ private:
     void config_pattern(const Napi::Config& opt);
 
 private:
-    void push_token(int token, std::vector<int>* ids);
-    void push_token(const SpecialToken& token, std::vector<int>* ids);
-    void push_token(const SpecialToken& token, std::vector<std::string>* ids);
-    void push_token(const sentencepiece::SentencePieceText_SentencePiece& piece, std::vector<int>* ids);
-    void push_token(const sentencepiece::SentencePieceText_SentencePiece& piece, std::vector<std::string>* ids);
+    void put_token(int token, int32_t index, const std::function<void(int, int)>& push_back);
+    void put_token(const std::string& token, int32_t index, const std::function<void(const std::string&, int)>& push_back);
+
+    void encode(std::string_view text, const std::function<void(int, int)>& push_back);
+    void encode(std::string_view text, const std::function<void(const std::string&, int)>& push_back);
 
 private:
     sentencepiece::SentencePieceProcessor sentence_piece_;

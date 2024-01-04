@@ -32,6 +32,16 @@ public:
         special = opt.Get("special", false);
     }
 
+    operator const int&() const
+    {
+        return id;
+    }
+
+    operator const std::string&() const
+    {
+        return content;
+    }
+
 public:
     std::string content;
     bool lstrip = false;

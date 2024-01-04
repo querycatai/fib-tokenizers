@@ -6,7 +6,7 @@ Napi::Value JSSentencepieceTokenizer::get_all_special_tokens(const Napi::Callbac
     std::vector<std::string> tokens;
 
     for (auto& token : special_tokens)
-        push_token(token.second, &tokens);
+        tokens.emplace_back(token.second);
 
     return to_value(info.Env(), tokens);
 }
@@ -20,69 +20,58 @@ int JSSentencepieceTokenizer::convert_token_to_id(std::string_view token)
     return sentence_piece_.PieceToId(token);
 }
 
-void JSSentencepieceTokenizer::push_token(int token, std::vector<int>* ids)
+void JSSentencepieceTokenizer::put_token(int token, int32_t index, const std::function<void(int, int)>& push_back)
 {
-    if (offset) {
-        if (id_to_token.find(token) != id_to_token.end())
-            ids->push_back(token);
-        else
-            ids->push_back(token + offset);
-    } else
-        ids->push_back(token);
-}
-
-void JSSentencepieceTokenizer::push_token(const SpecialToken& token, std::vector<int>* ids)
-{
-    push_token(token.id, ids);
-}
-
-void JSSentencepieceTokenizer::push_token(const SpecialToken& token, std::vector<std::string>* ids)
-{
-    ids->push_back(token.content);
-}
-
-void JSSentencepieceTokenizer::push_token(const sentencepiece::SentencePieceText_SentencePiece& piece, std::vector<int>* ids)
-{
-    int id = piece.id();
-
-    if (id == model_unk_id)
-        ids->push_back(unk_id);
+    if (token == model_unk_id)
+        push_back(unk_id, index);
     else
-        ids->push_back(id + offset);
+        push_back(token + offset, index);
 }
 
-void JSSentencepieceTokenizer::push_token(const sentencepiece::SentencePieceText_SentencePiece& piece, std::vector<std::string>* ids)
+void JSSentencepieceTokenizer::put_token(const std::string& token, int32_t index, const std::function<void(const std::string&, int)>& push_back)
 {
-    ids->push_back(piece.piece());
+    push_back(token, index);
+}
+
+void JSSentencepieceTokenizer::encode(std::string_view text, const std::function<void(int, int)>& push_back)
+{
+    sentencepiece::SentencePieceText spt;
+    sentence_piece_.Encode(text, &spt);
+
+    for (int32_t i = 0; i < spt.pieces_size(); i++)
+        put_token(spt.pieces(i).id(), i, push_back);
+}
+
+void JSSentencepieceTokenizer::encode(std::string_view text, const std::function<void(const std::string&, int)>& push_back)
+{
+    sentencepiece::SentencePieceText spt;
+    sentence_piece_.Encode(text, &spt);
+
+    for (int32_t i = 0; i < spt.pieces_size(); i++)
+        put_token(spt.pieces(i).piece(), i, push_back);
 }
 
 template <typename T>
-void JSSentencepieceTokenizer::sentencepiece_encode(char* text, size_t size, std::vector<T>* ids, int32_t prefix_count)
+void JSSentencepieceTokenizer::legacy_encode(std::string_view text, std::vector<T>* ids, int32_t prefix_count)
 {
     int32_t start = 0;
     std::string temp_string;
 
     if (!legacy) {
-        if (ids->size() > prefix_count) {
-            *--text = '-';
-
-            size++;
-            start = 1;
-        } else {
+        if (ids->size() > prefix_count)
+            temp_string = "_";
+        else
             temp_string = "_ ";
-            temp_string.append(text, size);
 
-            text = temp_string.data();
-            size = temp_string.length();
-            start = 1;
-        }
+        temp_string.append(text);
+        text = temp_string;
+        start = 1;
     }
 
-    sentencepiece::SentencePieceText spt;
-    sentence_piece_.Encode(std::string_view(text, size), &spt);
-
-    for (; start < spt.pieces_size(); start++)
-        push_token(spt.pieces(start), ids);
+    encode(text, [&](const T& token, int index) {
+        if (index >= start)
+            ids->emplace_back(token);
+    });
 }
 
 template <typename T>
@@ -99,23 +88,24 @@ void JSSentencepieceTokenizer::encode(std::string& text, std::vector<T>* ids)
             auto it = special_tokens.find(m[2]);
             if (it == special_tokens.end()) {
                 searchStart = m[2].first + 1;
-            } else {
-                const SpecialToken& token = it->second;
-
-                size_t pos = (token.lstrip ? m[0].first : m[2].first) - text.cbegin();
-                if (pos != lastPos)
-                    sentencepiece_encode(text.data() + lastPos, pos - lastPos, ids, prefix_count);
-
-                push_token(token, ids);
-
-                searchStart = token.rstrip ? m[0].first + m[0].length() : m[2].first + m[2].length();
-                lastPos = searchStart - text.cbegin();
+                continue;
             }
+
+            const SpecialToken& token = it->second;
+
+            size_t pos = (token.lstrip ? m[0].first : m[2].first) - text.cbegin();
+            if (pos != lastPos)
+                legacy_encode(std::string_view(text.data() + lastPos, pos - lastPos), ids, prefix_count);
+
+            ids->emplace_back(token);
+
+            searchStart = token.rstrip ? m[0].first + m[0].length() : m[2].first + m[2].length();
+            lastPos = searchStart - text.cbegin();
         }
     }
 
     if (lastPos < text.size())
-        sentencepiece_encode(text.data() + lastPos, text.size() - lastPos, ids, prefix_count);
+        legacy_encode(std::string_view(text.data() + lastPos, text.size() - lastPos), ids, prefix_count);
 }
 
 Napi::Value JSSentencepieceTokenizer::tokenize(const Napi::CallbackInfo& info)
@@ -134,16 +124,16 @@ Napi::Value JSSentencepieceTokenizer::encode(const Napi::CallbackInfo& info)
     std::vector<int> ids;
 
     for (auto& token : prefix_tokens)
-        push_token(token, &ids);
+        ids.emplace_back(token);
 
     encode(text, &ids);
 
     if (add_eos_if_not_present && add_eos_token && ids.size() > 0 && ids[ids.size() - 1] == eos_id)
         for (int i = 1; i < suffix_tokens.size(); i++)
-            push_token(suffix_tokens[i], &ids);
+            ids.emplace_back(suffix_tokens[i]);
     else
         for (auto& token : suffix_tokens)
-            push_token(token, &ids);
+            ids.emplace_back(token);
 
     return to_value(info.Env(), ids);
 }
@@ -158,8 +148,8 @@ Napi::Value JSSentencepieceTokenizer::decode(const Napi::CallbackInfo& info)
     pieces.reserve(ids.size());
 
     for (const int id : ids)
-        if (id != unk_id && id_to_token.find(id) == id_to_token.end()
-            && id >= offset && id < num_pieces + offset)
+        if (id != unk_id && id >= offset && id < num_pieces + offset
+            && id_to_token.find(id) == id_to_token.end())
             pieces.emplace_back(sentence_piece_.IdToPiece(id - offset));
 
     sentence_piece_.Decode(pieces, &text);
