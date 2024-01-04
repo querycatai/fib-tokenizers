@@ -36,21 +36,7 @@ private:                                                                        
 
 class Tokenizer {
 public:
-    void init(Napi::Config opt, int32_t vocab_size_, int32_t unk_id_)
-    {
-        vocab_size = special_token_offset = vocab_size_;
-        model_unk_id = unk_id_;
-
-        legacy = opt.Get("legacy", true);
-        offset = opt.Get("offset", 0);
-
-        config_tokens_decoder(opt);
-        config_added_tokens(opt);
-        config_special_tokens(opt);
-        config_basic_tokens(opt);
-        config_prefix_suffix(opt);
-        config_pattern(opt);
-    }
+    void init(Napi::Config opt, int32_t vocab_size_, int32_t unk_id_);
 
 protected:
     Napi::Value get_all_special_tokens(const Napi::CallbackInfo& info);
@@ -92,6 +78,7 @@ private:
     int32_t offset = 0;
     int32_t special_token_offset;
 
+    bool add_basic_tokens = true;
     int32_t model_unk_id;
     int32_t unk_id = 0;
     int32_t bos_id = 0;

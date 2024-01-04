@@ -1,33 +1,9 @@
 #include "BertTokenizer.h"
 #include "string_util.h"
 
-Napi::Function JSBertTokenizer::Init(Napi::Env env)
+BertTokenizer::BertTokenizer(const Napi::CallbackInfo& info)
+    : Napi::ObjectWrap<BertTokenizer>(info)
 {
-    return DefineClass(env, "BertTokenizer",
-        { InstanceMethod("tokenize", &JSBertTokenizer::tokenize, napi_default_jsproperty),
-            InstanceMethod("encode", &JSBertTokenizer::encode, napi_default_jsproperty),
-            InstanceMethod("decode", &JSBertTokenizer::decode, napi_default_jsproperty) });
-}
-
-JSBertTokenizer::JSBertTokenizer(const Napi::CallbackInfo& info)
-    : Napi::ObjectWrap<JSBertTokenizer>(info)
-{
-    static const char* special_token_keys[] = {
-        "unk_token", "pad_token", "mask_token", "sep_token", "cls_token"
-    };
-
-    static const char* special_token_values[] = {
-        "[UNK]", "[PAD]", "[MASK]", "[SEP]", "[CLS]"
-    };
-
-    std::u32string* special_tokens[] = {
-        &unk_token_, &pad_token_, &mask_token_, &sep_token_, &cls_token_
-    };
-
-    int32_t* special_token_ids[] = {
-        &unk_token_id_, &pad_token_id_, &mask_token_id_, &sep_token_id_, &cls_token_id_
-    };
-
     std::string_view vocab_data = from_value<std::string_view>(info[0]);
     split_vocab(vocab_data, vocab_array);
 
@@ -52,17 +28,14 @@ JSBertTokenizer::JSBertTokenizer(const Napi::CallbackInfo& info)
         }
     }
 
-    for (int32_t i = 0; i < sizeof(special_token_keys) / sizeof(special_token_keys[0]); i++) {
-        SpecialToken token(special_token_values[i]);
+    unk_token_ = U"[UNK]";
+    unk_token_ = opt.Get("unk_token", unk_token_);
+    FindTokenId(unk_token_, unk_token_id_);
 
-        token = opt.Get(special_token_keys[i], token);
-        puts(token.content.c_str());
-        utf8::convert(token.content, *special_tokens[i]);
-        FindTokenId(*special_tokens[i], *special_token_ids[i]);
-    }
+    Tokenizer::init(opt, vocab_array.size(), unk_token_id_);
 }
 
-bool JSBertTokenizer::FindTokenId(const std::u32string& token, int32_t& token_id)
+bool BertTokenizer::FindTokenId(const std::u32string& token, int32_t& token_id)
 {
     auto it = vocab_.find(token);
     if (it == vocab_.end()) {
@@ -73,7 +46,7 @@ bool JSBertTokenizer::FindTokenId(const std::u32string& token, int32_t& token_id
     return true;
 }
 
-void JSBertTokenizer::GreedySearch(const std::u32string& token, std::vector<std::u32string>& tokenized_result)
+void BertTokenizer::GreedySearch(const std::u32string& token, std::vector<std::u32string>& tokenized_result)
 {
     if (static_cast<int64_t>(token.size()) > max_input_chars_per_word_) {
         tokenized_result.push_back(unk_token_);
@@ -109,7 +82,7 @@ void JSBertTokenizer::GreedySearch(const std::u32string& token, std::vector<std:
     }
 }
 
-std::vector<std::u32string> JSBertTokenizer::wordpiece_tokenize(std::u32string& text)
+std::vector<std::u32string> BertTokenizer::wordpiece_tokenize(std::u32string& text)
 {
     std::vector<std::u32string> result;
     std::u32string token;
@@ -131,7 +104,7 @@ std::vector<std::u32string> JSBertTokenizer::wordpiece_tokenize(std::u32string& 
     return result;
 }
 
-std::vector<std::u32string> JSBertTokenizer::basic_tokenize(std::u32string& text)
+std::vector<std::u32string> BertTokenizer::basic_tokenize(std::u32string& text)
 {
     std::vector<std::u32string> tokens;
     std::u32string token;
@@ -201,47 +174,7 @@ std::vector<std::u32string> JSBertTokenizer::basic_tokenize(std::u32string& text
     return result;
 }
 
-Napi::Value JSBertTokenizer::tokenize(const Napi::CallbackInfo& info)
-{
-    std::u32string text = from_value<std::u32string>(info[0]);
-    std::vector<std::u32string> tokens;
-
-    if (do_basic_tokenize_)
-        tokens = basic_tokenize(text);
-    else
-        tokens = wordpiece_tokenize(text);
-
-    return to_value(info.Env(), tokens);
-}
-
-Napi::Value JSBertTokenizer::encode(const Napi::CallbackInfo& info)
-{
-    std::u32string text = from_value<std::u32string>(info[0]);
-    std::vector<std::u32string> tokens;
-
-    if (do_basic_tokenize_)
-        tokens = basic_tokenize(text);
-    else
-        tokens = wordpiece_tokenize(text);
-
-    std::vector<int64_t> ids;
-
-    ids.push_back(cls_token_id_);
-    for (const auto& token : tokens) {
-        int32_t token_id = -1;
-        if (!FindTokenId(token, token_id)) {
-            ids.push_back(unk_token_id_);
-            continue;
-        }
-
-        ids.push_back(token_id);
-    }
-    ids.push_back(sep_token_id_);
-
-    return to_value(info.Env(), ids);
-}
-
-bool JSBertTokenizer::RemoveTokenizeSpace(int64_t pre_token_id, int64_t new_token_id)
+bool BertTokenizer::RemoveTokenizeSpace(int64_t pre_token_id, int64_t new_token_id)
 {
     if (pre_token_id < 0) {
         return true;
@@ -271,21 +204,69 @@ bool JSBertTokenizer::RemoveTokenizeSpace(int64_t pre_token_id, int64_t new_toke
     return false;
 }
 
-Napi::Value JSBertTokenizer::decode(const Napi::CallbackInfo& info)
+int32_t BertTokenizer::model_token_to_id(std::string_view token)
 {
-    std::vector<int64_t> ids = to_array<int64_t>(info[0]);
+    std::u32string token32;
+    utf8::convert(token.data(), token.size(), token32);
 
-    bool skip_special_tokens = true;
+    auto it = vocab_.find(token32);
+    if (it == vocab_.end()) {
+        return unk_token_id_;
+    }
+
+    return it->second;
+}
+
+void BertTokenizer::encode(std::string_view text, const std::function<void(int32_t, int32_t)>& push_back)
+{
+    std::u32string text32;
+    utf8::convert(text.data(), text.size(), text32);
+
+    std::vector<std::u32string> tokens;
+
+    if (do_basic_tokenize_)
+        tokens = basic_tokenize(text32);
+    else
+        tokens = wordpiece_tokenize(text32);
+
+    for (int32_t i = 0; i < tokens.size(); i++) {
+        int32_t token_id = -1;
+        if (!FindTokenId(tokens[i], token_id)) {
+            push_back(unk_token_id_, i);
+            continue;
+        }
+
+        push_back(token_id, i);
+    }
+}
+
+void BertTokenizer::encode(std::string_view text, const std::function<void(const std::string&, int32_t)>& push_back)
+{
+    std::u32string text32;
+    utf8::convert(text.data(), text.size(), text32);
+
+    std::vector<std::u32string> tokens;
+
+    if (do_basic_tokenize_)
+        tokens = basic_tokenize(text32);
+    else
+        tokens = wordpiece_tokenize(text32);
+
+    for (int32_t i = 0; i < tokens.size(); i++) {
+        std::string token_str;
+        utf8::convert(tokens[i], token_str);
+        push_back(token_str, i);
+    }
+}
+
+void BertTokenizer::decode(const std::vector<int32_t>& ids, std::string& text)
+{
     bool clean_up_tokenization_spaces = true;
 
     std::u32string result;
     int64_t pre_token = -1;
 
     for (auto id : ids) {
-        if (skip_special_tokens && (id == unk_token_id_ || id == sep_token_id_ || id == pad_token_id_ || id == cls_token_id_ || id == mask_token_id_)) {
-            continue;
-        }
-
         // deal with unk ids
         if (id < 0 || static_cast<size_t>(id) >= vocab_array.size()) {
             if (!result.empty()) {
@@ -309,5 +290,5 @@ Napi::Value JSBertTokenizer::decode(const Napi::CallbackInfo& info)
         pre_token = id;
     }
 
-    return to_value(info.Env(), result);
+    utf8::convert(result, text);
 }

@@ -25,8 +25,6 @@ void Tokenizer::config_tokens_decoder(const Napi::Config& opt)
 
 void Tokenizer::add_token(SpecialToken& token, bool is_unk)
 {
-    // printf("add_token: %s[%d]\n", token.content.c_str(), token.id);
-
     if (token.content.length() > 0) {
         if (token.id == -1) {
             auto it = special_tokens.find(token.content);
@@ -36,9 +34,12 @@ void Tokenizer::add_token(SpecialToken& token, bool is_unk)
                 token.id = model_token_to_id(token.content);
 
                 if (token.id == model_unk_id && !is_unk && token.content != "<unk>") {
-                    do {
-                        token.id = special_token_offset++ + offset;
-                    } while (id_to_token.find(token.id) != id_to_token.end());
+                    if (add_basic_tokens) {
+                        do {
+                            token.id = special_token_offset++ + offset;
+                        } while (id_to_token.find(token.id) != id_to_token.end());
+                    } else
+                        token.id = 0;
                 } else {
                     token.id += offset;
                 }
@@ -170,4 +171,21 @@ void Tokenizer::config_pattern(const Napi::Config& opt)
         has_pattern = true;
         pattern = std::regex("(" + space_str + ")?(" + pattern_str + ")(" + space_str + ")?");
     }
+}
+
+void Tokenizer::init(Napi::Config opt, int32_t vocab_size_, int32_t unk_id_)
+{
+    vocab_size = special_token_offset = vocab_size_;
+    model_unk_id = unk_id_;
+
+    legacy = opt.Get("legacy", true);
+    offset = opt.Get("offset", 0);
+    add_basic_tokens = opt.Get("add_basic_tokens", true);
+
+    config_tokens_decoder(opt);
+    config_added_tokens(opt);
+    config_special_tokens(opt);
+    config_basic_tokens(opt);
+    config_prefix_suffix(opt);
+    config_pattern(opt);
 }

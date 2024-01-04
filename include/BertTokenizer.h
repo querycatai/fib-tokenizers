@@ -1,25 +1,20 @@
 #pragma once
 
-#include "napi_value.h"
-#include <node_api.h>
-#include <memory>
-#include <list>
+#include "Tokenizer.h"
 #include "SpecialToken.h"
 
-class JSBertTokenizer : public Napi::ObjectWrap<JSBertTokenizer> {
-private:
-    using OffsetMappingType = std::list<std::pair<size_t, size_t>>;
-
+class BertTokenizer : public Napi::ObjectWrap<BertTokenizer>,
+                      public Tokenizer {
 public:
-    JSBertTokenizer(const Napi::CallbackInfo& info);
+    BertTokenizer(const Napi::CallbackInfo& info);
 
-public:
-    static Napi::Function Init(Napi::Env env);
+    DECLARE_CLASS(BertTokenizer);
 
 private:
-    Napi::Value tokenize(const Napi::CallbackInfo& info);
-    Napi::Value encode(const Napi::CallbackInfo& info);
-    Napi::Value decode(const Napi::CallbackInfo& info);
+    virtual int32_t model_token_to_id(std::string_view token);
+    virtual void encode(std::string_view text, const std::function<void(int32_t, int32_t)>& push_back);
+    virtual void encode(std::string_view text, const std::function<void(const std::string&, int32_t)>& push_back);
+    virtual void decode(const std::vector<int32_t>& ids, std::string& text);
 
 private:
     bool FindToken(const std::u32string& token)
@@ -50,18 +45,6 @@ private:
 
     std::u32string unk_token_;
     int32_t unk_token_id_ = 0;
-
-    std::u32string sep_token_;
-    int32_t sep_token_id_ = 0;
-
-    std::u32string pad_token_;
-    int32_t pad_token_id_ = 0;
-
-    std::u32string cls_token_;
-    int32_t cls_token_id_ = 0;
-
-    std::u32string mask_token_;
-    int32_t mask_token_id_ = 0;
 
     bool tokenize_punctuation_ = true;
     bool remove_control_chars_ = true;
