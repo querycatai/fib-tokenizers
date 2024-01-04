@@ -180,7 +180,6 @@ void Tokenizer::init(Napi::Config opt, int32_t vocab_size_, int32_t unk_id_)
 
     legacy = opt.Get("legacy", true);
     offset = opt.Get("offset", 0);
-    add_basic_tokens = opt.Get("add_basic_tokens", true);
 
     config_tokens_decoder(opt);
     config_added_tokens(opt);

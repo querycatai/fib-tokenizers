@@ -3,6 +3,7 @@
 
 BertTokenizer::BertTokenizer(const Napi::CallbackInfo& info)
     : Napi::ObjectWrap<BertTokenizer>(info)
+    , Tokenizer(false)
 {
     std::string_view vocab_data = from_value<std::string_view>(info[0]);
     split_vocab(vocab_data, vocab_array);

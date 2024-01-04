@@ -36,6 +36,12 @@ private:                                                                        
 
 class Tokenizer {
 public:
+    Tokenizer(bool add_basic_tokens_ = true)
+        : add_basic_tokens(add_basic_tokens_)
+    {
+    }
+
+public:
     void init(Napi::Config opt, int32_t vocab_size_, int32_t unk_id_);
 
 protected:
@@ -78,7 +84,7 @@ private:
     int32_t offset = 0;
     int32_t special_token_offset;
 
-    bool add_basic_tokens = true;
+    bool add_basic_tokens;
     int32_t model_unk_id;
     int32_t unk_id = 0;
     int32_t bos_id = 0;
