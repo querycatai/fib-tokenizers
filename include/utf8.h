@@ -359,4 +359,10 @@ inline ssize_t convert(const std::basic_string<T1>& src, std::basic_string<T2>& 
     return convert(src.c_str(), src.size(), dst);
 }
 
+template <typename T1, typename T2>
+inline ssize_t convert(std::basic_string_view<T1> src, std::basic_string<T2>& dst)
+{
+    return convert(src.data(), src.size(), dst);
+}
+
 }
