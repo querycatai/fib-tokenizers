@@ -30,8 +30,18 @@ tokenizers.from_folder = function (home, model) {
         model_config.added_tokens = added_tokens;
 
     const special_tokens_map = get_json(path.join(model_path, "special_tokens_map.json"));
-    if (special_tokens_map)
+    if (special_tokens_map) {
+        if (special_tokens_map.additional_special_tokens && model_config.additional_special_tokens) {
+            special_tokens_map.additional_special_tokens.forEach(token => {
+                if (!model_config.additional_special_tokens.includes(token))
+                    model_config.additional_special_tokens.push(token);
+            });
+            delete special_tokens_map.additional_special_tokens;
+        }
+
         Object.assign(model_config, special_tokens_map);
+
+    }
 
     const tokenizer_class = tokenizers_index[model_config.tokenizer_class.toLowerCase()];
     const vocabs = tokenizer_class.vocabs.map(vocab => fs.readFileSync(path.join(model_path, vocab)));
