@@ -25,7 +25,6 @@ list(FILTER src_list EXCLUDE REGEX ".*blingfire_sentencebreaker.cc$")
 
 include_directories(
     "${PROJECT_SOURCE_DIR}/include"
-    "${PROJECT_SOURCE_DIR}/vender/GSL/include"
     "${PROJECT_SOURCE_DIR}/vender/json/include"
     "${PROJECT_SOURCE_DIR}/vender/sentencepiece/src"
     "${PROJECT_SOURCE_DIR}/vender/sentencepiece/src/builtin_pb"
