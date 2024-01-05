@@ -47,21 +47,25 @@ const SentencepieceTokenizer = [
 ];
 
 const BpeTokenizer = [
-    "BloomTokenizer",
-    "PreTrainedTokenizer",
-    "CodeGenTokenizer",
     "GPT2Tokenizer",
-    "WhisperTokenizer",
-    "CLIPTokenizer",
-    "BartTokenizer",
-    "RobertaTokenizer",
-    "Wav2Vec2CTCTokenizer",
-    "BlenderbotTokenizer",
-    "MarianTokenizer",
-    "OpenAIGPTTokenizer",
-    "LongformerTokenizer",
-    "FLMTokenizer",
-    "LEDTokenizer",
+    "CodeGenTokenizer",
+    // ====================================
+    // "WhisperTokenizer",
+    // "CLIPTokenizer",
+    // "BartTokenizer",
+    // "RobertaTokenizer",
+    // "Wav2Vec2CTCTokenizer",
+    // "BlenderbotTokenizer",
+    // "MarianTokenizer",
+    // "OpenAIGPTTokenizer",
+    // "M2M100Tokenizer",
+    // "LongformerTokenizer",
+    // "FLMTokenizer",
+    // "LEDTokenizer",
+    // "DebertaTokenizer",
+    // "GLMGPT2Tokenizer",
+    // "BlenderbotSmallTokenizer",
+    // "VitsTokenizer",
 ];
 
 const BertTokenizer = [
@@ -75,10 +79,17 @@ const TikTokenizer = [
     "QWenTokenizer"
 ];
 
+const FastTokenizer = [
+    // "BloomTokenizer",
+    // "PreTrainedTokenizer",
+];
+
 const base_class = {
     SentencepieceTokenizer,
+    BpeTokenizer,
     BertTokenizer,
-    TikTokenizer
+    TikTokenizer,
+    FastTokenizer
 };
 
 function fix_text(text) {
@@ -158,8 +169,8 @@ function test_tokenizer(tokenizer_class) {
 for (var _base_class in base_class)
     describe(_base_class, () => base_class[_base_class].forEach(test_tokenizer));
 
-// test_model("shibing624/text2vec-base-chinese-sentence");
-// test_tokenizer("ElectraTokenizer");
+// test_tokenizer("CodeGenTokenizer");
+// test_model("gpt2");
 
 test.run();
 // test.run(console.DEBUG);
