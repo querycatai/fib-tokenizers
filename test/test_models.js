@@ -49,6 +49,7 @@ const SentencepieceTokenizer = [
 const BpeTokenizer = [
     "GPT2Tokenizer",
     "CodeGenTokenizer",
+    "WhisperTokenizer"
     // ====================================
     // "WhisperTokenizer",
     // "CLIPTokenizer",
