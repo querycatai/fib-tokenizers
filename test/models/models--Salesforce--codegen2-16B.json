@@ -71,7 +71,8 @@
             "ids": [
                 32,
                 198,
-                1183,
+                6,
+                297,
                 37867,
                 1462,
                 8348,
@@ -87,7 +88,8 @@
             "tokens": [
                 "A",
                 "Ċ",
-                "'ll",
+                "'",
+                "ll",
                 "Ġ!!",
                 "to",
                 "?'",
@@ -100,7 +102,7 @@
                 "'t",
                 "."
             ],
-            "decoded": "A\n'll!!to?'d''d of, can't."
+            "decoded": "A\n'll !!to?'d''d of, can't."
         },
         {
             "input": "def main():\n\tpass",
@@ -126,8 +128,7 @@
             "input": "This\n\nis\na\ntest.",
             "ids": [
                 1212,
-                198,
-                198,
+                628,
                 271,
                 198,
                 64,
@@ -137,8 +138,7 @@
             ],
             "tokens": [
                 "This",
-                "Ċ",
-                "Ċ",
+                "ĊĊ",
                 "is",
                 "Ċ",
                 "a",
@@ -192,7 +192,7 @@
                 "  ",
                 "Hello"
             ],
-            "decoded": "Hi    Hello"
+            "decoded": "HiHello"
         },
         {
             "input": "trailing space   ",
@@ -200,29 +200,33 @@
                 9535,
                 4386,
                 2272,
-                50285
+                220,
+                50286
             ],
             "tokens": [
                 "tra",
                 "iling",
                 "Ġspace",
-                "   "
+                "Ġ",
+                "  "
             ],
-            "decoded": "trailing space    "
+            "decoded": "trailing space "
         },
         {
             "input": "   leading space",
             "ids": [
-                50285,
+                220,
+                50286,
                 12294,
                 2272
             ],
             "tokens": [
-                "   ",
+                "Ġ",
+                "  ",
                 "leading",
                 "Ġspace"
             ],
-            "decoded": "    leading space"
+            "decoded": " leading space"
         },
         {
             "input": "生活的真谛是",
@@ -382,7 +386,7 @@
                 "âĢ¦",
                 "  "
             ],
-            "decoded": "you…   "
+            "decoded": "you…"
         },
         {
             "input": "you…  ",
@@ -573,16 +577,18 @@
         {
             "input": "           grabbed",
             "ids": [
-                50277,
+                220,
+                50278,
                 32393,
                 3077
             ],
             "tokens": [
-                "           ",
+                "Ġ",
+                "          ",
                 "grab",
                 "bed"
             ],
-            "decoded": "            grabbed"
+            "decoded": " grabbed"
         },
         {
             "input": "\n",
@@ -612,7 +618,8 @@
                 197,
                 8658,
                 82,
-                50292,
+                197,
+                50293,
                 448,
                 994
             ],
@@ -620,11 +627,12 @@
                 "ĉ",
                 "tab",
                 "s",
-                "\t\t\t\t",
+                "ĉ",
+                "\t\t\t",
                 "out",
                 "Ġhere"
             ],
-            "decoded": "\ttabs \t\t\t\t out here"
+            "decoded": "\ttabs\tout here"
         },
         {
             "input": "\n\t\n",

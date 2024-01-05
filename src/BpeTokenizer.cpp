@@ -85,23 +85,17 @@ BpeTokenizer::BpeTokenizer(const Napi::CallbackInfo& info)
     for (auto& p : vocab_map_)
         vocab_index_map_.emplace(p.second, p.first);
 
-    for (int32_t i = 33; i <= 126; ++i)
-        byte_encoder_[i] = GetEncoding(utf8String((char32_t)i));
-
-    for (int32_t i = 161; i <= 172; ++i)
-        byte_encoder_[i] = GetEncoding(utf8String((char32_t)i));
-
-    for (int32_t i = 174; i <= 255; ++i)
-        byte_encoder_[i] = GetEncoding(utf8String((char32_t)i));
-
     int32_t index = 256;
-    for (int32_t i = 0; i < 33; ++i)
-        byte_encoder_[i] = GetEncoding(utf8String((char32_t)(index++)));
 
-    for (int32_t i = 127; i < 161; ++i)
-        byte_encoder_[i] = GetEncoding(utf8String((char32_t)(index++)));
-
-    byte_encoder_[173] = GetEncoding(utf8String((char32_t)(index++)));
+    for (int32_t i = 0; i < 256; ++i) {
+        if ((i >= 0 && i < 33) || (i >= 127 && i < 161) || (i == 173)) {
+            byte_decoder_[(char32_t)index] = i;
+            byte_encoder_[i] = GetEncoding(utf8String((char32_t)index++));
+        } else {
+            byte_decoder_[(char32_t)i] = i;
+            byte_encoder_[i] = GetEncoding(utf8String((char32_t)i));
+        }
+    }
 
     std::string_view merges_data = from_value<std::string_view>(info[1]);
     std::vector<std::string> merges;
@@ -191,4 +185,11 @@ void BpeTokenizer::encode(std::string_view text, const std::function<void(const 
 
 void BpeTokenizer::decode(const std::vector<int32_t>& ids, std::string& text)
 {
+    for (auto id : ids) {
+        std::u32string token32;
+
+        utf8::convert(vocab_index_map_[id], token32);
+        for (auto ch : token32)
+            text += byte_decoder_[ch];
+    }
 }

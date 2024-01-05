@@ -267,26 +267,14 @@ void BertTokenizer::decode(const std::vector<int32_t>& ids, std::string& text)
     int64_t pre_token = -1;
 
     for (auto id : ids) {
-        // deal with unk ids
-        if (id < 0 || static_cast<size_t>(id) >= vocab_array.size()) {
-            if (!result.empty()) {
-                result.push_back(' ');
-            }
-            result.append(unk_token_);
+        if (result.empty() && is_substr_[id])
             continue;
-        }
 
-        // skip first substr
-        if (result.empty() && is_substr_[static_cast<size_t>(id)]) {
-            continue;
-        }
-
-        if (!(result.empty() || is_substr_[static_cast<size_t>(id)]
-                || (clean_up_tokenization_spaces && RemoveTokenizeSpace(pre_token, id)))) {
+        if (!(result.empty() || is_substr_[id]
+                || (clean_up_tokenization_spaces && RemoveTokenizeSpace(pre_token, id))))
             result.push_back(' ');
-        }
 
-        result.append(vocab_array[static_cast<size_t>(id)]);
+        result.append(vocab_array[id]);
         pre_token = id;
     }
 

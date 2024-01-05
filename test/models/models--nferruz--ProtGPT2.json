@@ -220,7 +220,7 @@
                 "t",
                 "."
             ],
-            "decoded": "A\n'll!!to?'d''d of, can't."
+            "decoded": "A\n'll !!to?'d''d of, can't."
         },
         {
             "input": "def main():\n\tpass",
