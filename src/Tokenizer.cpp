@@ -1,4 +1,5 @@
 #include "Tokenizer.h"
+#include "string_util.h"
 
 Napi::Value Tokenizer::get_all_special_tokens(const Napi::CallbackInfo& info)
 {
@@ -101,6 +102,9 @@ Napi::Value Tokenizer::tokenize(const Napi::CallbackInfo& info)
     std::string text = from_value<std::string>(info[0]);
     std::vector<std::string> tokens;
 
+    if (add_prefix_space && text.length() > 0 && !IsSpace(text[0]))
+        text = " " + text;
+
     encode(text, &tokens);
 
     return to_value(info.Env(), tokens);
@@ -110,6 +114,9 @@ Napi::Value Tokenizer::encode(const Napi::CallbackInfo& info)
 {
     std::string text = from_value<std::string>(info[0]);
     std::vector<int32_t> ids;
+
+    if (add_prefix_space && text.length() > 0 && !IsSpace(text[0]))
+        text = " " + text;
 
     for (auto& token : prefix_tokens)
         ids.emplace_back(token);

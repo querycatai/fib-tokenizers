@@ -49,12 +49,11 @@ const SentencepieceTokenizer = [
 const BpeTokenizer = [
     "GPT2Tokenizer",
     "CodeGenTokenizer",
-    "WhisperTokenizer"
+    "WhisperTokenizer",
+    "RobertaTokenizer",
     // ====================================
-    // "WhisperTokenizer",
     // "CLIPTokenizer",
     // "BartTokenizer",
-    // "RobertaTokenizer",
     // "Wav2Vec2CTCTokenizer",
     // "BlenderbotTokenizer",
     // "MarianTokenizer",
@@ -170,8 +169,8 @@ function test_tokenizer(tokenizer_class) {
 for (var _base_class in base_class)
     describe(_base_class, () => base_class[_base_class].forEach(test_tokenizer));
 
-// test_tokenizer("CodeGenTokenizer");
-// test_model("gpt2");
+// test_tokenizer("RobertaTokenizer");
+// test_model("impira/layoutlm-invoices");
 
 test.run();
 // test.run(console.DEBUG);

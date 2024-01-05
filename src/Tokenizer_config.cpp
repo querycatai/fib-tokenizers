@@ -90,13 +90,11 @@ void Tokenizer::config_basic_tokens(const Napi::Config& opt)
 
 void Tokenizer::config_special_tokens(const Napi::Config& opt)
 {
-    std::vector<std::string> additional_special_tokens;
+    std::vector<SpecialToken> additional_special_tokens;
     additional_special_tokens = opt.Get("additional_special_tokens", additional_special_tokens);
 
-    for (int32_t i = 0; i < additional_special_tokens.size(); i++) {
-        SpecialToken token(additional_special_tokens[i]);
-        add_token(token);
-    }
+    for (int32_t i = 0; i < additional_special_tokens.size(); i++)
+        add_token(additional_special_tokens[i]);
 }
 
 void Tokenizer::config_added_tokens(const Napi::Config& opt)
@@ -194,6 +192,7 @@ void Tokenizer::init(Napi::Config opt, int32_t vocab_size_, int32_t unk_id_)
 
     legacy = opt.Get("legacy", true);
     offset = opt.Get("offset", 0);
+    add_prefix_space = opt.Get("add_prefix_space", false);
 
     config_tokens_decoder(opt);
     config_added_tokens(opt);

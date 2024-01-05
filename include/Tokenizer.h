@@ -92,6 +92,8 @@ private:
     int32_t eos_id = 0;
     int32_t pad_id = 0;
 
+    bool add_prefix_space = false;
+
     std::unordered_map<std::string_view, SpecialToken> special_tokens;
     std::unordered_map<int32_t, std::string> id_to_token;
 
