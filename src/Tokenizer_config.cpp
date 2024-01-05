@@ -25,6 +25,8 @@ void Tokenizer::config_tokens_decoder(const Napi::Config& opt)
 
 void Tokenizer::add_token(SpecialToken& token, bool is_unk)
 {
+    // printf("add_token: %s[%d]\n", token.content.c_str(), token.id);
+
     if (token.content.length() > 0) {
         if (token.id == -1) {
             auto it = special_tokens.find(token.content);
@@ -46,19 +48,31 @@ void Tokenizer::add_token(SpecialToken& token, bool is_unk)
             }
         }
 
+        // printf("add_token to: %s[%d]\n", token.content.c_str(), token.id);
         auto it = id_to_token.emplace(token.id, token.content);
         special_tokens.emplace(it.first->second, token);
+    }
+}
+
+void Tokenizer::config_unk_tokens(const Napi::Config& opt)
+{
+    Napi::Value config_value = opt.Get("unk_token", Napi::Value());
+    SpecialToken token = config_value;
+
+    if (token.content.length() > 0) {
+        add_token(token, true);
+        unk_id = token.id;
     }
 }
 
 void Tokenizer::config_basic_tokens(const Napi::Config& opt)
 {
     static const char* special_token_keys[] = {
-        "unk_token", "bos_token", "eos_token", "pad_token", "mask_token", "sep_token", "cls_token"
+        "bos_token", "eos_token", "pad_token", "mask_token", "sep_token", "cls_token"
     };
 
     int32_t* special_token_ids[] = {
-        &unk_id, &bos_id, &eos_id, &pad_id
+        &bos_id, &eos_id, &pad_id
     };
 
     for (int32_t i = 0; i < sizeof(special_token_keys) / sizeof(special_token_keys[0]); i++) {
@@ -66,7 +80,7 @@ void Tokenizer::config_basic_tokens(const Napi::Config& opt)
         SpecialToken token = config_value;
 
         if (token.content.length() > 0) {
-            add_token(token, i == 0);
+            add_token(token);
 
             if (i < sizeof(special_token_ids) / sizeof(special_token_ids[0]))
                 *special_token_ids[i] = token.id;
@@ -183,6 +197,7 @@ void Tokenizer::init(Napi::Config opt, int32_t vocab_size_, int32_t unk_id_)
 
     config_tokens_decoder(opt);
     config_added_tokens(opt);
+    config_unk_tokens(opt);
     config_special_tokens(opt);
     config_basic_tokens(opt);
     config_prefix_suffix(opt);

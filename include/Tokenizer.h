@@ -72,6 +72,7 @@ private:
 
 private:
     void config_tokens_decoder(const Napi::Config& opt);
+    void config_unk_tokens(const Napi::Config& opt);
     void config_basic_tokens(const Napi::Config& opt);
     void config_special_tokens(const Napi::Config& opt);
     void config_added_tokens(const Napi::Config& opt);
