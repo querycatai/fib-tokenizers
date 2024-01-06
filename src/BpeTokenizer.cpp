@@ -180,7 +180,8 @@ void BpeTokenizer::bpe_encode(std::string_view text, const std::function<void(in
                     start++;
                 else {
                     std::string tmp;
-                    utf8::convert(start++, 1, tmp);
+                    char32_t ch32 = *start++;
+                    utf8::convert(&ch32, 1, tmp);
 
                     if (start == end) {
                         for (int32_t i = 0; i < tmp.length() - 1; ++i)
@@ -194,7 +195,8 @@ void BpeTokenizer::bpe_encode(std::string_view text, const std::function<void(in
         } else {
             while (start < end) {
                 std::string tmp;
-                utf8::convert(start++, 1, tmp);
+                char32_t ch32 = *start++;
+                utf8::convert(&ch32, 1, tmp);
 
                 for (char& ch : tmp)
                     byte_list.push_back(std::make_pair(byte_encoder_[static_cast<unsigned char>(ch)], 1));
