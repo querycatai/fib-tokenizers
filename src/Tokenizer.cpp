@@ -39,13 +39,22 @@ void Tokenizer::legacy_encode(std::string_view text, std::vector<T>* ids, int32_
     int32_t start = 0;
     std::string temp_string;
 
-    if (!legacy) {
-        if (ids->size() > prefix_count)
-            temp_string = "_";
-        else
-            temp_string = "_ ";
+    if (do_lower_case) {
+        temp_string = text;
+        std::transform(temp_string.begin(), temp_string.end(), temp_string.begin(),
+            [](unsigned char c) { return std::tolower(c); });
+        text = temp_string;
+    }
 
-        temp_string.append(text);
+    if (!legacy) {
+        std::string temp_string_;
+        if (ids->size() > prefix_count)
+            temp_string_ = "_";
+        else
+            temp_string_ = "_ ";
+
+        temp_string_.append(text);
+        temp_string = std::move(temp_string_);
         text = temp_string;
         start = 1;
     }
@@ -61,6 +70,9 @@ void Tokenizer::encode(std::string& text, std::vector<T>* ids)
 {
     size_t lastPos = 0;
     int32_t prefix_count = ids->size();
+
+    if (add_prefix_space && text.length() > 0 && !IsSpace(text[0]))
+        text = " " + text;
 
     if (has_pattern) {
         std::smatch m;
@@ -102,9 +114,6 @@ Napi::Value Tokenizer::tokenize(const Napi::CallbackInfo& info)
     std::string text = from_value<std::string>(info[0]);
     std::vector<std::string> tokens;
 
-    if (add_prefix_space && text.length() > 0 && !IsSpace(text[0]))
-        text = " " + text;
-
     encode(text, &tokens);
 
     return to_value(info.Env(), tokens);
@@ -114,9 +123,6 @@ Napi::Value Tokenizer::encode(const Napi::CallbackInfo& info)
 {
     std::string text = from_value<std::string>(info[0]);
     std::vector<int32_t> ids;
-
-    if (add_prefix_space && text.length() > 0 && !IsSpace(text[0]))
-        text = " " + text;
 
     for (auto& token : prefix_tokens)
         ids.emplace_back(token);

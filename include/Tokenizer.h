@@ -80,12 +80,12 @@ private:
     void config_pattern(const Napi::Config& opt);
 
 private:
-    bool legacy;
+    bool legacy = true;
     int32_t vocab_size = 0;
     int32_t offset = 0;
     int32_t special_token_offset;
 
-    bool add_basic_tokens;
+    bool add_basic_tokens = false;
     int32_t model_unk_id;
     int32_t unk_id = 0;
     int32_t bos_id = 0;
@@ -93,13 +93,14 @@ private:
     int32_t pad_id = 0;
 
     bool add_prefix_space = false;
+    bool do_lower_case = false;
 
     std::unordered_map<std::string_view, SpecialToken> special_tokens;
     std::unordered_map<int32_t, std::string> id_to_token;
 
-    bool add_bos_token;
-    bool add_eos_token;
-    bool add_eos_if_not_present;
+    bool add_bos_token = false;
+    bool add_eos_token = false;
+    bool add_eos_if_not_present = false;
 
     std::vector<int32_t> prefix_tokens;
     std::vector<int32_t> suffix_tokens;

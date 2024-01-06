@@ -116,13 +116,13 @@ void Tokenizer::config_prefix_suffix(const Napi::Config& opt)
     for (auto& token : config_tokens)
         prefix_tokens.emplace_back(convert_token_to_id(token));
 
-    add_bos_token = opt.Get("add_bos_token", false);
+    add_bos_token = opt.Get("add_bos_token", add_bos_token);
     if (add_bos_token)
         prefix_tokens.emplace_back(bos_id);
 
     config_tokens.clear();
 
-    add_eos_token = opt.Get("add_eos_token", false);
+    add_eos_token = opt.Get("add_eos_token", add_eos_token);
     if (add_eos_token)
         suffix_tokens.emplace_back(eos_id);
 
@@ -130,7 +130,7 @@ void Tokenizer::config_prefix_suffix(const Napi::Config& opt)
     for (auto& token : config_tokens)
         suffix_tokens.emplace_back(convert_token_to_id(token));
 
-    add_eos_if_not_present = opt.Get("add_eos_if_not_present", false);
+    add_eos_if_not_present = opt.Get("add_eos_if_not_present", add_eos_if_not_present);
 }
 
 void Tokenizer::config_pattern(const Napi::Config& opt)
@@ -190,9 +190,10 @@ void Tokenizer::init(Napi::Config opt, int32_t vocab_size_, int32_t unk_id_)
     vocab_size = special_token_offset = vocab_size_;
     model_unk_id = unk_id_;
 
-    legacy = opt.Get("legacy", true);
+    legacy = opt.Get("legacy", legacy);
     offset = opt.Get("offset", 0);
-    add_prefix_space = opt.Get("add_prefix_space", false);
+    add_prefix_space = opt.Get("add_prefix_space", add_prefix_space);
+    do_lower_case = opt.Get("do_lower_case", do_lower_case);
 
     config_tokens_decoder(opt);
     config_added_tokens(opt);
