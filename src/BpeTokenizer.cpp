@@ -167,8 +167,22 @@ void BpeTokenizer::bpe_encode(std::string_view text, const std::function<void(in
                     utf8::convert(start++, 1, tmp);
 
                     if (start == end) {
-                        tmp.append("</w>", 4);
-                        byte_list.push_back(std::make_pair(GetEncoding(tmp), 1));
+                        for (int32_t i = 0; i < tmp.length() - 1; ++i)
+                            byte_list.push_back(std::make_pair(byte_encoder_[static_cast<unsigned char>(tmp[i])], 1));
+
+                        char32_t token = byte_encoder_[static_cast<unsigned char>(tmp.back())];
+                        auto it = vocab_index_map_.find(token);
+                        if (it != vocab_index_map_.end()) {
+                            tmp = it->second;
+                            tmp.append("</w>", 4);
+                            int32_t id = GetEncoding(tmp);
+                            if (id != unk_token_id_) {
+                                byte_list.push_back(std::make_pair(id, 1));
+                                continue;
+                            }
+                        }
+
+                        byte_list.push_back(std::make_pair(token, 1));
                     } else {
                         for (char& ch : tmp)
                             byte_list.push_back(std::make_pair(byte_encoder_[static_cast<unsigned char>(ch)], 1));
