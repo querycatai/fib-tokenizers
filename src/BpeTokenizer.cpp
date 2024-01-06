@@ -172,6 +172,9 @@ void BpeTokenizer::bpe_encode(std::string_view text, const std::function<void(in
         auto end = tok.end();
 
         if (clean_up_spaces) {
+            while (start < end && IsSpace(*(end - 1)))
+                end--;
+
             while (start < end)
                 if (IsSpace(*start))
                     start++;
