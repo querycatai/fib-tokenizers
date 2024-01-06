@@ -51,15 +51,16 @@ const BpeTokenizer = [
     "CodeGenTokenizer",
     "WhisperTokenizer",
     "RobertaTokenizer",
+    "CLIPTokenizer",
+    "BartTokenizer",
+    "BlenderbotTokenizer",
+    "OpenAIGPTTokenizer",
+    "LongformerTokenizer",
     // ====================================
-    // "CLIPTokenizer",
-    // "BartTokenizer",
     // "Wav2Vec2CTCTokenizer",
-    // "BlenderbotTokenizer",
     // "MarianTokenizer",
-    // "OpenAIGPTTokenizer",
     // "M2M100Tokenizer",
-    // "LongformerTokenizer",
+    // ====================================
     // "FLMTokenizer",
     // "LEDTokenizer",
     // "DebertaTokenizer",
@@ -121,7 +122,8 @@ function test_model(model) {
         });
 
         after(() => {
-            // fs.writeFile(path.join(__dirname, "models", "models--" + model.model.replace(/\//g, "--") + ".json"), JSON.stringify(model, null, 4));
+            if (update_data)
+                fs.writeFile(path.join(__dirname, "models", "models--" + model.model.replace(/\//g, "--") + ".json"), JSON.stringify(model, null, 4));
             tokenizer = undefined;
         });
 
@@ -140,19 +142,22 @@ function test_model(model) {
             it(`tokenize - ${JSON.stringify(test.input.substr(0, 64))}`, () => {
                 var result = tokenizer.tokenize(test.input);
                 result = result.map(token => token.replace(/�/g, ""));
-                // test.tokens = result;
+                if (update_data)
+                    test.tokens = result;
                 assert.deepEqual(result, test.tokens);
             });
 
             it(`encode - ${JSON.stringify(test.input.substr(0, 64))}`, () => {
                 var result = tokenizer.encode(test.input);
-                // test.ids = result;
+                if (update_data)
+                    test.ids = result;
                 assert.deepEqual(result, test.ids);
             });
 
             it(`decode - ${JSON.stringify(test.input.substr(0, 64))}`, () => {
                 var result = tokenizer.decode(test.ids);
-                // test.decoded = result;
+                if (update_data)
+                    test.decoded = result;
                 assert.equal(result, test.decoded);
             });
         }
@@ -161,6 +166,8 @@ function test_model(model) {
         // test_one(model.datasets[model.datasets.length - 1]);
     });
 }
+
+const update_data = false;
 
 function test_tokenizer(tokenizer_class) {
     describe(tokenizer_class, () => models[tokenizer_class.toLowerCase()].forEach(test_model));
