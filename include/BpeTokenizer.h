@@ -206,6 +206,7 @@ private:
     int32_t unk_token_id_ = 0;
 
     int32_t byte_encoder_[256] = {};
+    int32_t word_encoder_[256] = {};
     std::unordered_map<char32_t, int32_t> byte_decoder_;
     std::unordered_map<std::string, int32_t> vocab_map_;
     std::unordered_map<int32_t, std::string> vocab_index_map_;

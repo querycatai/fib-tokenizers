@@ -97,6 +97,19 @@ BpeTokenizer::BpeTokenizer(const Napi::CallbackInfo& info)
             byte_decoder_[(char32_t)i] = i;
             byte_encoder_[i] = GetEncoding(utf8String((char32_t)i));
         }
+
+        if (clean_up_spaces) {
+            word_encoder_[i] = byte_encoder_[i];
+
+            auto it = vocab_index_map_.find(byte_encoder_[i]);
+            if (it != vocab_index_map_.end()) {
+                std::string tmp = it->second;
+                tmp.append("</w>", 4);
+                int32_t id = GetEncoding(tmp);
+                if (id != unk_token_id_)
+                    word_encoder_[i] = id;
+            }
+        }
     }
 
     std::string_view merges_data = from_value<std::string_view>(info[1]);
@@ -169,20 +182,7 @@ void BpeTokenizer::bpe_encode(std::string_view text, const std::function<void(in
                     if (start == end) {
                         for (int32_t i = 0; i < tmp.length() - 1; ++i)
                             byte_list.push_back(std::make_pair(byte_encoder_[static_cast<unsigned char>(tmp[i])], 1));
-
-                        char32_t token = byte_encoder_[static_cast<unsigned char>(tmp.back())];
-                        auto it = vocab_index_map_.find(token);
-                        if (it != vocab_index_map_.end()) {
-                            tmp = it->second;
-                            tmp.append("</w>", 4);
-                            int32_t id = GetEncoding(tmp);
-                            if (id != unk_token_id_) {
-                                byte_list.push_back(std::make_pair(id, 1));
-                                continue;
-                            }
-                        }
-
-                        byte_list.push_back(std::make_pair(token, 1));
+                        byte_list.push_back(std::make_pair(word_encoder_[static_cast<unsigned char>(tmp.back())], 1));
                     } else {
                         for (char& ch : tmp)
                             byte_list.push_back(std::make_pair(byte_encoder_[static_cast<unsigned char>(ch)], 1));
