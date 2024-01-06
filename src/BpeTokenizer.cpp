@@ -146,7 +146,6 @@ int32_t BpeTokenizer::model_token_to_id(std::string_view token)
 void BpeTokenizer::bpe_encode(std::string_view text, const std::function<void(int32_t, int32_t)>& push_back) const
 {
     TokenWithRegularExp regcmp;
-
     regcmp.Set(text);
 
     while (true) {
@@ -155,8 +154,28 @@ void BpeTokenizer::bpe_encode(std::string_view text, const std::function<void(in
             break;
 
         std::list<std::pair<int32_t, int32_t>> byte_list;
-        for (char& cp : tok)
-            byte_list.push_back(std::make_pair(byte_encoder_[static_cast<unsigned char>(cp)], 1));
+
+        if (clean_up_spaces) {
+            auto start = tok.begin();
+            auto end = tok.end();
+
+            while (end > start && IsSpace(*end))
+                end--;
+
+            while (start < end)
+                if (IsSpace(*start))
+                    start++;
+                else {
+                    if (start + 1 == end) {
+                        std::string boundary(1, *start++);
+                        byte_list.push_back(std::make_pair(GetEncoding(boundary + "</w>"), 1));
+                    } else
+                        byte_list.push_back(std::make_pair(byte_encoder_[static_cast<unsigned char>(*start++)], 1));
+                }
+        } else {
+            for (char& cp : tok)
+                byte_list.push_back(std::make_pair(byte_encoder_[static_cast<unsigned char>(cp)], 1));
+        }
 
         bpe(byte_list);
 

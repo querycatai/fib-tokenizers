@@ -202,6 +202,8 @@ private:
         }
     };
 
+    bool clean_up_spaces = false;
+
     std::string unk_token;
     int32_t unk_token_id_ = 0;
 
