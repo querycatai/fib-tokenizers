@@ -102,11 +102,14 @@ void Tokenizer::config_added_tokens(const Napi::Config& opt)
     Napi::Value config_value = opt.Get("added_tokens", Napi::Value());
 
     if (config_value.IsArray()) {
-        std::vector<SpecialToken> added_tokens = from_value<std::vector<SpecialToken>>(config_value);
+        std::vector<SpecialToken> added_tokens;
+        added_tokens = opt.Get("added_tokens", added_tokens);
+
         for (auto& token : added_tokens)
             add_token(token);
     } else {
-        std::unordered_map<std::string, int32_t> added_tokens_map = from_value<std::unordered_map<std::string, int32_t>>(config_value);
+        std::unordered_map<std::string, int32_t> added_tokens_map;
+        added_tokens_map = opt.Get("added_tokens", added_tokens_map);
 
         for (auto& [key, value] : added_tokens_map) {
             SpecialToken token(key, value);
