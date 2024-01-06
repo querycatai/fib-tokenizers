@@ -1,5 +1,6 @@
 #include "Tokenizer.h"
 #include "string_util.h"
+#include "unicode.h"
 
 Napi::Value Tokenizer::get_all_special_tokens(const Napi::CallbackInfo& info)
 {
@@ -40,9 +41,13 @@ void Tokenizer::legacy_encode(std::string_view text, std::vector<T>* ids, int32_
     std::string temp_string;
 
     if (do_lower_case) {
-        temp_string = text;
-        std::transform(temp_string.begin(), temp_string.end(), temp_string.begin(),
-            [](unsigned char c) { return std::tolower(c); });
+        std::u32string text32;
+
+        utf8::convert(text, text32);
+        std::transform(text32.begin(), text32.end(), text32.begin(),
+            [](char32_t c) { return ufal::unilib::unicode::lowercase(c); });
+
+        utf8::convert(text32, temp_string);
         text = temp_string;
     }
 
