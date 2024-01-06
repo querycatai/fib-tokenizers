@@ -1,7 +1,7 @@
 {
     "model": "OpenAssistant/falcon-40b-sft-top1-560",
-    "tokenizer_class": "PreTrainedTokenizer",
-    "likes": 46,
+    "tokenizer_class": "PreTrainedTokenizerFast",
+    "likes": 48,
     "special_tokens": [
         "<|endoftext|>",
         ">>COMMENT<<",

@@ -1,7 +1,7 @@
 {
     "model": "facebook/incoder-6B",
-    "tokenizer_class": "PreTrainedTokenizer",
-    "likes": 67,
+    "tokenizer_class": "PreTrainedTokenizerFast",
+    "likes": 68,
     "special_tokens": [
         "<|endoftext|>"
     ],

@@ -92,7 +92,7 @@ def generate_one(model, likes):
 
         tokenizer = AutoTokenizer.from_pretrained(model, trust_remote_code=True, use_fast=False, local_files_only=True)
 
-        tokenizer_class = tokenizer.__class__.__name__.replace("Fast", "")
+        tokenizer_class = tokenizer.__class__.__name__
         special_tokens=tokenizer.all_special_tokens
 
         datasets = []

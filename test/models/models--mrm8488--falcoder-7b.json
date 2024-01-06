@@ -1,6 +1,6 @@
 {
     "model": "mrm8488/falcoder-7b",
-    "tokenizer_class": "PreTrainedTokenizer",
+    "tokenizer_class": "PreTrainedTokenizerFast",
     "likes": 90,
     "special_tokens": [
         "<|endoftext|>",

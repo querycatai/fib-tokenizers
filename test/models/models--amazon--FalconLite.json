@@ -1,7 +1,7 @@
 {
     "model": "amazon/FalconLite",
-    "tokenizer_class": "PreTrainedTokenizer",
-    "likes": 172,
+    "tokenizer_class": "PreTrainedTokenizerFast",
+    "likes": 173,
     "special_tokens": [
         "<|endoftext|>",
         ">>COMMENT<<",

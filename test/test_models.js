@@ -47,6 +47,7 @@ const SentencepieceTokenizer = [
 ];
 
 const BpeTokenizer = [
+    "BloomTokenizerFast",
     "GPT2Tokenizer",
     "CodeGenTokenizer",
     "WhisperTokenizer",
@@ -91,7 +92,7 @@ const base_class = {
     BpeTokenizer,
     BertTokenizer,
     TikTokenizer,
-    FastTokenizer
+    // FastTokenizer
 };
 
 function fix_text(text) {

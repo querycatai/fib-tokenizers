@@ -1,6 +1,6 @@
 {
     "model": "h2oai/h2ogpt-gm-oasst1-en-2048-falcon-7b-v3",
-    "tokenizer_class": "PreTrainedTokenizer",
+    "tokenizer_class": "PreTrainedTokenizerFast",
     "likes": 70,
     "special_tokens": [
         "<|endoftext|>",

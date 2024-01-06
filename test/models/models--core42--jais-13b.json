@@ -1,7 +1,7 @@
 {
     "model": "core42/jais-13b",
-    "tokenizer_class": "PreTrainedTokenizer",
-    "likes": 90,
+    "tokenizer_class": "PreTrainedTokenizerFast",
+    "likes": 91,
     "special_tokens": [
         "<|endoftext|>"
     ],

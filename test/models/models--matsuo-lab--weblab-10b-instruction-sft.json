@@ -1,6 +1,6 @@
 {
     "model": "matsuo-lab/weblab-10b-instruction-sft",
-    "tokenizer_class": "PreTrainedTokenizer",
+    "tokenizer_class": "PreTrainedTokenizerFast",
     "likes": 70,
     "special_tokens": [
         "<|endoftext|>",

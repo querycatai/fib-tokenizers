@@ -1,6 +1,6 @@
 {
     "model": "xverse/XVERSE-13B",
-    "tokenizer_class": "PreTrainedTokenizer",
+    "tokenizer_class": "PreTrainedTokenizerFast",
     "likes": 119,
     "special_tokens": [
         "<|startoftext|>",

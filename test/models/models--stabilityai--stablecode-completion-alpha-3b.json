@@ -1,7 +1,7 @@
 {
     "model": "stabilityai/stablecode-completion-alpha-3b",
-    "tokenizer_class": "PreTrainedTokenizer",
-    "likes": 106,
+    "tokenizer_class": "PreTrainedTokenizerFast",
+    "likes": 107,
     "special_tokens": [],
     "datasets": [
         {

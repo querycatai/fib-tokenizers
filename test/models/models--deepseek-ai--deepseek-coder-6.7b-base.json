@@ -1,7 +1,7 @@
 {
     "model": "deepseek-ai/deepseek-coder-6.7b-base",
-    "tokenizer_class": "LlamaTokenizer",
-    "likes": 40,
+    "tokenizer_class": "LlamaTokenizerFast",
+    "likes": 41,
     "special_tokens": [
         "<\uff5cbegin\u2581of\u2581sentence\uff5c>",
         "<\uff5cend\u2581of\u2581sentence\uff5c>"

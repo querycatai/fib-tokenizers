@@ -1,7 +1,7 @@
 {
     "model": "tiiuae/falcon-40b",
-    "tokenizer_class": "PreTrainedTokenizer",
-    "likes": 2361,
+    "tokenizer_class": "PreTrainedTokenizerFast",
+    "likes": 2362,
     "special_tokens": [
         "<|endoftext|>",
         ">>TITLE<<",

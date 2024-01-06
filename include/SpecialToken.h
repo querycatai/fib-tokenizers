@@ -24,6 +24,7 @@ public:
 
         Napi::Config opt(value);
 
+        id = opt.Get("id", -1);
         content = opt.Get("content", std::string());
         lstrip = opt.Get("lstrip", true);
         normalized = opt.Get("normalized", false);

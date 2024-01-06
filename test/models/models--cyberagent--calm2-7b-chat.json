@@ -1,7 +1,7 @@
 {
     "model": "cyberagent/calm2-7b-chat",
-    "tokenizer_class": "GPTNeoXTokenizer",
-    "likes": 50,
+    "tokenizer_class": "GPTNeoXTokenizerFast",
+    "likes": 53,
     "special_tokens": [
         "<|endoftext|>",
         "<|padding|>"

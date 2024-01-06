@@ -1,7 +1,7 @@
 {
     "model": "tiiuae/falcon-7b",
-    "tokenizer_class": "PreTrainedTokenizer",
-    "likes": 960,
+    "tokenizer_class": "PreTrainedTokenizerFast",
+    "likes": 963,
     "special_tokens": [
         "<|endoftext|>",
         ">>TITLE<<",

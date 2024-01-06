@@ -1,6 +1,6 @@
 {
     "model": "lightonai/alfred-40b-1023",
-    "tokenizer_class": "PreTrainedTokenizer",
+    "tokenizer_class": "PreTrainedTokenizerFast",
     "likes": 40,
     "special_tokens": [
         "<end_message>",

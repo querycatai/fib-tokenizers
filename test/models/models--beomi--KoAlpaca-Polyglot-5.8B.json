@@ -1,6 +1,6 @@
 {
     "model": "beomi/KoAlpaca-Polyglot-5.8B",
-    "tokenizer_class": "PreTrainedTokenizer",
+    "tokenizer_class": "PreTrainedTokenizerFast",
     "likes": 51,
     "special_tokens": [
         "<|endoftext|>",

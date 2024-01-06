@@ -1,6 +1,6 @@
 {
     "model": "OpenAssistant/falcon-7b-sft-mix-2000",
-    "tokenizer_class": "PreTrainedTokenizer",
+    "tokenizer_class": "PreTrainedTokenizerFast",
     "likes": 41,
     "special_tokens": [
         "<|endoftext|>",

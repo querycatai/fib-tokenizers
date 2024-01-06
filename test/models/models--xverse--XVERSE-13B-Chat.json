@@ -1,6 +1,6 @@
 {
     "model": "xverse/XVERSE-13B-Chat",
-    "tokenizer_class": "PreTrainedTokenizer",
+    "tokenizer_class": "PreTrainedTokenizerFast",
     "likes": 43,
     "special_tokens": [
         "<|startoftext|>",

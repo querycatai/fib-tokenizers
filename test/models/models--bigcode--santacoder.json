@@ -1,6 +1,6 @@
 {
     "model": "bigcode/santacoder",
-    "tokenizer_class": "GPT2Tokenizer",
+    "tokenizer_class": "GPT2TokenizerFast",
     "likes": 312,
     "special_tokens": [
         "<|endoftext|>",

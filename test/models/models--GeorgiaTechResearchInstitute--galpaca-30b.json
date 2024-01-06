@@ -1,6 +1,6 @@
 {
     "model": "GeorgiaTechResearchInstitute/galpaca-30b",
-    "tokenizer_class": "PreTrainedTokenizer",
+    "tokenizer_class": "PreTrainedTokenizerFast",
     "likes": 55,
     "special_tokens": [
         "<s>",

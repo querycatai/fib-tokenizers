@@ -1,7 +1,7 @@
 {
     "model": "TheBloke/WizardLM-Uncensored-Falcon-7B-GPTQ",
-    "tokenizer_class": "PreTrainedTokenizer",
-    "likes": 58,
+    "tokenizer_class": "PreTrainedTokenizerFast",
+    "likes": 59,
     "special_tokens": [
         "<|endoftext|>",
         "[PAD]",

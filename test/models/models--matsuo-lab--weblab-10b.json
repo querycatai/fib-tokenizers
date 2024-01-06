@@ -1,7 +1,7 @@
 {
     "model": "matsuo-lab/weblab-10b",
-    "tokenizer_class": "PreTrainedTokenizer",
-    "likes": 56,
+    "tokenizer_class": "PreTrainedTokenizerFast",
+    "likes": 57,
     "special_tokens": [
         "<|endoftext|>",
         "<|padding|>"

@@ -1,6 +1,6 @@
 {
     "model": "cognitivecomputations/WizardLM-Uncensored-Falcon-40b",
-    "tokenizer_class": "PreTrainedTokenizer",
+    "tokenizer_class": "PreTrainedTokenizerFast",
     "likes": 91,
     "special_tokens": [
         "<|endoftext|>",

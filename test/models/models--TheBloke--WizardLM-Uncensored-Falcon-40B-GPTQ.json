@@ -1,6 +1,6 @@
 {
     "model": "TheBloke/WizardLM-Uncensored-Falcon-40B-GPTQ",
-    "tokenizer_class": "PreTrainedTokenizer",
+    "tokenizer_class": "PreTrainedTokenizerFast",
     "likes": 58,
     "special_tokens": [
         "<|endoftext|>",

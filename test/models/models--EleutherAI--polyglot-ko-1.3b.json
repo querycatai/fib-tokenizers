@@ -1,7 +1,7 @@
 {
     "model": "EleutherAI/polyglot-ko-1.3b",
-    "tokenizer_class": "PreTrainedTokenizer",
-    "likes": 57,
+    "tokenizer_class": "PreTrainedTokenizerFast",
+    "likes": 59,
     "special_tokens": [
         "<|endoftext|>",
         "<|sep|>",

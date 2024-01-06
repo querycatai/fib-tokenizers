@@ -1,6 +1,6 @@
 {
     "model": "TheBloke/Falcon-7B-Instruct-GPTQ",
-    "tokenizer_class": "PreTrainedTokenizer",
+    "tokenizer_class": "PreTrainedTokenizerFast",
     "likes": 62,
     "special_tokens": [
         "<|endoftext|>",
