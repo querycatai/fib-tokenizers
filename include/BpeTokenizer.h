@@ -12,7 +12,7 @@ public:
         m_text = m_text_str;
     }
 
-    std::pair<bool, std::string> GetNextToken()
+    std::pair<bool, std::u32string_view> GetNextToken()
     {
         while (!m_text.empty()) {
             auto res = TryMatch();
@@ -20,9 +20,7 @@ public:
                 m_text = m_text.substr(1);
                 continue;
             }
-            std::string res_str;
-            utf8::convert(res, res_str);
-            return { true, res_str };
+            return { true, res };
         }
         return { false, {} };
     }

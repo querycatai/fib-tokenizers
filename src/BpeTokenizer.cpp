@@ -155,32 +155,41 @@ void BpeTokenizer::bpe_encode(std::string_view text, const std::function<void(in
 
         std::list<std::pair<int32_t, int32_t>> byte_list;
 
+        auto start = tok.begin();
+        auto end = tok.end();
+
         if (clean_up_spaces) {
-            auto start = tok.begin();
-            auto end = tok.end();
-
-            while (end > start && IsSpace(*end))
-                end--;
-
             while (start < end)
                 if (IsSpace(*start))
                     start++;
                 else {
-                    if (start + 1 == end) {
-                        std::string boundary(1, *start++);
-                        byte_list.push_back(std::make_pair(GetEncoding(boundary + "</w>"), 1));
-                    } else
-                        byte_list.push_back(std::make_pair(byte_encoder_[static_cast<unsigned char>(*start++)], 1));
+                    std::string tmp;
+                    utf8::convert(start++, 1, tmp);
+
+                    if (start == end) {
+                        tmp.append("</w>", 4);
+                        byte_list.push_back(std::make_pair(GetEncoding(tmp), 1));
+                    } else {
+                        for (char& ch : tmp)
+                            byte_list.push_back(std::make_pair(byte_encoder_[static_cast<unsigned char>(ch)], 1));
+                    }
                 }
         } else {
-            for (char& cp : tok)
-                byte_list.push_back(std::make_pair(byte_encoder_[static_cast<unsigned char>(cp)], 1));
+            while (start < end) {
+                std::string tmp;
+                utf8::convert(start++, 1, tmp);
+
+                for (char& ch : tmp)
+                    byte_list.push_back(std::make_pair(byte_encoder_[static_cast<unsigned char>(ch)], 1));
+            }
         }
 
-        bpe(byte_list);
+        if (byte_list.size() > 0) {
+            bpe(byte_list);
 
-        for (auto p : byte_list)
-            push_back(p.first, p.second);
+            for (auto p : byte_list)
+                push_back(p.first, p.second);
+        }
     }
 }
 
