@@ -65,9 +65,9 @@ const BpeTokenizer = [
     // "MarianTokenizer",
     // "M2M100Tokenizer",
     // "DebertaTokenizer",
-    // ====================================
     // "BlenderbotSmallTokenizer",
     // "VitsTokenizer",
+    // ====================================
 ];
 
 const BertTokenizer = [
@@ -177,7 +177,7 @@ function test_tokenizer(tokenizer_class) {
 for (var _base_class in base_class)
     describe(_base_class, () => base_class[_base_class].forEach(test_tokenizer));
 
-// test_tokenizer("RobertaTokenizer");
+// test_tokenizer("VitsTokenizer");
 // test_model("impira/layoutlm-invoices");
 
 test.run();
