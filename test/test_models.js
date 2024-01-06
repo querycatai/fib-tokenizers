@@ -56,15 +56,16 @@ const BpeTokenizer = [
     "BlenderbotTokenizer",
     "OpenAIGPTTokenizer",
     "LongformerTokenizer",
+    "FLMTokenizer",
+    "LEDTokenizer",
+    "GLMGPT2Tokenizer",
+
     // ====================================
     // "Wav2Vec2CTCTokenizer",
     // "MarianTokenizer",
     // "M2M100Tokenizer",
-    // ====================================
-    // "FLMTokenizer",
-    // "LEDTokenizer",
     // "DebertaTokenizer",
-    // "GLMGPT2Tokenizer",
+    // ====================================
     // "BlenderbotSmallTokenizer",
     // "VitsTokenizer",
 ];
