@@ -78,6 +78,8 @@ BpeTokenizer::BpeTokenizer(const Napi::CallbackInfo& info)
     stoken = opt.Get("unk_token", stoken);
     unk_token = stoken.content;
 
+    clean_up_spaces = opt.Get("clean_up_spaces", clean_up_spaces);
+
     auto it = vocab_map_.find(unk_token);
     if (it != end(vocab_map_))
         unk_token_id_ = it->second;
@@ -185,11 +187,29 @@ void BpeTokenizer::encode(std::string_view text, const std::function<void(const 
 
 void BpeTokenizer::decode(const std::vector<int32_t>& ids, std::string& text)
 {
-    for (auto id : ids) {
+    for (int32_t i = 0; i < ids.size(); i++) {
         std::u32string token32;
+        bool has_wordend = false;
 
-        utf8::convert(vocab_index_map_[id], token32);
+        if (clean_up_spaces) {
+            const std::string& token = vocab_index_map_[ids[i]];
+            if (token.length() > 4 && token.substr(token.length() - 4) == "</w>") {
+                utf8::convert(token.c_str(), token.length() - 4, token32);
+                has_wordend = true;
+            } else
+                utf8::convert(token, token32);
+        } else
+            utf8::convert(vocab_index_map_[ids[i]], token32);
+
         for (auto ch : token32)
             text += byte_decoder_[ch];
+
+        if (has_wordend && i < ids.size() - 1) {
+            char next_char = vocab_index_map_[ids[i + 1]][0];
+
+            if (next_char != '.' && next_char != ',' && next_char != '!' && next_char != '?'
+                && next_char != '\'' && next_char != '\"')
+                text += ' ';
+        }
     }
 }
