@@ -242,7 +242,7 @@ public:
             opt_.Set(pair.key(), json_convert(pair.value()));
     }
 
-    Env Env() const
+    Env GetEnv() const
     {
         return opt_.Env();
     }
@@ -252,19 +252,19 @@ private:
     {
         switch (value.type()) {
         case nlohmann::json::value_t::null:
-            return Env().Null();
+            return GetEnv().Null();
         case nlohmann::json::value_t::boolean:
-            return Napi::Boolean::New(Env(), value.get<bool>());
+            return Napi::Boolean::New(GetEnv(), value.get<bool>());
         case nlohmann::json::value_t::number_integer:
-            return Napi::Number::New(Env(), value.get<int32_t>());
+            return Napi::Number::New(GetEnv(), value.get<int32_t>());
         case nlohmann::json::value_t::number_unsigned:
-            return Napi::Number::New(Env(), value.get<uint32_t>());
+            return Napi::Number::New(GetEnv(), value.get<uint32_t>());
         case nlohmann::json::value_t::number_float:
-            return Napi::Number::New(Env(), value.get<double>());
+            return Napi::Number::New(GetEnv(), value.get<double>());
         case nlohmann::json::value_t::string:
-            return Napi::String::New(Env(), value.get<std::string>());
+            return Napi::String::New(GetEnv(), value.get<std::string>());
         case nlohmann::json::value_t::array: {
-            Napi::Array array = Napi::Array::New(Env(), value.size());
+            Napi::Array array = Napi::Array::New(GetEnv(), value.size());
 
             for (size_t i = 0; i < value.size(); ++i)
                 array[i] = json_convert(value[i]);
@@ -272,7 +272,7 @@ private:
             return array;
         }
         case nlohmann::json::value_t::object: {
-            Napi::Object object = Napi::Object::New(Env());
+            Napi::Object object = Napi::Object::New(GetEnv());
 
             for (auto& pair : value.items())
                 object.Set(pair.key(), json_convert(pair.value()));
@@ -280,7 +280,7 @@ private:
             return object;
         }
         default:
-            return Env().Undefined();
+            return GetEnv().Undefined();
         }
     }
 

@@ -42,7 +42,7 @@ TikTokenizerCore::TikTokenizerCore(std::vector<std::string>& vocab_list, Napi::C
     else if (opt_base_model == "p50k_edit")
         base_model = LanguageModel::P50K_EDIT;
     else
-        throw Napi::Error::New(opt.Env(), "Unknown base model");
+        throw Napi::Error::New(opt.GetEnv(), "Unknown base model");
 
     LinesReader lines_reader(vocab_list);
     encoder_ = GptEncoding::get_encoding(base_model, &lines_reader);

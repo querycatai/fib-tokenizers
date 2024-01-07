@@ -161,7 +161,7 @@ void Tokenizer::config_post_processor(const Napi::Config& opt)
             napi_valuetype type = v.Type();
             if (type != napi_undefined && type != napi_null) {
                 if (has_sequence)
-                    throw Napi::Error::New(opt.Env(), "Only one Sequence post processor is allowed");
+                    throw Napi::Error::New(opt.GetEnv(), "Only one Sequence post processor is allowed");
 
                 has_sequence = true;
                 continue;

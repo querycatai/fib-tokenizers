@@ -28,6 +28,6 @@ FastTokenizer::FastTokenizer(const Napi::CallbackInfo& info)
 
         Tokenizer::init(std::make_shared<BpeTokenizerCore>(vocab_map_, merges, opt), opt);
     } else {
-        throw Napi::Error::New(opt.Env(), model_type_str + " is not supported");
+        throw Napi::Error::New(opt.GetEnv(), model_type_str + " is not supported");
     }
 }
