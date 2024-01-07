@@ -83,8 +83,7 @@ const TikTokenizer = [
 
 const FastTokenizer = [
     "BloomTokenizerFast",
-    // "BloomTokenizer",
-    // "PreTrainedTokenizer",
+    "PreTrainedTokenizerFast",
 ];
 
 const base_class = {
@@ -178,8 +177,8 @@ const update_data = false;
 for (var _base_class in base_class)
     describe(_base_class, () => base_class[_base_class].forEach(test_tokenizer));
 
-test_tokenizer("BloomTokenizerFast");
-// test_model("pbelcak/UltraFastBERT-1x11-long");
+// test_tokenizer("PreTrainedTokenizerFast");
+// test_model("facebook/incoder-6B");
 
 test.run();
 // test.run(console.DEBUG);
