@@ -128,8 +128,8 @@ private:
     std::vector<int32_t> suffix_tokens;
 
 private:
-    std::map<std::string_view, SpecialToken> special_tokens;
-    std::map<int32_t, std::string> id_to_token;
+    std::unordered_map<std::string_view, SpecialToken> special_tokens;
+    std::unordered_map<int32_t, std::string> id_to_token;
 
 private:
     boost::regex pattern;

@@ -5,7 +5,7 @@
 
 class BertTokenizerCore : public TokenizerCore {
 public:
-    BertTokenizerCore(std::map<std::string, int32_t> vocab_map, Napi::Config& opt);
+    BertTokenizerCore(std::unordered_map<std::string, int32_t> vocab_map, Napi::Config& opt);
 
 private:
     virtual int32_t vocab_size() const;
@@ -25,9 +25,9 @@ private:
     std::vector<std::u32string> wordpiece_tokenize(std::u32string& text);
 
 private:
-    std::map<std::u32string, int32_t> vocab_map_;
-    std::map<int32_t, std::u32string> vocab_index_map_;
-    std::map<int32_t, bool> is_substr_;
+    std::unordered_map<std::u32string, int32_t> vocab_map_;
+    std::unordered_map<int32_t, std::u32string> vocab_index_map_;
+    std::unordered_map<int32_t, bool> is_substr_;
 
 private:
     bool do_basic_tokenize_;

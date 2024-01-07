@@ -18,7 +18,7 @@ FastTokenizer::FastTokenizer(const Napi::CallbackInfo& info)
         model_type_str = model_type.get<std::string>();
 
     if (model_type_str == "BPE") {
-        std::map<std::string, int32_t> vocab_map_ = model["vocab"].get<std::map<std::string, int32_t>>();
+        std::unordered_map<std::string, int32_t> vocab_map_ = model["vocab"].get<std::unordered_map<std::string, int32_t>>();
         model.erase("vocab");
 
         std::vector<std::string> merges = model["merges"].get<std::vector<std::string>>();
@@ -28,7 +28,7 @@ FastTokenizer::FastTokenizer(const Napi::CallbackInfo& info)
 
         Tokenizer::init(std::make_shared<BpeTokenizerCore>(vocab_map_, merges, opt), opt);
     } else if (model_type_str == "WordPiece") {
-        std::map<std::string, int32_t> vocab_map_ = model["vocab"].get<std::map<std::string, int32_t>>();
+        std::unordered_map<std::string, int32_t> vocab_map_ = model["vocab"].get<std::unordered_map<std::string, int32_t>>();
         model.erase("vocab");
 
         opt.assign(model);

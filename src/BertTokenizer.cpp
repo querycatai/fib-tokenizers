@@ -8,7 +8,7 @@ BertTokenizer::BertTokenizer(const Napi::CallbackInfo& info)
     std::vector<std::string> vocab_list;
     split_vocab(vocab_data, vocab_list);
 
-    std::map<std::string, int32_t> vocab_map_;
+    std::unordered_map<std::string, int32_t> vocab_map_;
     for (int i = 0; i < vocab_list.size(); i++)
         vocab_map_.insert_or_assign(vocab_list[i], i);
 
@@ -16,7 +16,7 @@ BertTokenizer::BertTokenizer(const Napi::CallbackInfo& info)
     Tokenizer::init(std::make_shared<BertTokenizerCore>(vocab_map_, opt), opt, false);
 }
 
-BertTokenizerCore::BertTokenizerCore(std::map<std::string, int32_t> vocab_map, Napi::Config& opt)
+BertTokenizerCore::BertTokenizerCore(std::unordered_map<std::string, int32_t> vocab_map, Napi::Config& opt)
 {
     if (!opt.Has("do_lower_case"))
         opt.Set("do_lower_case", true);
