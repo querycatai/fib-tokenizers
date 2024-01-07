@@ -10,3 +10,6 @@
 [submodule "vender/cpp-tiktoken"]
 	path = vender/cpp-tiktoken
 	url = https://github.com/gh-markt/cpp-tiktoken.git
+[submodule "vender/boost_regex"]
+	path = vender/boost_regex
+	url = https://github.com/boostorg/regex.git
