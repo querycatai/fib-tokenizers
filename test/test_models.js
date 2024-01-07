@@ -84,6 +84,8 @@ const TikTokenizer = [
 const FastTokenizer = [
     "BloomTokenizerFast",
     "PreTrainedTokenizerFast",
+    "GPT2TokenizerFast",
+    "LlamaTokenizerFast"
 ];
 
 const base_class = {
@@ -177,7 +179,7 @@ const update_data = false;
 for (var _base_class in base_class)
     describe(_base_class, () => base_class[_base_class].forEach(test_tokenizer));
 
-// test_tokenizer("PreTrainedTokenizerFast");
+// test_tokenizer("GPT2TokenizerFast");
 // test_model("facebook/incoder-6B");
 
 test.run();
