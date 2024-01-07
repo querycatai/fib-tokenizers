@@ -126,13 +126,13 @@ void Tokenizer::config_prefix_suffix(const Napi::Config& opt)
     for (auto& token : config_tokens)
         prefix_tokens.emplace_back(convert_token_to_id(token));
 
-    add_bos_token = opt.Get("add_bos_token", add_bos_token);
+    bool add_bos_token = opt.Get("add_bos_token", false);
     if (add_bos_token)
         prefix_tokens.emplace_back(bos_id);
 
     config_tokens.clear();
 
-    add_eos_token = opt.Get("add_eos_token", add_eos_token);
+    bool add_eos_token = opt.Get("add_eos_token", false);
     if (add_eos_token)
         suffix_tokens.emplace_back(eos_id);
 

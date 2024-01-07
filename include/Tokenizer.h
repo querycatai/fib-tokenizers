@@ -81,30 +81,33 @@ private:
 
 private:
     bool legacy = true;
-    int32_t vocab_size = 0;
     int32_t offset = 0;
+
+    bool do_lower_case = false;
+    bool add_prefix_space = false;
+    bool add_eos_if_not_present = false;
+    bool add_basic_tokens = false;
+
+private:
+    int32_t vocab_size = 0;
     int32_t special_token_offset;
 
-    bool add_basic_tokens = false;
+private:
     int32_t model_unk_id;
     int32_t unk_id = 0;
     int32_t bos_id = 0;
     int32_t eos_id = 0;
     int32_t pad_id = 0;
 
-    bool add_prefix_space = false;
-    bool do_lower_case = false;
-
-    std::unordered_map<std::string_view, SpecialToken> special_tokens;
-    std::unordered_map<int32_t, std::string> id_to_token;
-
-    bool add_bos_token = false;
-    bool add_eos_token = false;
-    bool add_eos_if_not_present = false;
-
+private:
     std::vector<int32_t> prefix_tokens;
     std::vector<int32_t> suffix_tokens;
 
+private:
+    std::unordered_map<std::string_view, SpecialToken> special_tokens;
+    std::unordered_map<int32_t, std::string> id_to_token;
+
+private:
     std::regex pattern;
     bool has_pattern = false;
 };

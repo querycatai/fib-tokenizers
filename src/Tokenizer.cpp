@@ -134,7 +134,8 @@ Napi::Value Tokenizer::encode(const Napi::CallbackInfo& info)
 
     encode(text, &ids);
 
-    if (add_eos_if_not_present && add_eos_token && ids.size() > 0 && ids[ids.size() - 1] == eos_id)
+    if (add_eos_if_not_present && suffix_tokens.size() > 0
+        && ids.size() > 0 && ids[ids.size() - 1] == eos_id)
         for (int32_t i = 1; i < suffix_tokens.size(); i++)
             ids.emplace_back(suffix_tokens[i]);
     else
