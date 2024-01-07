@@ -1,11 +1,11 @@
-import requests
+
 import json
 import os
 import re
 import glob
 import shutil
-from transformers import AutoTokenizer
 from colorama import Fore
+import argparse
 
 TEST_DATA = {
     "shared": [
@@ -77,6 +77,8 @@ def resolve_model(model):
         return model_home
 
 def generate_one(model, likes):
+    from transformers import AutoTokenizer
+
     model_file = "models--" + model.replace("/", "--") + ".json"
     if os.path.exists(model_file):
         return
@@ -140,6 +142,8 @@ def generate_one(model, likes):
         print(f"\n{Fore.RED}===========> Failed to generate for {model}: {e}{Fore.RESET}\n")
 
 def renew_model(model):
+    from transformers import AutoTokenizer
+
     model = re.search(r'models--(.*).json', model)[1].replace('--', '/')
     try:
         print(f"{Fore.GREEN}Renew for {model}{Fore.RESET}")
@@ -149,17 +153,35 @@ def renew_model(model):
         shutil.rmtree(cache_dir, ignore_errors=True)
         print(f"\n{Fore.RED}===========> Failed to generate for {model}: {e}{Fore.RESET}\n")
 
-local_models = glob.glob(os.path.join("./", "models--*.json"))
-for model in local_models:
-    renew_model(model)
+def do_download():
+    local_models = glob.glob(os.path.join("./", "models--*.json"))
+    for model in local_models:
+        renew_model(model)
 
-response = requests.get("https://huggingface.co/api/models", params={
-    'sort': 'likes',
-    'direction': -1,
-    'limit': 2000
-})
+def update():
+    import requests
+    response = requests.get("https://huggingface.co/api/models", params={
+        'filter': 'chat',
+        'sort': 'likes',
+        'direction': -1,
+        'limit': 2000
+    })
 
-models = [model['modelId'] for model in response.json()]
+    models = [model['modelId'] for model in response.json()]
 
-for model in response.json():
-    generate_one(model['modelId'], model['likes'])
+    for model in models:
+        generate_one(model, 0)
+
+parser = argparse.ArgumentParser(description='Generate test cases for tokenizers')
+subparsers = parser.add_subparsers(dest='command')
+renew_parser = subparsers.add_parser('renew', help='renew exists models')
+update_parser = subparsers.add_parser('update', help='generate test cases for new models')
+
+args = parser.parse_args()
+
+if args.command == 'renew':
+    do_renew()
+elif args.command == 'update':
+    update()
+else:
+    parser.print_help()
