@@ -1,8 +1,21 @@
 #include "BpeTokenizer.h"
-#include "nlohmann/json.hpp"
 #include "string_util.h"
 
-void BpeTokenizer::bpe(std::list<std::pair<int32_t, int32_t>>& vals) const
+BpeTokenizer::BpeTokenizer(const Napi::CallbackInfo& info)
+    : Napi::ObjectWrap<BpeTokenizer>(info)
+{
+    std::string_view vocab_data = from_value<std::string_view>(info[0]);
+    std::unordered_map<std::string, int32_t> vocab_map = std::move(nlohmann::json::parse(vocab_data).get<std::unordered_map<std::string, int32_t>>());
+
+    std::vector<std::string> merges;
+    std::string_view merges_data = from_value<std::string_view>(info[1]);
+    split_vocab(merges_data, merges);
+
+    Napi::Config opt(info[2]);
+    Tokenizer::init(std::make_shared<BpeTokenizerCore>(vocab_map, merges, opt), opt);
+}
+
+void BpeTokenizerCore::bpe(std::list<std::pair<int32_t, int32_t>>& vals) const
 {
     while (vals.size() >= 2) {
         auto pos_it = vals.end();
@@ -66,13 +79,9 @@ static std::string utf8String(char32_t ch)
     return result;
 }
 
-BpeTokenizer::BpeTokenizer(const Napi::CallbackInfo& info)
-    : Napi::ObjectWrap<BpeTokenizer>(info)
+BpeTokenizerCore::BpeTokenizerCore(std::unordered_map<std::string, int32_t>& vocab_map, std::vector<std::string>& merges, Napi::Config& opt)
 {
-    Napi::Config opt(info[2]);
-
-    std::string_view vocab_data = from_value<std::string_view>(info[0]);
-    vocab_map_ = std::move(nlohmann::json::parse(vocab_data).get<std::unordered_map<std::string, int32_t>>());
+    vocab_map_ = std::move(vocab_map);
 
     SpecialToken stoken("<|endoftext|>");
     stoken = opt.Get("unk_token", stoken);
@@ -112,10 +121,6 @@ BpeTokenizer::BpeTokenizer(const Napi::CallbackInfo& info)
         }
     }
 
-    std::string_view merges_data = from_value<std::string_view>(info[1]);
-    std::vector<std::string> merges;
-    split_vocab(merges_data, merges);
-
     index = 0;
     for (auto& line : merges) {
         if (line.empty())
@@ -137,11 +142,9 @@ BpeTokenizer::BpeTokenizer(const Napi::CallbackInfo& info)
         BpeNode value { GetEncoding(w1 + w2), index++, token_length };
         bpe_map_.emplace(key, value);
     }
-
-    Tokenizer::init(opt, vocab_map_.size(), unk_token_id_);
 }
 
-int32_t BpeTokenizer::GetEncoding(const std::string& key) const
+int32_t BpeTokenizerCore::GetEncoding(const std::string& key) const
 {
     auto it = vocab_map_.find(key);
     if (it != end(vocab_map_)) {
@@ -151,12 +154,22 @@ int32_t BpeTokenizer::GetEncoding(const std::string& key) const
     }
 }
 
-int32_t BpeTokenizer::model_token_to_id(std::string_view token)
+int32_t BpeTokenizerCore::vocab_size() const
+{
+    return vocab_map_.size();
+}
+
+int32_t BpeTokenizerCore::unk_id() const
+{
+    return unk_token_id_;
+}
+
+int32_t BpeTokenizerCore::model_token_to_id(std::string_view token)
 {
     return vocab_map_[std::string(token)];
 }
 
-void BpeTokenizer::bpe_encode(std::string_view text, const std::function<void(int32_t, int32_t)>& push_back) const
+void BpeTokenizerCore::bpe_encode(std::string_view text, const std::function<void(int32_t, int32_t)>& push_back) const
 {
     TokenWithRegularExp regcmp;
     regcmp.Set(text);
@@ -212,7 +225,7 @@ void BpeTokenizer::bpe_encode(std::string_view text, const std::function<void(in
     }
 }
 
-void BpeTokenizer::encode(std::string_view text, const std::function<void(int32_t, int32_t)>& push_back)
+void BpeTokenizerCore::encode(std::string_view text, const std::function<void(int32_t, int32_t)>& push_back)
 {
     int32_t i = 0;
 
@@ -221,7 +234,7 @@ void BpeTokenizer::encode(std::string_view text, const std::function<void(int32_
     });
 }
 
-void BpeTokenizer::encode(std::string_view text, const std::function<void(const std::string&, int32_t)>& push_back)
+void BpeTokenizerCore::encode(std::string_view text, const std::function<void(const std::string&, int32_t)>& push_back)
 {
     int32_t i = 0;
     int32_t lastPos = 0;
@@ -232,7 +245,7 @@ void BpeTokenizer::encode(std::string_view text, const std::function<void(const 
     });
 }
 
-void BpeTokenizer::decode(const std::vector<int32_t>& ids, std::string& text)
+void BpeTokenizerCore::decode(const std::vector<int32_t>& ids, std::string& text)
 {
     for (int32_t i = 0; i < ids.size(); i++) {
         std::u32string token32;

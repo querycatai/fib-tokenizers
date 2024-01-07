@@ -3,12 +3,18 @@
 
 BertTokenizer::BertTokenizer(const Napi::CallbackInfo& info)
     : Napi::ObjectWrap<BertTokenizer>(info)
-    , Tokenizer(false)
 {
     std::string_view vocab_data = from_value<std::string_view>(info[0]);
-    split_vocab(vocab_data, vocab_array);
+    std::vector<std::u32string> vocab_list;
+    split_vocab(vocab_data, vocab_list);
 
     Napi::Config opt(info[1]);
+    Tokenizer::init(std::make_shared<BertTokenizerCore>(vocab_list, opt), opt, false);
+}
+
+BertTokenizerCore::BertTokenizerCore(std::vector<std::u32string>& vocab_list, Napi::Config& opt)
+{
+    vocab_array = std::move(vocab_list);
 
     do_basic_tokenize_ = opt.Get("do_basic_tokenize", true);
     do_lower_case_ = opt.Get("do_lower_case", true);
@@ -31,11 +37,9 @@ BertTokenizer::BertTokenizer(const Napi::CallbackInfo& info)
 
     unk_token_ = opt.Get("unk_token", std::u32string(U"[UNK]"));
     FindTokenId(unk_token_, unk_token_id_);
-
-    Tokenizer::init(opt, vocab_array.size(), unk_token_id_);
 }
 
-bool BertTokenizer::FindTokenId(const std::u32string& token, int32_t& token_id)
+bool BertTokenizerCore::FindTokenId(const std::u32string& token, int32_t& token_id)
 {
     auto it = vocab_.find(token);
     if (it == vocab_.end()) {
@@ -46,7 +50,7 @@ bool BertTokenizer::FindTokenId(const std::u32string& token, int32_t& token_id)
     return true;
 }
 
-void BertTokenizer::GreedySearch(const std::u32string& token, std::vector<std::u32string>& tokenized_result)
+void BertTokenizerCore::GreedySearch(const std::u32string& token, std::vector<std::u32string>& tokenized_result)
 {
     if (static_cast<int64_t>(token.size()) > max_input_chars_per_word_) {
         tokenized_result.push_back(unk_token_);
@@ -82,7 +86,7 @@ void BertTokenizer::GreedySearch(const std::u32string& token, std::vector<std::u
     }
 }
 
-std::vector<std::u32string> BertTokenizer::wordpiece_tokenize(std::u32string& text)
+std::vector<std::u32string> BertTokenizerCore::wordpiece_tokenize(std::u32string& text)
 {
     std::vector<std::u32string> result;
     std::u32string token;
@@ -104,7 +108,7 @@ std::vector<std::u32string> BertTokenizer::wordpiece_tokenize(std::u32string& te
     return result;
 }
 
-std::vector<std::u32string> BertTokenizer::basic_tokenize(std::u32string& text)
+std::vector<std::u32string> BertTokenizerCore::basic_tokenize(std::u32string& text)
 {
     std::vector<std::u32string> tokens;
     std::u32string token;
@@ -174,7 +178,7 @@ std::vector<std::u32string> BertTokenizer::basic_tokenize(std::u32string& text)
     return result;
 }
 
-bool BertTokenizer::RemoveTokenizeSpace(int64_t pre_token_id, int64_t new_token_id)
+bool BertTokenizerCore::RemoveTokenizeSpace(int64_t pre_token_id, int64_t new_token_id)
 {
     if (pre_token_id < 0) {
         return true;
@@ -204,7 +208,17 @@ bool BertTokenizer::RemoveTokenizeSpace(int64_t pre_token_id, int64_t new_token_
     return false;
 }
 
-int32_t BertTokenizer::model_token_to_id(std::string_view token)
+int32_t BertTokenizerCore::vocab_size() const
+{
+    return vocab_array.size();
+}
+
+int32_t BertTokenizerCore::unk_id() const
+{
+    return unk_token_id_;
+}
+
+int32_t BertTokenizerCore::model_token_to_id(std::string_view token)
 {
     std::u32string token32;
     utf8::convert(token.data(), token.size(), token32);
@@ -217,7 +231,7 @@ int32_t BertTokenizer::model_token_to_id(std::string_view token)
     return it->second;
 }
 
-void BertTokenizer::encode(std::string_view text, const std::function<void(int32_t, int32_t)>& push_back)
+void BertTokenizerCore::encode(std::string_view text, const std::function<void(int32_t, int32_t)>& push_back)
 {
     std::u32string text32;
     utf8::convert(text.data(), text.size(), text32);
@@ -240,7 +254,7 @@ void BertTokenizer::encode(std::string_view text, const std::function<void(int32
     }
 }
 
-void BertTokenizer::encode(std::string_view text, const std::function<void(const std::string&, int32_t)>& push_back)
+void BertTokenizerCore::encode(std::string_view text, const std::function<void(const std::string&, int32_t)>& push_back)
 {
     std::u32string text32;
     utf8::convert(text.data(), text.size(), text32);
@@ -259,7 +273,7 @@ void BertTokenizer::encode(std::string_view text, const std::function<void(const
     }
 }
 
-void BertTokenizer::decode(const std::vector<int32_t>& ids, std::string& text)
+void BertTokenizerCore::decode(const std::vector<int32_t>& ids, std::string& text)
 {
     bool clean_up_tokenization_spaces = true;
 

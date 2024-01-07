@@ -21,17 +21,17 @@ int32_t Tokenizer::convert_token_to_id(std::string_view token)
     return model_token_to_id(token);
 }
 
-void Tokenizer::put_token(int32_t token, int32_t index, const std::function<void(int32_t, int32_t)>& push_back)
+void Tokenizer::put_token(int32_t token, const std::function<void(int32_t)>& push_back)
 {
     if (token == model_unk_id)
-        push_back(unk_id, index);
+        push_back(unk_id);
     else
-        push_back(token + offset, index);
+        push_back(token + offset);
 }
 
-void Tokenizer::put_token(const std::string& token, int32_t index, const std::function<void(const std::string&, int32_t)>& push_back)
+void Tokenizer::put_token(const std::string& token, const std::function<void(const std::string&)>& push_back)
 {
-    push_back(token, index);
+    push_back(token);
 }
 
 template <typename T>
@@ -65,8 +65,11 @@ void Tokenizer::legacy_encode(std::string_view text, std::vector<T>* ids, int32_
     }
 
     encode(text, [&](const T& token, int32_t index) {
-        if (index >= start)
-            ids->emplace_back(token);
+        if (index >= start) {
+            put_token(token, [&](const T& token) {
+                ids->emplace_back(token);
+            });
+        }
     });
 }
 

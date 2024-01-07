@@ -47,7 +47,6 @@ const SentencepieceTokenizer = [
 ];
 
 const BpeTokenizer = [
-    "BloomTokenizerFast",
     "GPT2Tokenizer",
     "CodeGenTokenizer",
     "WhisperTokenizer",
@@ -83,6 +82,7 @@ const TikTokenizer = [
 ];
 
 const FastTokenizer = [
+    "BloomTokenizerFast",
     // "BloomTokenizer",
     // "PreTrainedTokenizer",
 ];
@@ -92,7 +92,7 @@ const base_class = {
     BpeTokenizer,
     BertTokenizer,
     TikTokenizer,
-    // FastTokenizer
+    FastTokenizer
 };
 
 function fix_text(text) {
@@ -169,17 +169,17 @@ function test_model(model) {
     });
 }
 
-const update_data = false;
-
 function test_tokenizer(tokenizer_class) {
     describe(tokenizer_class, () => models[tokenizer_class.toLowerCase()].forEach(test_model));
 }
 
+const update_data = false;
+
 for (var _base_class in base_class)
     describe(_base_class, () => base_class[_base_class].forEach(test_tokenizer));
 
-// test_tokenizer("VitsTokenizer");
-// test_model("impira/layoutlm-invoices");
+test_tokenizer("BloomTokenizerFast");
+// test_model("pbelcak/UltraFastBERT-1x11-long");
 
 test.run();
 // test.run(console.DEBUG);

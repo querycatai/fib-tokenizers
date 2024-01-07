@@ -234,10 +234,13 @@ void Tokenizer::config_pattern(const Napi::Config& opt)
     }
 }
 
-void Tokenizer::init(Napi::Config opt, int32_t vocab_size_, int32_t unk_id_)
+void Tokenizer::init(std::shared_ptr<TokenizerCore> Tokenizer_, Napi::Config opt, bool add_basic_tokens_)
 {
-    vocab_size = special_token_offset = vocab_size_;
-    model_unk_id = unk_id_;
+    tokenizer = Tokenizer_;
+    vocab_size = special_token_offset = tokenizer->vocab_size();
+    model_unk_id = tokenizer->unk_id();
+
+    add_basic_tokens = add_basic_tokens_;
 
     legacy = opt.Get("legacy", legacy);
     offset = opt.Get("offset", 0);

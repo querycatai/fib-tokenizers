@@ -17,49 +17,68 @@ public:                                                                         
     }                                                                                       \
                                                                                             \
 private:                                                                                    \
-    Napi::Value get_all_special_tokens(const Napi::CallbackInfo& info)                      \
+    virtual Napi::Value get_all_special_tokens(const Napi::CallbackInfo& info)              \
     {                                                                                       \
         return Tokenizer::get_all_special_tokens(info);                                     \
     }                                                                                       \
-    Napi::Value tokenize(const Napi::CallbackInfo& info)                                    \
+    virtual Napi::Value tokenize(const Napi::CallbackInfo& info)                            \
     {                                                                                       \
         return Tokenizer::tokenize(info);                                                   \
     }                                                                                       \
-    Napi::Value encode(const Napi::CallbackInfo& info)                                      \
+    virtual Napi::Value encode(const Napi::CallbackInfo& info)                              \
     {                                                                                       \
         return Tokenizer::encode(info);                                                     \
     }                                                                                       \
-    Napi::Value decode(const Napi::CallbackInfo& info)                                      \
+    virtual Napi::Value decode(const Napi::CallbackInfo& info)                              \
     {                                                                                       \
         return Tokenizer::decode(info);                                                     \
     }
 
-class Tokenizer {
+class TokenizerCore {
 public:
-    Tokenizer(bool add_basic_tokens_ = true)
-        : add_basic_tokens(add_basic_tokens_)
-    {
-    }
-
-public:
-    void init(Napi::Config opt, int32_t vocab_size_, int32_t unk_id_);
-
-protected:
-    Napi::Value get_all_special_tokens(const Napi::CallbackInfo& info);
-    Napi::Value tokenize(const Napi::CallbackInfo& info);
-    Napi::Value encode(const Napi::CallbackInfo& info);
-    Napi::Value decode(const Napi::CallbackInfo& info);
-
-private:
+    virtual int32_t vocab_size() const = 0;
+    virtual int32_t unk_id() const = 0;
     virtual int32_t model_token_to_id(std::string_view token) = 0;
     virtual void encode(std::string_view text, const std::function<void(int32_t, int32_t)>& push_back) = 0;
     virtual void encode(std::string_view text, const std::function<void(const std::string&, int32_t)>& push_back) = 0;
     virtual void decode(const std::vector<int32_t>& ids, std::string& text) = 0;
+};
+
+class Tokenizer {
+public:
+    void init(std::shared_ptr<TokenizerCore> tokenizer_, Napi::Config opt, bool add_basic_tokens_ = true);
+
+public:
+    virtual Napi::Value get_all_special_tokens(const Napi::CallbackInfo& info);
+    virtual Napi::Value tokenize(const Napi::CallbackInfo& info);
+    virtual Napi::Value encode(const Napi::CallbackInfo& info);
+    virtual Napi::Value decode(const Napi::CallbackInfo& info);
+
+private:
+    int32_t model_token_to_id(std::string_view token)
+    {
+        return tokenizer->model_token_to_id(token);
+    }
+
+    void encode(std::string_view text, const std::function<void(int32_t, int32_t)>& push_back)
+    {
+        tokenizer->encode(text, push_back);
+    }
+
+    void encode(std::string_view text, const std::function<void(const std::string&, int32_t)>& push_back)
+    {
+        tokenizer->encode(text, push_back);
+    }
+
+    void decode(const std::vector<int32_t>& ids, std::string& text)
+    {
+        tokenizer->decode(ids, text);
+    }
 
 protected:
     int32_t convert_token_to_id(std::string_view token);
-    void put_token(int32_t token, int32_t index, const std::function<void(int32_t, int32_t)>& push_back);
-    void put_token(const std::string& token, int32_t index, const std::function<void(const std::string&, int32_t)>& push_back);
+    void put_token(int32_t token, const std::function<void(int32_t)>& push_back);
+    void put_token(const std::string& token, const std::function<void(const std::string&)>& push_back);
 
 private:
     void add_token(SpecialToken& token, bool is_unk = false);
@@ -79,6 +98,9 @@ private:
     void config_prefix_suffix(const Napi::Config& opt);
     void config_post_processor(const Napi::Config& opt);
     void config_pattern(const Napi::Config& opt);
+
+private:
+    std::shared_ptr<TokenizerCore> tokenizer;
 
 private:
     bool legacy = true;

@@ -164,20 +164,21 @@ private:
     std::u32string_view m_text;
 };
 
-class BpeTokenizer : public Napi::ObjectWrap<BpeTokenizer>,
-                     public Tokenizer {
+class BpeTokenizerCore : public TokenizerCore {
 public:
-    BpeTokenizer(const Napi::CallbackInfo& info);
-
-    DECLARE_CLASS(BpeTokenizer);
+    BpeTokenizerCore(std::unordered_map<std::string, int32_t>& vocab_map,
+        std::vector<std::string>& merges, Napi::Config& opt);
 
 private:
+    virtual int32_t vocab_size() const;
+    virtual int32_t unk_id() const;
     virtual int32_t model_token_to_id(std::string_view token);
     virtual void encode(std::string_view text, const std::function<void(int32_t, int32_t)>& push_back);
     virtual void encode(std::string_view text, const std::function<void(const std::string&, int32_t)>& push_back);
     virtual void decode(const std::vector<int32_t>& ids, std::string& text);
 
 private:
+    void init(std::unordered_map<std::string, int32_t>& vocab_map, std::vector<std::string>& merges, Napi::Config& opt);
     void bpe(std::list<std::pair<int32_t, int32_t>>& vals) const;
     int32_t GetEncoding(const std::string& key) const;
     int32_t GetVocabIndex(const std::string& str) const;
@@ -211,4 +212,11 @@ private:
     std::unordered_map<std::string, int32_t> vocab_map_;
     std::unordered_map<int32_t, std::string> vocab_index_map_;
     std::unordered_map<std::pair<int32_t, int32_t>, BpeNode, hash_pair> bpe_map_;
+};
+
+class BpeTokenizer : public Napi::ObjectWrap<BpeTokenizer>,
+                     public Tokenizer {
+public:
+    BpeTokenizer(const Napi::CallbackInfo& info);
+    DECLARE_CLASS(BpeTokenizer);
 };

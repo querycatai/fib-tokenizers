@@ -6,6 +6,7 @@
 #include <string_view>
 #include <vector>
 #include <unordered_map>
+#include "nlohmann/json.hpp"
 #include "utf8.h"
 
 inline Napi::Value to_value(Napi::Env env, const Napi::Value& value)
@@ -235,12 +236,54 @@ public:
         return value;
     }
 
+    void assign(const nlohmann::json& value)
+    {
+        for (auto& pair : value.items())
+            opt_.Set(pair.key(), json_convert(pair.value()));
+    }
+
     Env Env() const
     {
         return opt_.Env();
     }
 
 private:
+    Napi::Value json_convert(const nlohmann::json& value)
+    {
+        switch (value.type()) {
+        case nlohmann::json::value_t::null:
+            return Env().Null();
+        case nlohmann::json::value_t::boolean:
+            return Napi::Boolean::New(Env(), value.get<bool>());
+        case nlohmann::json::value_t::number_integer:
+            return Napi::Number::New(Env(), value.get<int32_t>());
+        case nlohmann::json::value_t::number_unsigned:
+            return Napi::Number::New(Env(), value.get<uint32_t>());
+        case nlohmann::json::value_t::number_float:
+            return Napi::Number::New(Env(), value.get<double>());
+        case nlohmann::json::value_t::string:
+            return Napi::String::New(Env(), value.get<std::string>());
+        case nlohmann::json::value_t::array: {
+            Napi::Array array = Napi::Array::New(Env(), value.size());
+
+            for (size_t i = 0; i < value.size(); ++i)
+                array[i] = json_convert(value[i]);
+
+            return array;
+        }
+        case nlohmann::json::value_t::object: {
+            Napi::Object object = Napi::Object::New(Env());
+
+            for (auto& pair : value.items())
+                object.Set(pair.key(), json_convert(pair.value()));
+
+            return object;
+        }
+        default:
+            return Env().Undefined();
+        }
+    }
+
     void _convert(const Value& value, Value* result) const
     {
         *result = value;

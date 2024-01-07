@@ -3,14 +3,13 @@
 #include "Tokenizer.h"
 #include "SpecialToken.h"
 
-class BertTokenizer : public Napi::ObjectWrap<BertTokenizer>,
-                      public Tokenizer {
+class BertTokenizerCore : public TokenizerCore {
 public:
-    BertTokenizer(const Napi::CallbackInfo& info);
-
-    DECLARE_CLASS(BertTokenizer);
+    BertTokenizerCore(std::vector<std::u32string>& vocab_list, Napi::Config& opt);
 
 private:
+    virtual int32_t vocab_size() const;
+    virtual int32_t unk_id() const;
     virtual int32_t model_token_to_id(std::string_view token);
     virtual void encode(std::string_view text, const std::function<void(int32_t, int32_t)>& push_back);
     virtual void encode(std::string_view text, const std::function<void(const std::string&, int32_t)>& push_back);
@@ -48,4 +47,11 @@ private:
 
     bool tokenize_punctuation_ = true;
     bool remove_control_chars_ = true;
+};
+
+class BertTokenizer : public Napi::ObjectWrap<BertTokenizer>,
+                      public Tokenizer {
+public:
+    BertTokenizer(const Napi::CallbackInfo& info);
+    DECLARE_CLASS(BertTokenizer);
 };
