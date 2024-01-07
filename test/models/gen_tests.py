@@ -153,7 +153,7 @@ def renew_model(model):
         shutil.rmtree(cache_dir, ignore_errors=True)
         print(f"\n{Fore.RED}===========> Failed to generate for {model}: {e}{Fore.RESET}\n")
 
-def do_download():
+def do_renew():
     local_models = glob.glob(os.path.join("./", "models--*.json"))
     for model in local_models:
         renew_model(model)
