@@ -5,7 +5,7 @@ BpeTokenizer::BpeTokenizer(const Napi::CallbackInfo& info)
     : Napi::ObjectWrap<BpeTokenizer>(info)
 {
     std::string_view vocab_data = from_value<std::string_view>(info[0]);
-    std::unordered_map<std::string, int32_t> vocab_map = std::move(nlohmann::json::parse(vocab_data).get<std::unordered_map<std::string, int32_t>>());
+    std::map<std::string, int32_t> vocab_map = std::move(nlohmann::json::parse(vocab_data).get<std::map<std::string, int32_t>>());
 
     std::vector<std::string> merges;
     std::string_view merges_data = from_value<std::string_view>(info[1]);
@@ -79,13 +79,13 @@ static std::string utf8String(char32_t ch)
     return result;
 }
 
-BpeTokenizerCore::BpeTokenizerCore(std::unordered_map<std::string, int32_t>& vocab_map, std::vector<std::string>& merges, Napi::Config& opt)
+BpeTokenizerCore::BpeTokenizerCore(std::map<std::string, int32_t>& vocab_map, std::vector<std::string>& merges, Napi::Config& opt)
 {
     vocab_map_ = std::move(vocab_map);
 
     SpecialToken stoken("<|endoftext|>");
     stoken = opt.Get("unk_token", stoken);
-    unk_token = stoken.content;
+    std::string unk_token = stoken.content;
 
     clean_up_spaces = opt.Get("clean_up_spaces", clean_up_spaces);
 

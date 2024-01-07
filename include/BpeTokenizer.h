@@ -166,7 +166,7 @@ private:
 
 class BpeTokenizerCore : public TokenizerCore {
 public:
-    BpeTokenizerCore(std::unordered_map<std::string, int32_t>& vocab_map,
+    BpeTokenizerCore(std::map<std::string, int32_t>& vocab_map,
         std::vector<std::string>& merges, Napi::Config& opt);
 
 private:
@@ -178,7 +178,7 @@ private:
     virtual void decode(const std::vector<int32_t>& ids, std::string& text);
 
 private:
-    void init(std::unordered_map<std::string, int32_t>& vocab_map, std::vector<std::string>& merges, Napi::Config& opt);
+    void init(std::map<std::string, int32_t>& vocab_map, std::vector<std::string>& merges, Napi::Config& opt);
     void bpe(std::list<std::pair<int32_t, int32_t>>& vals) const;
     int32_t GetEncoding(const std::string& key) const;
     int32_t GetVocabIndex(const std::string& str) const;
@@ -203,14 +203,13 @@ private:
 
     bool clean_up_spaces = false;
 
-    std::string unk_token;
     int32_t unk_token_id_ = 0;
 
     int32_t byte_encoder_[256] = {};
     int32_t word_encoder_[256] = {};
-    std::unordered_map<char32_t, int32_t> byte_decoder_;
-    std::unordered_map<std::string, int32_t> vocab_map_;
-    std::unordered_map<int32_t, std::string> vocab_index_map_;
+    std::map<char32_t, int32_t> byte_decoder_;
+    std::map<std::string, int32_t> vocab_map_;
+    std::map<int32_t, std::string> vocab_index_map_;
     std::unordered_map<std::pair<int32_t, int32_t>, BpeNode, hash_pair> bpe_map_;
 };
 

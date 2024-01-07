@@ -8,7 +8,7 @@ FastTokenizer::FastTokenizer(const Napi::CallbackInfo& info)
     Napi::Config opt(info[1]);
 
     nlohmann::json vocab = nlohmann::json::parse(from_value<std::string_view>(info[0]));
-    const nlohmann::json model = vocab["model"];
+    nlohmann::json model = vocab["model"];
     vocab.erase("model");
     opt.assign(vocab);
 
@@ -18,8 +18,13 @@ FastTokenizer::FastTokenizer(const Napi::CallbackInfo& info)
         model_type_str = model_type.get<std::string>();
 
     if (model_type_str == "BPE") {
-        std::unordered_map<std::string, int32_t> vocab_map_ = model["vocab"].get<std::unordered_map<std::string, int32_t>>();
+        std::map<std::string, int32_t> vocab_map_ = model["vocab"].get<std::map<std::string, int32_t>>();
+        model.erase("vocab");
+
         std::vector<std::string> merges = model["merges"].get<std::vector<std::string>>();
+        model.erase("merges");
+
+        opt.assign(model);
 
         Tokenizer::init(std::make_shared<BpeTokenizerCore>(vocab_map_, merges, opt), opt);
     } else {

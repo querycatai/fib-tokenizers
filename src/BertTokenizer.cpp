@@ -69,7 +69,8 @@ void BertTokenizerCore::GreedySearch(const std::u32string& token, std::vector<st
             if (start > 0) {
                 substr = static_cast<const std::u32string>(suffix_indicator_ + substr);
             }
-            if (FindToken(substr)) {
+
+            if (vocab_.find(substr) != vocab_.end()) {
                 is_found = true;
                 break;
             }

@@ -14,7 +14,7 @@ std::string escapeRegex(const std::string& str)
 
 void Tokenizer::config_tokens_decoder(const Napi::Config& opt)
 {
-    std::unordered_map<std::string, SpecialToken> added_tokens_decoder;
+    std::map<std::string, SpecialToken> added_tokens_decoder;
     added_tokens_decoder = opt.Get("added_tokens_decoder", added_tokens_decoder);
 
     for (auto& [key, token] : added_tokens_decoder) {
@@ -108,7 +108,7 @@ void Tokenizer::config_added_tokens(const Napi::Config& opt)
         for (auto& token : added_tokens)
             add_token(token);
     } else {
-        std::unordered_map<std::string, int32_t> added_tokens_map;
+        std::map<std::string, int32_t> added_tokens_map;
         added_tokens_map = opt.Get("added_tokens", added_tokens_map);
 
         for (auto& [key, value] : added_tokens_map) {

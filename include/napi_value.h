@@ -76,7 +76,7 @@ inline Napi::Value to_value(Napi::Env env, const std::vector<VALUE_TYPE>& value)
 }
 
 template <typename CHAR_TYPE, typename VALUE_TYPE>
-inline Napi::Value to_value(Napi::Env env, const std::unordered_map<std::basic_string<CHAR_TYPE>, VALUE_TYPE>& value)
+inline Napi::Value to_value(Napi::Env env, const std::map<std::basic_string<CHAR_TYPE>, VALUE_TYPE>& value)
 {
     Napi::Object object = Napi::Object::New(env);
 

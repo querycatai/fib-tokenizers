@@ -16,11 +16,6 @@ private:
     virtual void decode(const std::vector<int32_t>& ids, std::string& text);
 
 private:
-    bool FindToken(const std::u32string& token)
-    {
-        return vocab_.find(token) != vocab_.end();
-    }
-
     bool FindTokenId(const std::u32string& token, int32_t& token_id);
     void GreedySearch(const std::u32string& token, std::vector<std::u32string>& tokenized_result);
     bool RemoveTokenizeSpace(int64_t pre_token_id, int64_t new_token_id);
@@ -31,7 +26,7 @@ private:
 
 private:
     std::vector<std::u32string> vocab_array;
-    std::unordered_map<std::u32string, int32_t> vocab_;
+    std::map<std::u32string, int32_t> vocab_;
     std::vector<bool> is_substr_;
 
 private:
