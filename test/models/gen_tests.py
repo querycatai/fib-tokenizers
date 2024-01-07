@@ -82,17 +82,22 @@ def generate_one(model, likes):
         return
 
     try:
-        print(f"{Fore.GREEN}Generating for {model}{Fore.RESET}")
+        print(f"{Fore.YELLOW}Downloading for {model}{Fore.RESET}")
         tokenizer = AutoTokenizer.from_pretrained(model, trust_remote_code=True, use_fast=False)
+        tokenizer_class = tokenizer.__class__.__name__
+        if tokenizer_class != "PreTrainedTokenizerFast":
+            return
 
+        print(f"{Fore.GREEN}Generating for {model}{Fore.RESET}")
         model_home = resolve_model(model)
-        tokenizer_json = os.path.join(model_home, "tokenizer.json")
-        if os.path.isfile(tokenizer_json) and glob.glob(os.path.join(model_home, "*.model")):
-            os.remove(tokenizer_json)
+
+        if not tokenizer_class.endswith("Fast"):
+            tokenizer_json = os.path.join(model_home, "tokenizer.json")
+            if os.path.isfile(tokenizer_json) and glob.glob(os.path.join(model_home, "*.model")):
+                os.remove(tokenizer_json)
 
         tokenizer = AutoTokenizer.from_pretrained(model, trust_remote_code=True, use_fast=False, local_files_only=True)
 
-        tokenizer_class = tokenizer.__class__.__name__
         special_tokens=tokenizer.all_special_tokens
 
         datasets = []
