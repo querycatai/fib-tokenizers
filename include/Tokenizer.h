@@ -1,6 +1,7 @@
 #pragma once
 
 #include <regex>
+#include <boost/regex.hpp>
 #include <string_view>
 #include "napi_value.h"
 #include "SpecialToken.h"
@@ -131,6 +132,6 @@ private:
     std::map<int32_t, std::string> id_to_token;
 
 private:
-    std::regex pattern;
+    boost::regex pattern;
     bool has_pattern = false;
 };

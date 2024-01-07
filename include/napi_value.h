@@ -236,6 +236,23 @@ public:
         return value;
     }
 
+    template <typename VALUE_TYPE>
+    void Set(const char* name, const VALUE_TYPE& value)
+    {
+        if (!opt_)
+            return;
+
+        opt_.Set(name, to_value(opt_.Env(), value));
+    }
+
+    bool Has(const char* name) const
+    {
+        if (!opt_)
+            return false;
+
+        return opt_.Has(name);
+    }
+
     void assign(const nlohmann::json& value)
     {
         for (auto& pair : value.items())

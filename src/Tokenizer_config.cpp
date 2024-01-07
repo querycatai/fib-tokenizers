@@ -182,6 +182,13 @@ void Tokenizer::config_post_processor(const Napi::Config& opt)
     }
 }
 
+static std::string utf16_string(char16_t ch)
+{
+    std::string str;
+    utf8::convert(&ch, 1, str);
+    return str;
+}
+
 void Tokenizer::config_pattern(const Napi::Config& opt)
 {
     static const char* space_tokens[] = {
@@ -196,6 +203,7 @@ void Tokenizer::config_pattern(const Napi::Config& opt)
     if (special_tokens.size() > 0) {
         std::string pattern_str;
         std::vector<std::string> keys;
+        std::vector<char16_t> chars;
 
         for (auto& [key, value] : special_tokens)
             keys.emplace_back(key);
@@ -204,8 +212,31 @@ void Tokenizer::config_pattern(const Napi::Config& opt)
         for (auto& key : keys)
             res.emplace(escapeRegex(std::string(key)));
 
-        keys.clear();
+        for (auto& token : res) {
+            std::u16string u16_token;
+            utf8::convert(token, u16_token);
+            if (u16_token.length() == 1)
+                chars.emplace_back(u16_token[0]);
+        }
 
+        std::sort(chars.begin(), chars.end());
+        char16_t start_char = 0;
+        char16_t end_char = 0;
+        for (auto& c : chars) {
+            if (c == end_char + 1)
+                end_char = c;
+            else {
+                if (end_char > start_char + 1) {
+                    res.emplace("[" + utf16_string(start_char) + "-" + utf16_string(end_char) + "]");
+                    for (char16_t i = start_char; i <= end_char; i++)
+                        res.erase(utf16_string(i));
+                }
+
+                start_char = end_char = c;
+            }
+        }
+
+        keys.clear();
         for (auto& token : res) {
             keys.emplace_back(token);
         }
@@ -230,7 +261,7 @@ void Tokenizer::config_pattern(const Napi::Config& opt)
         }
 
         has_pattern = true;
-        pattern = std::regex("(" + space_str + ")?(" + pattern_str + ")(" + space_str + ")?");
+        pattern = boost::regex("(" + space_str + ")?(" + pattern_str + ")(" + space_str + ")?");
     }
 }
 

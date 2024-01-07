@@ -5,34 +5,43 @@ BertTokenizer::BertTokenizer(const Napi::CallbackInfo& info)
     : Napi::ObjectWrap<BertTokenizer>(info)
 {
     std::string_view vocab_data = from_value<std::string_view>(info[0]);
-    std::vector<std::u32string> vocab_list;
+    std::vector<std::string> vocab_list;
     split_vocab(vocab_data, vocab_list);
 
+    std::map<std::string, int32_t> vocab_map_;
+    for (int i = 0; i < vocab_list.size(); i++)
+        vocab_map_.insert_or_assign(vocab_list[i], i);
+
     Napi::Config opt(info[1]);
-    Tokenizer::init(std::make_shared<BertTokenizerCore>(vocab_list, opt), opt, false);
+    Tokenizer::init(std::make_shared<BertTokenizerCore>(vocab_map_, opt), opt, false);
 }
 
-BertTokenizerCore::BertTokenizerCore(std::vector<std::u32string>& vocab_list, Napi::Config& opt)
+BertTokenizerCore::BertTokenizerCore(std::map<std::string, int32_t> vocab_map, Napi::Config& opt)
 {
-    vocab_array = std::move(vocab_list);
+    if (!opt.Has("do_lower_case"))
+        opt.Set("do_lower_case", true);
 
     do_basic_tokenize_ = opt.Get("do_basic_tokenize", true);
-    do_lower_case_ = opt.Get("do_lower_case", true);
     tokenize_chinese_chars_ = opt.Get("tokenize_chinese_chars", true);
     strip_accents_ = opt.Get("strip_accents", false);
     suffix_indicator_ = opt.Get("suffix_indicator", std::u32string(U"##"));
     max_input_chars_per_word_ = opt.Get("max_input_chars_per_word", 100);
 
-    for (int i = 0; i < vocab_array.size(); i++) {
-        auto& token = vocab_array[i];
-        vocab_.insert_or_assign(token, i);
+    for (auto& p : vocab_map) {
+        std::u32string token;
+        utf8::convert(p.first, token);
+        int32_t i = p.second;
+
+        vocab_map_.insert_or_assign(token, i);
 
         if (token.rfind(suffix_indicator_, 0) == 0) {
-            vocab_array[i] = token.substr(suffix_indicator_.size(), token.size() - suffix_indicator_.size());
-            is_substr_.push_back(true);
+            token = token.substr(suffix_indicator_.size(), token.size() - suffix_indicator_.size());
+            is_substr_.insert_or_assign(i, true);
         } else {
-            is_substr_.push_back(false);
+            is_substr_.insert_or_assign(i, false);
         }
+
+        vocab_index_map_.insert_or_assign(i, token);
     }
 
     unk_token_ = opt.Get("unk_token", std::u32string(U"[UNK]"));
@@ -41,8 +50,8 @@ BertTokenizerCore::BertTokenizerCore(std::vector<std::u32string>& vocab_list, Na
 
 bool BertTokenizerCore::FindTokenId(const std::u32string& token, int32_t& token_id)
 {
-    auto it = vocab_.find(token);
-    if (it == vocab_.end()) {
+    auto it = vocab_map_.find(token);
+    if (it == vocab_map_.end()) {
         return false;
     }
 
@@ -70,7 +79,7 @@ void BertTokenizerCore::GreedySearch(const std::u32string& token, std::vector<st
                 substr = static_cast<const std::u32string>(suffix_indicator_ + substr);
             }
 
-            if (vocab_.find(substr) != vocab_.end()) {
+            if (vocab_map_.find(substr) != vocab_map_.end()) {
                 is_found = true;
                 break;
             }
@@ -93,18 +102,22 @@ std::vector<std::u32string> BertTokenizerCore::wordpiece_tokenize(std::u32string
     std::u32string token;
 
     for (auto c : text) {
-        if (c == U' ' && !token.empty()) {
-            GreedySearch(token, result);
-            token.clear();
-            continue;
-        }
-
-        token.push_back(c);
+        if (IsSpace(c)) {
+            if (!token.empty()) {
+                GreedySearch(token, result);
+                token.clear();
+                continue;
+            }
+        } else
+            token.push_back(c);
     }
 
-    if (!token.empty()) {
+    if (!token.empty())
         GreedySearch(token, result);
-    }
+
+    for (auto& token : result)
+        if (token.rfind(suffix_indicator_, 0) == 0)
+            token = token.substr(suffix_indicator_.size(), token.size() - suffix_indicator_.size());
 
     return result;
 }
@@ -131,12 +144,6 @@ std::vector<std::u32string> BertTokenizerCore::basic_tokenize(std::u32string& te
     if (strip_accents_) {
         for (auto& c : text) {
             c = StripAccent(c);
-        }
-    }
-
-    if (do_lower_case_) {
-        for (auto& c : text) {
-            c = ToLower(c);
         }
     }
 
@@ -185,8 +192,8 @@ bool BertTokenizerCore::RemoveTokenizeSpace(int64_t pre_token_id, int64_t new_to
         return true;
     }
 
-    auto pre_char = vocab_array[static_cast<size_t>(pre_token_id)].back();
-    auto cur_char = vocab_array[static_cast<size_t>(new_token_id)][0];
+    auto pre_char = vocab_index_map_[static_cast<size_t>(pre_token_id)].back();
+    auto cur_char = vocab_index_map_[static_cast<size_t>(new_token_id)][0];
 
     if (cur_char == U'.' || cur_char == U',' || cur_char == U'?' || cur_char == U'!' || cur_char == U'\'') {
         return true;
@@ -211,7 +218,7 @@ bool BertTokenizerCore::RemoveTokenizeSpace(int64_t pre_token_id, int64_t new_to
 
 int32_t BertTokenizerCore::vocab_size() const
 {
-    return vocab_array.size();
+    return vocab_index_map_.size();
 }
 
 int32_t BertTokenizerCore::unk_id() const
@@ -224,8 +231,8 @@ int32_t BertTokenizerCore::model_token_to_id(std::string_view token)
     std::u32string token32;
     utf8::convert(token.data(), token.size(), token32);
 
-    auto it = vocab_.find(token32);
-    if (it == vocab_.end()) {
+    auto it = vocab_map_.find(token32);
+    if (it == vocab_map_.end()) {
         return unk_token_id_;
     }
 
@@ -244,15 +251,8 @@ void BertTokenizerCore::encode(std::string_view text, const std::function<void(i
     else
         tokens = wordpiece_tokenize(text32);
 
-    for (int32_t i = 0; i < tokens.size(); i++) {
-        int32_t token_id = -1;
-        if (!FindTokenId(tokens[i], token_id)) {
-            push_back(unk_token_id_, i);
-            continue;
-        }
-
-        push_back(token_id, i);
-    }
+    for (int32_t i = 0; i < tokens.size(); i++)
+        push_back(vocab_map_[tokens[i]], i);
 }
 
 void BertTokenizerCore::encode(std::string_view text, const std::function<void(const std::string&, int32_t)>& push_back)
@@ -289,7 +289,7 @@ void BertTokenizerCore::decode(const std::vector<int32_t>& ids, std::string& tex
                 || (clean_up_tokenization_spaces && RemoveTokenizeSpace(pre_token, id))))
             result.push_back(' ');
 
-        result.append(vocab_array[id]);
+        result.append(vocab_index_map_[id]);
         pre_token = id;
     }
 

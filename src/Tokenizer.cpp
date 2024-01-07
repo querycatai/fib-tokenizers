@@ -83,10 +83,10 @@ void Tokenizer::encode(std::string& text, std::vector<T>* ids)
         text = " " + text;
 
     if (has_pattern) {
-        std::smatch m;
+        boost::smatch m;
         std::string::const_iterator searchStart(text.cbegin());
 
-        while (std::regex_search(searchStart, text.cend(), m, pattern)) {
+        while (boost::regex_search(searchStart, text.cend(), m, pattern)) {
             auto it = special_tokens.find(std::string_view(&*m[2].first, m[2].length()));
             if (it == special_tokens.end()) {
                 searchStart = m[2].first + 1;

@@ -27,6 +27,15 @@ FastTokenizer::FastTokenizer(const Napi::CallbackInfo& info)
         opt.assign(model);
 
         Tokenizer::init(std::make_shared<BpeTokenizerCore>(vocab_map_, merges, opt), opt);
+    } else if (model_type_str == "WordPiece") {
+        std::map<std::string, int32_t> vocab_map_ = model["vocab"].get<std::map<std::string, int32_t>>();
+        model.erase("vocab");
+
+        opt.assign(model);
+        opt.Set("do_basic_tokenize", false);
+
+        Tokenizer::init(std::make_shared<BertTokenizerCore>(vocab_map_, opt), opt);
+    } else if (model_type_str == "Bert") {
     } else {
         throw Napi::Error::New(opt.GetEnv(), model_type_str + " is not supported");
     }
