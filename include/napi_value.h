@@ -5,7 +5,6 @@
 #include <string>
 #include <string_view>
 #include <vector>
-#include <unordered_map>
 #include "nlohmann/json.hpp"
 #include "utf8.h"
 
@@ -173,9 +172,9 @@ inline std::vector<VALUE_TYPE> to_array(const Napi::Value& value)
 }
 
 template <typename CHAR_TYPE, typename VALUE_TYPE>
-inline std::unordered_map<std::basic_string<CHAR_TYPE>, VALUE_TYPE> to_object(const Napi::Value& value)
+inline std::map<std::basic_string<CHAR_TYPE>, VALUE_TYPE> to_object(const Napi::Value& value)
 {
-    std::unordered_map<std::basic_string<CHAR_TYPE>, VALUE_TYPE> result;
+    std::map<std::basic_string<CHAR_TYPE>, VALUE_TYPE> result;
     Napi::Object object = value.As<Napi::Object>();
     Napi::Array keys = object.GetPropertyNames();
     uint32_t length = keys.Length();
@@ -319,7 +318,7 @@ private:
     }
 
     template <typename CHAR_TYPE, typename VALUE_TYPE>
-    void _convert(const Value& value, std::unordered_map<std::basic_string<CHAR_TYPE>, VALUE_TYPE>* result) const
+    void _convert(const Value& value, std::map<std::basic_string<CHAR_TYPE>, VALUE_TYPE>* result) const
     {
         *result = to_object<CHAR_TYPE, VALUE_TYPE>(value);
     }
