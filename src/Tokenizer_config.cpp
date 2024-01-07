@@ -143,6 +143,45 @@ void Tokenizer::config_prefix_suffix(const Napi::Config& opt)
     add_eos_if_not_present = opt.Get("add_eos_if_not_present", add_eos_if_not_present);
 }
 
+void Tokenizer::config_post_processor(const Napi::Config& opt)
+{
+    Napi::Value post_processor = opt.Get({ "post_processor", "single" });
+    if (post_processor.IsArray()) {
+        Napi::Array post_processor_array = post_processor.As<Napi::Array>();
+        bool has_sequence = false;
+
+        prefix_tokens.clear();
+        suffix_tokens.clear();
+
+        for (int32_t i = 0; i < post_processor_array.Length(); i++) {
+            Napi::Object post_processor_object = post_processor_array.Get(i).As<Napi::Object>();
+            Napi::Value v;
+
+            v = post_processor_object.Get("Sequence");
+            napi_valuetype type = v.Type();
+            if (type != napi_undefined && type != napi_null) {
+                if (has_sequence)
+                    throw Napi::Error::New(opt.Env(), "Only one Sequence post processor is allowed");
+
+                has_sequence = true;
+                continue;
+            }
+
+            v = post_processor_object.Get("SpecialToken");
+            type = v.Type();
+            if (type != napi_undefined && type != napi_null) {
+                post_processor_object = v.As<Napi::Object>();
+                std::string token = post_processor_object.Get("id").As<Napi::String>();
+
+                if (!has_sequence)
+                    prefix_tokens.emplace_back(convert_token_to_id(token));
+                else
+                    suffix_tokens.emplace_back(convert_token_to_id(token));
+            }
+        }
+    }
+}
+
 void Tokenizer::config_pattern(const Napi::Config& opt)
 {
     static const char* space_tokens[] = {
@@ -211,5 +250,6 @@ void Tokenizer::init(Napi::Config opt, int32_t vocab_size_, int32_t unk_id_)
     config_special_tokens(opt);
     config_basic_tokens(opt);
     config_prefix_suffix(opt);
+    config_post_processor(opt);
     config_pattern(opt);
 }

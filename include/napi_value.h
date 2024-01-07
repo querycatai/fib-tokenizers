@@ -195,7 +195,6 @@ class Config {
 public:
     Config(Value opt)
     {
-        napi_env env = opt.Env();
         if (opt.Type() != napi_undefined)
             opt_ = opt.As<Object>();
     }
@@ -216,6 +215,29 @@ public:
         VALUE_TYPE result;
         _convert(value, &result);
         return result;
+    }
+
+    Value Get(const std::initializer_list<const char*>& names) const
+    {
+        if (!opt_)
+            return Value();
+
+        Value value = opt_;
+        for (auto& name : names) {
+            Object o_ = value.As<Object>();
+            value = o_.Get(name);
+
+            napi_valuetype valuetype = value.Type();
+            if (valuetype == napi_undefined || valuetype == napi_null)
+                return Value();
+        }
+
+        return value;
+    }
+
+    Env Env() const
+    {
+        return opt_.Env();
     }
 
 private:
