@@ -35,7 +35,7 @@ void Tokenizer::put_token(const std::string& token, const std::function<void(con
 }
 
 template <typename T>
-void Tokenizer::legacy_encode(std::string_view text, std::vector<T>* ids, int32_t prefix_count)
+void Tokenizer::legacy_encode(std::string_view text, std::vector<T>* ids, int32_t max_length, int32_t prefix_count)
 {
     int32_t start = 0;
     std::string temp_string;
@@ -67,14 +67,15 @@ void Tokenizer::legacy_encode(std::string_view text, std::vector<T>* ids, int32_
     encode(text, [&](const T& token, int32_t index) {
         if (index >= start) {
             put_token(token, [&](const T& token) {
-                ids->emplace_back(token);
+                if (ids->size() < max_length)
+                    ids->emplace_back(token);
             });
         }
     });
 }
 
 template <typename T>
-void Tokenizer::encode(std::string& text, std::vector<T>* ids)
+void Tokenizer::special_encode(std::string& text, std::vector<T>* ids, int32_t max_length)
 {
     size_t lastPos = 0;
     int32_t prefix_count = ids->size();
@@ -104,9 +105,10 @@ void Tokenizer::encode(std::string& text, std::vector<T>* ids)
 
             size_t pos = (token.lstrip ? m[0].first : m[2].first) - text.cbegin();
             if (pos != lastPos)
-                legacy_encode(std::string_view(text.data() + lastPos, pos - lastPos), ids, prefix_count);
+                legacy_encode(std::string_view(text.data() + lastPos, pos - lastPos), ids, max_length, prefix_count);
 
-            ids->emplace_back(token);
+            if (ids->size() < max_length)
+                ids->emplace_back(token);
 
             searchStart = token.rstrip ? m[0].first + m[0].length() : m[2].first + m[2].length();
             lastPos = searchStart - text.cbegin();
@@ -114,7 +116,7 @@ void Tokenizer::encode(std::string& text, std::vector<T>* ids)
     }
 
     if (lastPos < text.size())
-        legacy_encode(std::string_view(text.data() + lastPos, text.size() - lastPos), ids, prefix_count);
+        legacy_encode(std::string_view(text.data() + lastPos, text.size() - lastPos), ids, max_length, prefix_count);
 }
 
 Napi::Value Tokenizer::tokenize(const Napi::CallbackInfo& info)
@@ -122,20 +124,17 @@ Napi::Value Tokenizer::tokenize(const Napi::CallbackInfo& info)
     std::string text = from_value<std::string>(info[0]);
     std::vector<std::string> tokens;
 
-    encode(text, &tokens);
+    special_encode(text, &tokens);
 
     return to_value(info.Env(), tokens);
 }
 
-Napi::Value Tokenizer::encode(const Napi::CallbackInfo& info)
+void Tokenizer::encode(std::string& text, std::vector<int32_t>& ids, int32_t max_length)
 {
-    std::string text = from_value<std::string>(info[0]);
-    std::vector<int32_t> ids;
-
     for (auto& token : prefix_tokens)
         ids.emplace_back(token);
 
-    encode(text, &ids);
+    special_encode(text, &ids, max_length - suffix_tokens.size());
 
     if (add_eos_if_not_present && suffix_tokens.size() > 0
         && ids.size() > 0 && ids[ids.size() - 1] == eos_id)
@@ -144,8 +143,76 @@ Napi::Value Tokenizer::encode(const Napi::CallbackInfo& info)
     else
         for (auto& token : suffix_tokens)
             ids.emplace_back(token);
+}
+
+Napi::Value Tokenizer::encode(const Napi::CallbackInfo& info)
+{
+    std::vector<int32_t> ids;
+
+    std::string text = from_value<std::string>(info[0]);
+
+    Napi::Config opt(info[1]);
+    int32_t max_length = opt.Get("max_length", std::numeric_limits<int32_t>::max());
+
+    encode(text, ids, max_length);
 
     return to_value(info.Env(), ids);
+}
+
+Napi::Value Tokenizer::encode_plus(const Napi::CallbackInfo& info)
+{
+    std::vector<std::vector<int32_t>> ids;
+    std::vector<std::vector<int32_t>> masks;
+
+    std::vector<std::string> texts = to_array<std::string>(info[0]);
+
+    Napi::Config opt(info[1]);
+    bool padding = opt.Get("padding", false);
+    bool truncation = opt.Get("truncation", false);
+    int32_t max_length = truncation ? opt.Get("max_length", model_max_length) : std::numeric_limits<int32_t>::max();
+
+    int32_t max_line_length = 0;
+    for (auto& text : texts) {
+        std::vector<int32_t> ids_;
+        std::vector<int32_t> masks_;
+
+        encode(text, ids_, max_length);
+        if (ids_.size() > max_line_length)
+            max_line_length = ids_.size();
+
+        for (int32_t i = 0; i < ids_.size(); i++)
+            masks_.emplace_back(1);
+
+        ids.emplace_back(std::move(ids_));
+        masks.emplace_back(std::move(masks_));
+    }
+
+    if (padding) {
+        for (int32_t i = 0; i < ids.size(); i++) {
+            std::vector<int32_t>& ids_ = ids[i];
+            std::vector<int32_t>& masks_ = masks[i];
+
+            if (ids_.size() < max_line_length) {
+                if (padding_left) {
+                    for (int32_t j = ids_.size(); j < max_line_length; j++) {
+                        ids_.emplace(ids_.begin(), pad_id);
+                        masks_.emplace(masks_.begin(), 0);
+                    }
+                } else {
+                    for (int32_t j = ids_.size(); j < max_line_length; j++) {
+                        ids_.emplace_back(pad_id);
+                        masks_.emplace_back(0);
+                    }
+                }
+            }
+        }
+    }
+
+    Napi::Object result = Napi::Object::New(info.Env());
+    result.Set("input_ids", to_value(info.Env(), ids));
+    result.Set("attention_mask", to_value(info.Env(), masks));
+
+    return result;
 }
 
 Napi::Value Tokenizer::decode(const Napi::CallbackInfo& info)

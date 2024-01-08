@@ -278,6 +278,14 @@ void Tokenizer::init(std::shared_ptr<TokenizerCore> Tokenizer_, Napi::Config opt
     add_prefix_space = opt.Get("add_prefix_space", add_prefix_space);
     do_lower_case = opt.Get("do_lower_case", do_lower_case);
 
+    model_max_length = opt.Get("model_max_length", model_max_length);
+    if (model_max_length <= 0)
+        model_max_length = 1024;
+
+    std::string padding_side = opt.Get("padding_side", std::string("right"));
+    if (padding_side == "left")
+        padding_left = true;
+
     config_tokens_decoder(opt);
     config_added_tokens(opt);
     config_unk_tokens(opt);

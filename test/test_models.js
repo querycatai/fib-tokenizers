@@ -141,6 +141,38 @@ function test_model(model) {
         //         assert.deepEqual(special_tokens.sort(), model.special_tokens.sort());
         // });
 
+        it("encode", () => {
+            var res1 = tokenizer.encode("a b c d e f g h i j k l m n o p");
+            var res2 = tokenizer.encode("a b c d e f g h i j k l m n o p", {
+                max_length: 100
+            });
+
+            assert.deepEqual(res1, res2);
+
+            var res3 = tokenizer.encode("a b c d e f g h i j k l m n o p", {
+                max_length: 3
+            });
+
+            assert.equal(res3.length, 3);
+        });
+
+        if (model.batch_encode)
+            it("encode_plus", () => {
+                var res1 = tokenizer.encode_plus(["a a", "b b b b b b b b b b b b b b b b b"], {
+                    truncation: true,
+                    max_length: 10,
+                    padding: true
+                });
+
+                if (update_data) {
+                    model.batch_encode.input_ids = res1.input_ids;
+                    model.batch_encode.attention_mask = res1.attention_mask;
+                }
+
+                assert.deepEqual(model.batch_encode.input_ids, res1.input_ids);
+                assert.deepEqual(model.batch_encode.attention_mask, res1.attention_mask);
+            });
+
         function test_one(test) {
             it(`tokenize - ${JSON.stringify(test.input.substr(0, 64))}`, () => {
                 var result = tokenizer.tokenize(test.input);

@@ -1,38 +1,44 @@
 #pragma once
 
 #include <regex>
+#include <limits>
 #include <boost/regex.hpp>
 #include <string_view>
 #include "napi_value.h"
 #include "SpecialToken.h"
 
-#define DECLARE_CLASS(class_name)                                                           \
-public:                                                                                     \
-    static Napi::Function Init(Napi::Env env)                                               \
-    {                                                                                       \
-        return DefineClass(env, #class_name,                                                \
-            { InstanceAccessor<&class_name::get_all_special_tokens>("all_special_tokens"),  \
-                InstanceMethod("tokenize", &class_name::tokenize, napi_default_jsproperty), \
-                InstanceMethod("encode", &class_name::encode, napi_default_jsproperty),     \
-                InstanceMethod("decode", &class_name::decode, napi_default_jsproperty) });  \
-    }                                                                                       \
-                                                                                            \
-private:                                                                                    \
-    virtual Napi::Value get_all_special_tokens(const Napi::CallbackInfo& info)              \
-    {                                                                                       \
-        return Tokenizer::get_all_special_tokens(info);                                     \
-    }                                                                                       \
-    virtual Napi::Value tokenize(const Napi::CallbackInfo& info)                            \
-    {                                                                                       \
-        return Tokenizer::tokenize(info);                                                   \
-    }                                                                                       \
-    virtual Napi::Value encode(const Napi::CallbackInfo& info)                              \
-    {                                                                                       \
-        return Tokenizer::encode(info);                                                     \
-    }                                                                                       \
-    virtual Napi::Value decode(const Napi::CallbackInfo& info)                              \
-    {                                                                                       \
-        return Tokenizer::decode(info);                                                     \
+#define DECLARE_CLASS(class_name)                                                                 \
+public:                                                                                           \
+    static Napi::Function Init(Napi::Env env)                                                     \
+    {                                                                                             \
+        return DefineClass(env, #class_name,                                                      \
+            { InstanceAccessor<&class_name::get_all_special_tokens>("all_special_tokens"),        \
+                InstanceMethod("tokenize", &class_name::tokenize, napi_default_jsproperty),       \
+                InstanceMethod("encode", &class_name::encode, napi_default_jsproperty),           \
+                InstanceMethod("encode_plus", &class_name::encode_plus, napi_default_jsproperty), \
+                InstanceMethod("decode", &class_name::decode, napi_default_jsproperty) });        \
+    }                                                                                             \
+                                                                                                  \
+private:                                                                                          \
+    Napi::Value get_all_special_tokens(const Napi::CallbackInfo& info)                            \
+    {                                                                                             \
+        return Tokenizer::get_all_special_tokens(info);                                           \
+    }                                                                                             \
+    Napi::Value tokenize(const Napi::CallbackInfo& info)                                          \
+    {                                                                                             \
+        return Tokenizer::tokenize(info);                                                         \
+    }                                                                                             \
+    Napi::Value encode(const Napi::CallbackInfo& info)                                            \
+    {                                                                                             \
+        return Tokenizer::encode(info);                                                           \
+    }                                                                                             \
+    Napi::Value encode_plus(const Napi::CallbackInfo& info)                                       \
+    {                                                                                             \
+        return Tokenizer::encode_plus(info);                                                      \
+    }                                                                                             \
+    Napi::Value decode(const Napi::CallbackInfo& info)                                            \
+    {                                                                                             \
+        return Tokenizer::decode(info);                                                           \
     }
 
 class TokenizerCore {
@@ -50,10 +56,11 @@ public:
     void init(std::shared_ptr<TokenizerCore> tokenizer_, Napi::Config opt, bool add_basic_tokens_ = true);
 
 public:
-    virtual Napi::Value get_all_special_tokens(const Napi::CallbackInfo& info);
-    virtual Napi::Value tokenize(const Napi::CallbackInfo& info);
-    virtual Napi::Value encode(const Napi::CallbackInfo& info);
-    virtual Napi::Value decode(const Napi::CallbackInfo& info);
+    Napi::Value get_all_special_tokens(const Napi::CallbackInfo& info);
+    Napi::Value tokenize(const Napi::CallbackInfo& info);
+    Napi::Value encode(const Napi::CallbackInfo& info);
+    Napi::Value encode_plus(const Napi::CallbackInfo& info);
+    Napi::Value decode(const Napi::CallbackInfo& info);
 
 private:
     int32_t model_token_to_id(std::string_view token)
@@ -85,10 +92,12 @@ private:
     void add_token(SpecialToken& token, bool is_unk = false);
 
     template <typename T>
-    void encode(std::string& text, std::vector<T>* ids);
+    void special_encode(std::string& text, std::vector<T>* ids, int32_t max_length = std::numeric_limits<int32_t>::max());
 
     template <typename T>
-    void legacy_encode(std::string_view text, std::vector<T>* ids, int32_t prefix_count);
+    void legacy_encode(std::string_view text, std::vector<T>* ids, int32_t max_length, int32_t prefix_count);
+
+    void encode(std::string& text, std::vector<int32_t>& ids, int32_t max_length);
 
 private:
     void config_tokens_decoder(const Napi::Config& opt);
@@ -111,6 +120,8 @@ private:
     bool add_prefix_space = false;
     bool add_eos_if_not_present = false;
     bool add_basic_tokens = false;
+    bool padding_left = false;
+    int32_t model_max_length = 1024;
 
 private:
     int32_t vocab_size = 0;
