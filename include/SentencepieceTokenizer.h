@@ -5,10 +5,7 @@
 
 class SentencepieceTokenizerCore : public TokenizerCore {
 public:
-    SentencepieceTokenizerCore(std::string_view vocab_data)
-    {
-        sentence_piece_.LoadFromSerializedProto(vocab_data);
-    }
+    SentencepieceTokenizerCore(std::string_view vocab_data, Napi::Config& opt);
 
 private:
     virtual int32_t vocab_size() const;
@@ -25,11 +22,6 @@ private:
 class SentencepieceTokenizer : public Napi::ObjectWrap<SentencepieceTokenizer>,
                                public Tokenizer {
 public:
-    SentencepieceTokenizer(const Napi::CallbackInfo& info)
-        : Napi::ObjectWrap<SentencepieceTokenizer>(info)
-    {
-        std::string_view vocab_data = from_value<std::string_view>(info[0]);
-        Tokenizer::init(std::make_shared<SentencepieceTokenizerCore>(vocab_data), info[1]);
-    }
+    SentencepieceTokenizer(const Napi::CallbackInfo& info);
     DECLARE_CLASS(SentencepieceTokenizer);
 };

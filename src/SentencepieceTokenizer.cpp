@@ -1,6 +1,21 @@
 #include "SentencepieceTokenizer.h"
 #include "sentencepiece.pb.h"
 
+SentencepieceTokenizer::SentencepieceTokenizer(const Napi::CallbackInfo& info)
+    : Napi::ObjectWrap<SentencepieceTokenizer>(info)
+{
+    std::string_view vocab_data = from_value<std::string_view>(info[0]);
+    Napi::Config opt(info[1]);
+
+    Tokenizer::init(std::make_shared<SentencepieceTokenizerCore>(vocab_data, opt), opt);
+}
+
+SentencepieceTokenizerCore::SentencepieceTokenizerCore(std::string_view vocab_data, Napi::Config& opt)
+{
+    opt.Set("do_lower_case", false);
+    sentence_piece_.LoadFromSerializedProto(vocab_data);
+}
+
 int32_t SentencepieceTokenizerCore::vocab_size() const
 {
     return sentence_piece_.GetPieceSize();
