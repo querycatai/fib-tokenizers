@@ -76,29 +76,29 @@ def resolve_model(model):
     else:
         return model_home
 
-def generate_one(model, likes):
+def generate_one(model, likes, update=False):
     from transformers import AutoTokenizer
 
     model_file = "models--" + model.replace("/", "--") + ".json"
-    if os.path.exists(model_file):
+    if not update and os.path.exists(model_file):
         return
 
     try:
-        print(f"{Fore.YELLOW}Downloading for {model}{Fore.RESET}")
-        tokenizer = AutoTokenizer.from_pretrained(model, trust_remote_code=True, use_fast=False)
-        tokenizer_class = tokenizer.__class__.__name__
-        if tokenizer_class != "PreTrainedTokenizerFast":
-            return
+        if not update:
+            print(f"{Fore.YELLOW}Downloading for {model}{Fore.RESET}")
+            tokenizer = AutoTokenizer.from_pretrained(model, trust_remote_code=True, use_fast=False)
 
         print(f"{Fore.GREEN}Generating for {model}{Fore.RESET}")
+
+        tokenizer = AutoTokenizer.from_pretrained(model, trust_remote_code=True, use_fast=False, local_files_only=True)
+        tokenizer_class = tokenizer.__class__.__name__
         model_home = resolve_model(model)
 
         if not tokenizer_class.endswith("Fast"):
             tokenizer_json = os.path.join(model_home, "tokenizer.json")
             if os.path.isfile(tokenizer_json) and glob.glob(os.path.join(model_home, "*.model")):
                 os.remove(tokenizer_json)
-
-        tokenizer = AutoTokenizer.from_pretrained(model, trust_remote_code=True, use_fast=False, local_files_only=True)
+                tokenizer = AutoTokenizer.from_pretrained(model, trust_remote_code=True, use_fast=False, local_files_only=True)
 
         special_tokens=tokenizer.all_special_tokens
 
@@ -141,24 +141,39 @@ def generate_one(model, likes):
         shutil.rmtree(cache_dir, ignore_errors=True)
         print(f"\n{Fore.RED}===========> Failed to generate for {model}: {e}{Fore.RESET}\n")
 
-def renew_model(model):
+def pull_model(model):
     from transformers import AutoTokenizer
 
     model = re.search(r'models--(.*).json', model)[1].replace('--', '/')
     try:
-        print(f"{Fore.GREEN}Renew for {model}{Fore.RESET}")
+        print(f"{Fore.GREEN}Pull for {model}{Fore.RESET}")
         tokenizer = AutoTokenizer.from_pretrained(model, trust_remote_code=True, use_fast=False)
+        tokenizer_class = tokenizer.__class__.__name__
+        model_home = resolve_model(model)
+
+        if not tokenizer_class.endswith("Fast"):
+            tokenizer_json = os.path.join(model_home, "tokenizer.json")
+            if os.path.isfile(tokenizer_json) and glob.glob(os.path.join(model_home, "*.model")):
+                os.remove(tokenizer_json)
+
     except Exception as e:
         cache_dir = os.path.join(os.path.expanduser("~"), ".cache", "huggingface", "hub", "models--" + model.replace("/", "--"))
         shutil.rmtree(cache_dir, ignore_errors=True)
         print(f"\n{Fore.RED}===========> Failed to generate for {model}: {e}{Fore.RESET}\n")
 
+def do_pull():
+    local_models = glob.glob(os.path.join("./", "models--*.json"))
+    for model in local_models:
+        pull_model(model)
+
 def do_renew():
     local_models = glob.glob(os.path.join("./", "models--*.json"))
     for model in local_models:
-        renew_model(model)
+        with open(model, 'r') as file:
+            data = json.load(file)
+        generate_one(re.search(r'models--(.*).json', model)[1].replace('--', '/'), data['likes'], True)
 
-def update():
+def do_update():
     import requests
     response = requests.get("https://huggingface.co/api/models", params={
         'filter': 'chat',
@@ -167,21 +182,24 @@ def update():
         'limit': 2000
     })
 
-    models = [model['modelId'] for model in response.json()]
-
+    models = response.json()
     for model in models:
-        generate_one(model, 0)
+        generate_one(model['modelId'], model['likes'])
 
 parser = argparse.ArgumentParser(description='Generate test cases for tokenizers')
 subparsers = parser.add_subparsers(dest='command')
-renew_parser = subparsers.add_parser('renew', help='renew exists models')
-update_parser = subparsers.add_parser('update', help='generate test cases for new models')
+
+subparsers.add_parser('pull', help='pull exists models')
+subparsers.add_parser('renew', help='renew exists models')
+subparsers.add_parser('update', help='generate test cases for new models')
 
 args = parser.parse_args()
 
-if args.command == 'renew':
+if args.command == 'pull':
+    do_pull()
+elif args.command == 'renew':
     do_renew()
 elif args.command == 'update':
-    update()
+    do_update()
 else:
     parser.print_help()

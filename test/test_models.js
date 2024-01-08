@@ -179,8 +179,8 @@ const update_data = false;
 for (var _base_class in base_class)
     describe(_base_class, () => base_class[_base_class].forEach(test_tokenizer));
 
-// test_tokenizer("GPT2TokenizerFast");
-// test_model("facebook/incoder-6B");
+// test_tokenizer("LlamaTokenizer");
+// test_model("xverse/XVERSE-13B");
 
-test.run();
-// test.run(console.DEBUG);
+// test.run();
+test.run(console.DEBUG);

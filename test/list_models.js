@@ -5,7 +5,7 @@ const tokenizers = require("..");
 var models = fs.readdir(path.join(__dirname, "models"))
     .filter(file => file.endsWith(".json"))
     .map(model => JSON.parse(fs.readFile(path.join(__dirname, "models", model), "utf-8")))
-    .sort((a, b) => b.likes - a.likes);
+// .sort((a, b) => b.likes - a.likes);
 
 var home = path.join(process.env.HOME, ".cache/huggingface/hub");
 
@@ -40,7 +40,7 @@ for (var tokenizer_class in sorted_tokenizer_list) {
     const model_path = tokenizers.resolve_model(home, sorted_tokenizer_list[tokenizer_class][0]);
     var vocab_file = "";
     fs.readdirSync(model_path).forEach((file) => {
-        if (file.endsWith(".model"))
+        if (file.endsWith("tokenizer.json"))
             vocab_file = file;
     });
 
