@@ -1,5 +1,8 @@
 #include "BpeTokenizer.h"
 #include "string_util.h"
+#include "pcre.h"
+
+static const char* py_pattern = "'s|'t|'re|'ve|'m|'ll|'d| ?\\p{L}+| ?\\p{N}+| ?[^\\s\\p{L}\\p{N}]+|\\s+(?!\\S)|\\s+";
 
 BpeTokenizer::BpeTokenizer(const Napi::CallbackInfo& info)
     : Napi::ObjectWrap<BpeTokenizer>(info)
@@ -142,6 +145,15 @@ BpeTokenizerCore::BpeTokenizerCore(std::unordered_map<std::string, int32_t>& voc
         BpeNode value { GetEncoding(w1 + w2), index++, token_length };
         bpe_map_.emplace(key, value);
     }
+
+    const char* error;
+    int error_offset;
+    regex_ = pcre_compile(py_pattern, PCRE_UCP | PCRE_UTF8, &error, &error_offset, nullptr);
+}
+
+BpeTokenizerCore::~BpeTokenizerCore()
+{
+    pcre_free(regex_);
 }
 
 int32_t BpeTokenizerCore::GetEncoding(const std::string& key) const
@@ -171,58 +183,64 @@ int32_t BpeTokenizerCore::model_token_to_id(std::string_view token)
 
 void BpeTokenizerCore::bpe_encode(std::string_view text, const std::function<void(int32_t, int32_t)>& push_back) const
 {
-    TokenWithRegularExp regcmp;
-    regcmp.Set(text);
+    const char* text_ptr = text.data();
+    int text_length = text.size();
+    int ovector[30];
+    int start_offset = 0;
+    int rc;
 
-    while (true) {
-        auto [b, tok] = regcmp.GetNextToken();
-        if (!b)
-            break;
+    do {
+        rc = pcre_exec(regex_, nullptr, text_ptr, text_length, start_offset, 0, ovector, sizeof(ovector) / sizeof(ovector[0]));
+        if (rc >= 0) {
+            std::u32string tok;
+            utf8::convert(text_ptr + ovector[0], ovector[1] - ovector[0], tok);
+            start_offset = ovector[1];
 
-        std::list<std::pair<int32_t, int32_t>> byte_list;
+            std::list<std::pair<int32_t, int32_t>> byte_list;
 
-        auto start = tok.begin();
-        auto end = tok.end();
+            auto start = tok.begin();
+            auto end = tok.end();
 
-        if (clean_up_spaces) {
-            while (start < end && IsSpace(*(end - 1)))
-                end--;
+            if (clean_up_spaces) {
+                while (start < end && IsSpace(*(end - 1)))
+                    end--;
 
-            while (start < end)
-                if (IsSpace(*start))
-                    start++;
-                else {
+                while (start < end)
+                    if (IsSpace(*start))
+                        start++;
+                    else {
+                        std::string tmp;
+                        char32_t ch32 = *start++;
+                        utf8::convert(&ch32, 1, tmp);
+
+                        if (start == end) {
+                            for (int32_t i = 0; i < tmp.length() - 1; ++i)
+                                byte_list.push_back(std::make_pair(byte_encoder_[static_cast<unsigned char>(tmp[i])], 1));
+                            byte_list.push_back(std::make_pair(word_encoder_[static_cast<unsigned char>(tmp.back())], 1));
+                        } else {
+                            for (char& ch : tmp)
+                                byte_list.push_back(std::make_pair(byte_encoder_[static_cast<unsigned char>(ch)], 1));
+                        }
+                    }
+            } else {
+                while (start < end) {
                     std::string tmp;
                     char32_t ch32 = *start++;
                     utf8::convert(&ch32, 1, tmp);
 
-                    if (start == end) {
-                        for (int32_t i = 0; i < tmp.length() - 1; ++i)
-                            byte_list.push_back(std::make_pair(byte_encoder_[static_cast<unsigned char>(tmp[i])], 1));
-                        byte_list.push_back(std::make_pair(word_encoder_[static_cast<unsigned char>(tmp.back())], 1));
-                    } else {
-                        for (char& ch : tmp)
-                            byte_list.push_back(std::make_pair(byte_encoder_[static_cast<unsigned char>(ch)], 1));
-                    }
+                    for (char& ch : tmp)
+                        byte_list.push_back(std::make_pair(byte_encoder_[static_cast<unsigned char>(ch)], 1));
                 }
-        } else {
-            while (start < end) {
-                std::string tmp;
-                char32_t ch32 = *start++;
-                utf8::convert(&ch32, 1, tmp);
+            }
 
-                for (char& ch : tmp)
-                    byte_list.push_back(std::make_pair(byte_encoder_[static_cast<unsigned char>(ch)], 1));
+            if (byte_list.size() > 0) {
+                bpe(byte_list);
+
+                for (auto p : byte_list)
+                    push_back(p.first, p.second);
             }
         }
-
-        if (byte_list.size() > 0) {
-            bpe(byte_list);
-
-            for (auto p : byte_list)
-                push_back(p.first, p.second);
-        }
-    }
+    } while (rc >= 0 && start_offset < text_length);
 }
 
 void BpeTokenizerCore::encode(std::string_view text, const std::function<void(int32_t, int32_t)>& push_back)

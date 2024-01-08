@@ -3,171 +3,14 @@
 #include "Tokenizer.h"
 #include <list>
 #include "unicode.h"
-
-class TokenWithRegularExp {
-public:
-    void Set(std::string_view val)
-    {
-        utf8::convert(val, m_text_str);
-        m_text = m_text_str;
-    }
-
-    std::pair<bool, std::u32string_view> GetNextToken()
-    {
-        while (!m_text.empty()) {
-            auto res = TryMatch();
-            if (res.empty()) {
-                m_text = m_text.substr(1);
-                continue;
-            }
-            return { true, res };
-        }
-        return { false, {} };
-    }
-
-private:
-    std::u32string_view TryMatch()
-    {
-        // python pattern:
-        // 's|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+
-
-        // 's|'t|'re|'ve|'m|'ll|'d|
-        // Note: the sequencial of the following if should not be switched, which follows the python regex's syntax
-        if ((m_text[0] == U'\'') && (m_text.size() > 1)) {
-            if ((m_text[1] == U's') || (m_text[1] == U't') || (m_text[1] == U'm') || (m_text[1] == U'd')) {
-                std::u32string_view res = m_text.substr(0, 2);
-                m_text = m_text.substr(2);
-                return res;
-            }
-
-            if (m_text.size() > 2) {
-                if (((m_text[1] == U'r') && (m_text[2] == U'e')) || ((m_text[1] == U'v') && (m_text[2] == U'e')) || ((m_text[1] == U'l') && (m_text[2] == U'l'))) {
-                    std::u32string_view res = m_text.substr(0, 3);
-                    m_text = m_text.substr(3);
-                    return res;
-                }
-            }
-        }
-
-        // ?\p{L}+
-        if ((m_text[0] == U' ') && (m_text.size() > 1) && (ufal::unilib::unicode::category(m_text[1]) & ufal::unilib::unicode::L)) {
-            size_t i = 2;
-            for (; i < m_text.size(); ++i) {
-                if ((ufal::unilib::unicode::category(m_text[i]) & ufal::unilib::unicode::L) == 0)
-                    break;
-            }
-            std::u32string_view res = m_text.substr(0, i);
-            m_text = m_text.substr(i);
-            return res;
-        }
-
-        if (ufal::unilib::unicode::category(m_text[0]) & ufal::unilib::unicode::L) {
-            size_t i = 1;
-            for (; i < m_text.size(); ++i) {
-                if ((ufal::unilib::unicode::category(m_text[i]) & ufal::unilib::unicode::L) == 0)
-                    break;
-            }
-            std::u32string_view res = m_text.substr(0, i);
-            m_text = m_text.substr(i);
-            return res;
-        }
-
-        // ?\p{N}+
-        if ((m_text[0] == U' ') && (m_text.size() > 1) && (ufal::unilib::unicode::category(m_text[1]) & ufal::unilib::unicode::N)) {
-            size_t i = 2;
-            for (; i < m_text.size(); ++i) {
-                if ((ufal::unilib::unicode::category(m_text[i]) & ufal::unilib::unicode::N) == 0)
-                    break;
-            }
-            std::u32string_view res = m_text.substr(0, i);
-            m_text = m_text.substr(i);
-            return res;
-        }
-
-        if (ufal::unilib::unicode::category(m_text[0]) & ufal::unilib::unicode::N) {
-            size_t i = 1;
-            for (; i < m_text.size(); ++i) {
-                if ((ufal::unilib::unicode::category(m_text[i]) & ufal::unilib::unicode::N) == 0)
-                    break;
-            }
-            std::u32string_view res = m_text.substr(0, i);
-            m_text = m_text.substr(i);
-            return res;
-        }
-
-        // ?[^\s\p{L}\p{N}]+
-        if ((m_text[0] == U' ') && (m_text.size() > 1) && (NotLNZ(m_text[1]))) {
-            size_t i = 2;
-            for (; i < m_text.size(); ++i) {
-                if (!NotLNZ(m_text[i]))
-                    break;
-            }
-            std::u32string_view res = m_text.substr(0, i);
-            m_text = m_text.substr(i);
-            return res;
-        }
-
-        if (NotLNZ(m_text[0])) {
-            size_t i = 1;
-            for (; i < m_text.size(); ++i) {
-                if (!NotLNZ(m_text[i]))
-                    break;
-            }
-            std::u32string_view res = m_text.substr(0, i);
-            m_text = m_text.substr(i);
-            return res;
-        }
-
-        // \s+(?!\S)|\s+
-        if ((m_text.size() >= 1) && (IsZ(m_text[0]))) {
-            size_t i = 1;
-            for (; i < m_text.size(); ++i) {
-                if (!IsZ(m_text[i]))
-                    break;
-            }
-            if ((i > 1) && (i != m_text.size())) //\s+(?!\S)
-            {
-                i--;
-                std::u32string_view res = m_text.substr(0, i);
-                m_text = m_text.substr(i);
-                return res;
-            }
-            // \s+
-            std::u32string_view res = m_text.substr(0, i);
-            m_text = m_text.substr(i);
-            return res;
-        }
-
-        return std::u32string_view {};
-    }
-
-    static bool IsZ(char32_t ch)
-    {
-        auto category = ufal::unilib::unicode::category(ch);
-        return (category & ufal::unilib::unicode::Z) != 0;
-    }
-
-    static bool NotLNZ(char32_t ch)
-    {
-        auto category = ufal::unilib::unicode::category(ch);
-        if (category & ufal::unilib::unicode::L)
-            return false;
-        if (category & ufal::unilib::unicode::N)
-            return false;
-        if (category & ufal::unilib::unicode::Z)
-            return false;
-        return true;
-    }
-
-private:
-    std::u32string m_text_str;
-    std::u32string_view m_text;
-};
+#include "pcre.h"
 
 class BpeTokenizerCore : public TokenizerCore {
 public:
     BpeTokenizerCore(std::unordered_map<std::string, int32_t>& vocab_map,
         std::vector<std::string>& merges, Napi::Config& opt);
+
+    ~BpeTokenizerCore();
 
 private:
     virtual int32_t vocab_size() const;
@@ -211,6 +54,9 @@ private:
     std::unordered_map<std::string, int32_t> vocab_map_;
     std::unordered_map<int32_t, std::string> vocab_index_map_;
     std::unordered_map<std::pair<int32_t, int32_t>, BpeNode, hash_pair> bpe_map_;
+
+private:
+    pcre* regex_ = nullptr;
 };
 
 class BpeTokenizer : public Napi::ObjectWrap<BpeTokenizer>,
