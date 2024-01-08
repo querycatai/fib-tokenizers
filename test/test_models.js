@@ -41,8 +41,8 @@ const SentencepieceTokenizer = [
     "XGLMTokenizer",
     "BigBirdTokenizer",
     "BaichuanTokenizer",
+    "XLNetTokenizer",
 
-    // "XLNetTokenizer",
     // "Midm_bitext_Tokenizer", // custom implementation
 ];
 
@@ -58,7 +58,6 @@ const BpeTokenizer = [
     "LongformerTokenizer",
     "FLMTokenizer",
     "LEDTokenizer",
-    "GLMGPT2Tokenizer",
 
     // ====================================
     // "Wav2Vec2CTCTokenizer",

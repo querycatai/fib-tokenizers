@@ -131,20 +131,20 @@ Napi::Value Tokenizer::tokenize(const Napi::CallbackInfo& info)
 
 void Tokenizer::encode(std::string& text, std::vector<int32_t>& ids, int32_t max_length)
 {
-    for (auto& token : prefix_tokens)
+    for (auto& token : single_prefix_tokens)
         if (ids.size() < max_length)
             ids.emplace_back(token);
 
-    special_encode(text, &ids, max_length - suffix_tokens.size());
+    special_encode(text, &ids, max_length - single_suffix_tokens.size());
 
-    if (add_eos_if_not_present && suffix_tokens.size() > 0
+    if (add_eos_if_not_present && single_suffix_tokens.size() > 0
         && ids.size() > 0 && ids[ids.size() - 1] == eos_id)
-        for (int32_t i = 1; i < suffix_tokens.size(); i++) {
+        for (int32_t i = 1; i < single_suffix_tokens.size(); i++) {
             if (ids.size() < max_length)
-                ids.emplace_back(suffix_tokens[i]);
+                ids.emplace_back(single_suffix_tokens[i]);
         }
     else
-        for (auto& token : suffix_tokens) {
+        for (auto& token : single_suffix_tokens) {
             if (ids.size() < max_length)
                 ids.emplace_back(token);
         }

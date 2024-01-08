@@ -120,25 +120,13 @@ void Tokenizer::config_added_tokens(const Napi::Config& opt)
 
 void Tokenizer::config_prefix_suffix(const Napi::Config& opt)
 {
-    std::vector<std::string> config_tokens;
-
-    config_tokens = opt.Get("prefix_tokens", config_tokens);
-    for (auto& token : config_tokens)
-        prefix_tokens.emplace_back(convert_token_to_id(token));
-
     bool add_bos_token = opt.Get("add_bos_token", false);
     if (add_bos_token)
-        prefix_tokens.emplace_back(bos_id);
-
-    config_tokens.clear();
+        single_prefix_tokens.emplace_back(bos_id);
 
     bool add_eos_token = opt.Get("add_eos_token", false);
     if (add_eos_token)
-        suffix_tokens.emplace_back(eos_id);
-
-    config_tokens = opt.Get("suffix_tokens", config_tokens);
-    for (auto& token : config_tokens)
-        suffix_tokens.emplace_back(convert_token_to_id(token));
+        single_suffix_tokens.emplace_back(eos_id);
 
     add_eos_if_not_present = opt.Get("add_eos_if_not_present", add_eos_if_not_present);
 }
@@ -150,8 +138,8 @@ void Tokenizer::config_post_processor(const Napi::Config& opt)
         Napi::Array post_processor_array = post_processor.As<Napi::Array>();
         bool has_sequence = false;
 
-        prefix_tokens.clear();
-        suffix_tokens.clear();
+        single_prefix_tokens.clear();
+        single_suffix_tokens.clear();
 
         for (int32_t i = 0; i < post_processor_array.Length(); i++) {
             Napi::Object post_processor_object = post_processor_array.Get(i).As<Napi::Object>();
@@ -174,9 +162,9 @@ void Tokenizer::config_post_processor(const Napi::Config& opt)
                 std::string token = post_processor_object.Get("id").As<Napi::String>();
 
                 if (!has_sequence)
-                    prefix_tokens.emplace_back(convert_token_to_id(token));
+                    single_prefix_tokens.emplace_back(convert_token_to_id(token));
                 else
-                    suffix_tokens.emplace_back(convert_token_to_id(token));
+                    single_suffix_tokens.emplace_back(convert_token_to_id(token));
             }
         }
     }
@@ -220,12 +208,12 @@ void Tokenizer::config_post_processor(const Napi::Config& opt)
             }
         }
     } else {
-        pair_prefix_tokens.insert(pair_prefix_tokens.end(), prefix_tokens.begin(), prefix_tokens.end());
+        pair_prefix_tokens.insert(pair_prefix_tokens.end(), single_prefix_tokens.begin(), single_prefix_tokens.end());
 
-        pair_middle_tokens.insert(pair_middle_tokens.end(), suffix_tokens.begin(), suffix_tokens.end());
-        pair_middle_tokens.insert(pair_middle_tokens.end(), prefix_tokens.begin(), prefix_tokens.end());
+        pair_middle_tokens.insert(pair_middle_tokens.end(), single_suffix_tokens.begin(), single_suffix_tokens.end());
+        pair_middle_tokens.insert(pair_middle_tokens.end(), single_prefix_tokens.begin(), single_prefix_tokens.end());
 
-        pair_suffix_tokens.insert(pair_suffix_tokens.end(), suffix_tokens.begin(), suffix_tokens.end());
+        pair_suffix_tokens.insert(pair_suffix_tokens.end(), single_suffix_tokens.begin(), single_suffix_tokens.end());
     }
 }
 
