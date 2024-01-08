@@ -10,6 +10,123 @@
 [submodule "vender/cpp-tiktoken"]
 	path = vender/cpp-tiktoken
 	url = https://github.com/gh-markt/cpp-tiktoken.git
-[submodule "vender/boost_regex"]
-	path = vender/boost_regex
+[submodule "vender/fmt"]
+	path = vender/fmt
+	url = https://github.com/fmtlib/fmt
+[submodule "vender/rapidjson"]
+	path = vender/rapidjson
+	url = https://github.com/Tencent/rapidjson
+[submodule "vender/jinja2"]
+	path = vender/jinja2
+	url = https://github.com/jinja2cpp/Jinja2Cpp
+[submodule "vender/boost/algorithm"]
+	path = vender/boost/algorithm
+	url = https://github.com/boostorg/algorithm.git
+[submodule "vender/boost/detail"]
+	path = vender/boost/detail
+	url = https://github.com/boostorg/detail.git
+[submodule "vender/boost/numeric_conversion"]
+	path = vender/boost/numeric_conversion
+	url = https://github.com/boostorg/numeric_conversion.git
+[submodule "vender/boost/throw_exception"]
+	path = vender/boost/throw_exception
+	url = https://github.com/boostorg/throw_exception.git
+[submodule "vender/boost/assert"]
+	path = vender/boost/assert
+	url = https://github.com/boostorg/assert.git
+[submodule "vender/boost/filesystem"]
+	path = vender/boost/filesystem
+	url = https://github.com/boostorg/filesystem.git
+[submodule "vender/boost/optional"]
+	path = vender/boost/optional
+	url = https://github.com/boostorg/optional.git
+[submodule "vender/boost/type_traits"]
+	path = vender/boost/type_traits
+	url = https://github.com/boostorg/type_traits.git
+[submodule "vender/boost/concept_check"]
+	path = vender/boost/concept_check
+	url = https://github.com/boostorg/concept_check.git
+[submodule "vender/boost/functional"]
+	path = vender/boost/functional
+	url = https://github.com/boostorg/functional.git
+[submodule "vender/boost/predef"]
+	path = vender/boost/predef
+	url = https://github.com/boostorg/predef.git
+[submodule "vender/boost/unordered"]
+	path = vender/boost/unordered
+	url = https://github.com/boostorg/unordered.git
+[submodule "vender/boost/config"]
+	path = vender/boost/config
+	url = https://github.com/boostorg/config.git
+[submodule "vender/boost/intrusive"]
+	path = vender/boost/intrusive
+	url = https://github.com/boostorg/intrusive.git
+[submodule "vender/boost/preprocessor"]
+	path = vender/boost/preprocessor
+	url = https://github.com/boostorg/preprocessor.git
+[submodule "vender/boost/utility"]
+	path = vender/boost/utility
+	url = https://github.com/boostorg/utility.git
+[submodule "vender/boost/container"]
+	path = vender/boost/container
+	url = https://github.com/boostorg/container.git
+[submodule "vender/boost/io"]
+	path = vender/boost/io
+	url = https://github.com/boostorg/io.git
+[submodule "vender/boost/range"]
+	path = vender/boost/range
+	url = https://github.com/boostorg/range.git
+[submodule "vender/boost/variant"]
+	path = vender/boost/variant
+	url = https://github.com/boostorg/variant.git
+[submodule "vender/boost/container_hash"]
+	path = vender/boost/container_hash
+	url = https://github.com/boostorg/container_hash.git
+[submodule "vender/boost/iterator"]
+	path = vender/boost/iterator
+	url = https://github.com/boostorg/iterator.git
+[submodule "vender/boost/regex"]
+	path = vender/boost/regex
 	url = https://github.com/boostorg/regex.git
+[submodule "vender/boost/winapi"]
+	path = vender/boost/winapi
+	url = https://github.com/boostorg/winapi.git
+[submodule "vender/boost/conversion"]
+	path = vender/boost/conversion
+	url = https://github.com/boostorg/conversion.git
+[submodule "vender/boost/move"]
+	path = vender/boost/move
+	url = https://github.com/boostorg/move.git
+[submodule "vender/boost/smart_ptr"]
+	path = vender/boost/smart_ptr
+	url = https://github.com/boostorg/smart_ptr.git
+[submodule "vender/boost/core"]
+	path = vender/boost/core
+	url = https://github.com/boostorg/core.git
+[submodule "vender/boost/mp11"]
+	path = vender/boost/mp11
+	url = https://github.com/boostorg/mp11.git
+[submodule "vender/boost/static_assert"]
+	path = vender/boost/static_assert
+	url = https://github.com/boostorg/static_assert.git
+[submodule "vender/boost/describe"]
+	path = vender/boost/describe
+	url = https://github.com/boostorg/describe.git
+[submodule "vender/boost/mpl"]
+	path = vender/boost/mpl
+	url = https://github.com/boostorg/mpl.git
+[submodule "vender/boost/system"]
+	path = vender/boost/system
+	url = https://github.com/boostorg/system.git
+[submodule "vender/nonstd/expected-lite"]
+	path = vender/nonstd/expected-lite
+	url = https://github.com/martinmoene/expected-lite
+[submodule "vender/nonstd/optional-lite"]
+	path = vender/nonstd/optional-lite
+	url = https://github.com/martinmoene/optional-lite
+[submodule "vender/nonstd/string-view-lite"]
+	path = vender/nonstd/string-view-lite
+	url = https://github.com/martinmoene/string-view-lite
+[submodule "vender/nonstd/variant-lite"]
+	path = vender/nonstd/variant-lite
+	url = https://github.com/martinmoene/variant-lite

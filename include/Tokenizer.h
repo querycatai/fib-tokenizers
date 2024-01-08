@@ -3,6 +3,7 @@
 #include <regex>
 #include <limits>
 #include <boost/regex.hpp>
+#include <jinja2cpp/template.h>
 #include <string_view>
 #include "napi_value.h"
 #include "SpecialToken.h"
@@ -149,6 +150,9 @@ private:
 private:
     std::unordered_map<std::string_view, SpecialToken> special_tokens;
     std::unordered_map<int32_t, std::string> id_to_token;
+
+private:
+    jinja2::Template chat_template;
 
 private:
     boost::regex pattern;
