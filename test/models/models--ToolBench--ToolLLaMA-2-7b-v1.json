@@ -1674,6 +1674,7 @@
             1
         ]
     },
+    "pad_token": "<unk>",
     "batch_encode": {
         "input_ids": [
             [

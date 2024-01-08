@@ -139,7 +139,10 @@ def generate_one(model, likes, update=False):
         data['pair_encode'] = dict(tokenizer("a a", "b b b b"))
 
         if tokenizer.pad_token is not None:
+            data['pad_token'] = tokenizer.pad_token
             data['batch_encode'] = dict(tokenizer(["a a", "b b b b b b b b b b b b b b b b b"], max_length=10, truncation=True, padding=True))
+        else:
+            data['batch_encode'] = dict(tokenizer(["a a", "b b b b b b b b b b b b b b b b b"], max_length=10, truncation=True))
 
         with open(model_file, "w", encoding="utf-8", errors='ignore') as fp:
             json.dump(data, fp, indent=4)

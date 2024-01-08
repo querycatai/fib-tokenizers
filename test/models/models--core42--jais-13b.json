@@ -1523,6 +1523,7 @@
             1
         ]
     },
+    "pad_token": "<|endoftext|>",
     "batch_encode": {
         "input_ids": [
             [

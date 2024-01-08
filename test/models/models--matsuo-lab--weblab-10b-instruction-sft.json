@@ -1516,6 +1516,7 @@
             1
         ]
     },
+    "pad_token": "<|padding|>",
     "batch_encode": {
         "input_ids": [
             [
