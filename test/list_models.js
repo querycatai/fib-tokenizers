@@ -5,7 +5,7 @@ const tokenizers = require("..");
 var models = fs.readdir(path.join(__dirname, "models"))
     .filter(file => file.endsWith(".json"))
     .map(model => JSON.parse(fs.readFile(path.join(__dirname, "models", model), "utf-8")))
-// .sort((a, b) => b.likes - a.likes);
+    .sort((a, b) => b.likes - a.likes);
 
 var home = path.join(process.env.HOME, ".cache/huggingface/hub");
 
