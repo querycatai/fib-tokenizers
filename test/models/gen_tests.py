@@ -128,14 +128,22 @@ def generate_one(model, likes, update=False):
                 # decoded_with_special=decoded_with_special
             ))
 
+        data=dict(
+            model=model,
+            tokenizer_class=tokenizer_class,
+            likes=likes,
+            special_tokens=special_tokens,
+            datasets=datasets,
+        )
+
+        data['pair_encode'] = dict(tokenizer("a a", "b b b b b b b b b b b b b b b b b b b b"))
+
+        if tokenizer.pad_token is not None:
+            data['batch_encode'] = dict(tokenizer(["a a", "b b b"], max_length=10, truncation=True, padding=True))
+
         with open(model_file, "w", encoding="utf-8", errors='ignore') as fp:
-            json.dump(dict(
-                model=model,
-                tokenizer_class=tokenizer_class,
-                likes=likes,
-                special_tokens=special_tokens,
-                datasets=datasets,
-            ), fp, indent=4)
+            json.dump(data, fp, indent=4)
+
     except Exception as e:
         cache_dir = os.path.join(os.path.expanduser("~"), ".cache", "huggingface", "hub", "models--" + model.replace("/", "--"))
         shutil.rmtree(cache_dir, ignore_errors=True)
