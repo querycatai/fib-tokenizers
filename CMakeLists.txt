@@ -92,3 +92,7 @@ add_definitions(
     -DPACKAGE_STRING
     -DVERSION
 )
+
+if(WIN32)
+    add_definitions(-DRAPIDJSON_ENDIAN=RAPIDJSON_LITTLEENDIAN)
+endif()
