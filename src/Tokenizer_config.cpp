@@ -161,7 +161,7 @@ void Tokenizer::config_post_processor(const Napi::Config& opt)
             napi_valuetype type = v.Type();
             if (type != napi_undefined && type != napi_null) {
                 if (has_sequence)
-                    throw Napi::Error::New(opt.GetEnv(), "Only one Sequence post processor is allowed");
+                    throw Napi::Error::New(opt.GetEnv(), "Only one Sequence is allowed in single mode post processor.");
 
                 has_sequence = true;
                 continue;
@@ -179,6 +179,53 @@ void Tokenizer::config_post_processor(const Napi::Config& opt)
                     suffix_tokens.emplace_back(convert_token_to_id(token));
             }
         }
+    }
+
+    post_processor = opt.Get({ "post_processor", "pair" });
+    if (post_processor.IsArray()) {
+        Napi::Array post_processor_array = post_processor.As<Napi::Array>();
+        int32_t sequence_count = 0;
+
+        for (int32_t i = 0; i < post_processor_array.Length(); i++) {
+            Napi::Object post_processor_object = post_processor_array.Get(i).As<Napi::Object>();
+            Napi::Value v;
+
+            v = post_processor_object.Get("Sequence");
+            napi_valuetype type = v.Type();
+            if (type != napi_undefined && type != napi_null) {
+                if (sequence_count > 2)
+                    throw Napi::Error::New(opt.GetEnv(), "Only two Sequence are allowed in pair mode post processor.");
+
+                sequence_count++;
+                continue;
+            }
+
+            v = post_processor_object.Get("SpecialToken");
+            type = v.Type();
+            if (type != napi_undefined && type != napi_null) {
+                post_processor_object = v.As<Napi::Object>();
+                std::string token = post_processor_object.Get("id").As<Napi::String>();
+
+                switch (sequence_count) {
+                case 0:
+                    pair_prefix_tokens.emplace_back(convert_token_to_id(token));
+                    break;
+                case 1:
+                    pair_middle_tokens.emplace_back(convert_token_to_id(token));
+                    break;
+                case 2:
+                    pair_suffix_tokens.emplace_back(convert_token_to_id(token));
+                    break;
+                }
+            }
+        }
+    } else {
+        pair_prefix_tokens.insert(pair_prefix_tokens.end(), prefix_tokens.begin(), prefix_tokens.end());
+
+        pair_middle_tokens.insert(pair_middle_tokens.end(), suffix_tokens.begin(), suffix_tokens.end());
+        pair_middle_tokens.insert(pair_middle_tokens.end(), prefix_tokens.begin(), prefix_tokens.end());
+
+        pair_suffix_tokens.insert(pair_suffix_tokens.end(), suffix_tokens.begin(), suffix_tokens.end());
     }
 }
 

@@ -132,17 +132,22 @@ Napi::Value Tokenizer::tokenize(const Napi::CallbackInfo& info)
 void Tokenizer::encode(std::string& text, std::vector<int32_t>& ids, int32_t max_length)
 {
     for (auto& token : prefix_tokens)
-        ids.emplace_back(token);
+        if (ids.size() < max_length)
+            ids.emplace_back(token);
 
     special_encode(text, &ids, max_length - suffix_tokens.size());
 
     if (add_eos_if_not_present && suffix_tokens.size() > 0
         && ids.size() > 0 && ids[ids.size() - 1] == eos_id)
-        for (int32_t i = 1; i < suffix_tokens.size(); i++)
-            ids.emplace_back(suffix_tokens[i]);
+        for (int32_t i = 1; i < suffix_tokens.size(); i++) {
+            if (ids.size() < max_length)
+                ids.emplace_back(suffix_tokens[i]);
+        }
     else
-        for (auto& token : suffix_tokens)
-            ids.emplace_back(token);
+        for (auto& token : suffix_tokens) {
+            if (ids.size() < max_length)
+                ids.emplace_back(token);
+        }
 }
 
 Napi::Value Tokenizer::encode(const Napi::CallbackInfo& info)
@@ -159,7 +164,7 @@ Napi::Value Tokenizer::encode(const Napi::CallbackInfo& info)
     return to_value(info.Env(), ids);
 }
 
-Napi::Value Tokenizer::encode_plus(const Napi::CallbackInfo& info)
+Napi::Value Tokenizer::batch_encode(const Napi::CallbackInfo& info)
 {
     std::vector<std::vector<int32_t>> ids;
     std::vector<std::vector<int32_t>> masks;
@@ -213,6 +218,70 @@ Napi::Value Tokenizer::encode_plus(const Napi::CallbackInfo& info)
     result.Set("attention_mask", to_value(info.Env(), masks));
 
     return result;
+}
+
+Napi::Value Tokenizer::pair_encode(const Napi::CallbackInfo& info)
+{
+    std::vector<int32_t> ids;
+    std::vector<int32_t> types;
+    std::vector<int32_t> masks;
+
+    std::vector<std::string> texts;
+    Napi::Config opt;
+    int32_t i;
+
+    texts.emplace_back(from_value<std::string>(info[0]));
+    if (info[1].IsString()) {
+        texts.emplace_back(from_value<std::string>(info[1]));
+        opt = Napi::Config(info[2]);
+    } else
+        opt = Napi::Config(info[1]);
+
+    bool truncation = opt.Get("truncation", false);
+    int32_t max_length = truncation ? opt.Get("max_length", model_max_length) : std::numeric_limits<int32_t>::max();
+
+    for (auto& token : pair_prefix_tokens)
+        if (ids.size() < max_length) {
+            ids.emplace_back(token);
+            types.emplace_back(0);
+            masks.emplace_back(1);
+        }
+
+    for (i = 0; i < texts.size(); i++) {
+        int32_t max_length_ = max_length - pair_suffix_tokens.size();
+        special_encode(texts[i], &ids, max_length_);
+        if (i < texts.size() - 1)
+            for (auto& token : pair_middle_tokens)
+                if (ids.size() < max_length_)
+                    ids.emplace_back(token);
+
+        for (int32_t j = types.size(); j < ids.size(); j++) {
+            types.emplace_back(i);
+            masks.emplace_back(1);
+        }
+    }
+
+    for (auto& token : pair_suffix_tokens)
+        if (ids.size() < max_length) {
+            ids.emplace_back(token);
+            types.emplace_back(i - 1);
+            masks.emplace_back(1);
+        }
+
+    Napi::Object result = Napi::Object::New(info.Env());
+    result.Set("input_ids", to_value(info.Env(), ids));
+    result.Set("token_type_ids", to_value(info.Env(), types));
+    result.Set("attention_mask", to_value(info.Env(), masks));
+
+    return result;
+}
+
+Napi::Value Tokenizer::encode_plus(const Napi::CallbackInfo& info)
+{
+    if (info[0].IsArray())
+        return batch_encode(info);
+    else
+        return pair_encode(info);
 }
 
 Napi::Value Tokenizer::decode(const Napi::CallbackInfo& info)

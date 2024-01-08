@@ -63,6 +63,10 @@ public:
     Napi::Value decode(const Napi::CallbackInfo& info);
 
 private:
+    Napi::Value batch_encode(const Napi::CallbackInfo& info);
+    Napi::Value pair_encode(const Napi::CallbackInfo& info);
+
+private:
     int32_t model_token_to_id(std::string_view token)
     {
         return tokenizer->model_token_to_id(token);
@@ -137,6 +141,11 @@ private:
 private:
     std::vector<int32_t> prefix_tokens;
     std::vector<int32_t> suffix_tokens;
+
+private:
+    std::vector<int32_t> pair_prefix_tokens;
+    std::vector<int32_t> pair_middle_tokens;
+    std::vector<int32_t> pair_suffix_tokens;
 
 private:
     std::unordered_map<std::string_view, SpecialToken> special_tokens;

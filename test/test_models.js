@@ -156,20 +156,36 @@ function test_model(model) {
             assert.equal(res3.length, 3);
         });
 
-        it("encode_plus", () => {
-            var res1 = tokenizer.encode_plus(["a a", "b b b b b b b b b b b b b b b b b"], {
-                truncation: true,
-                max_length: 10,
-                padding: model.pad_token !== undefined
+        describe("encode_plus", () => {
+            it("batch_encode", () => {
+                var res1 = tokenizer.encode_plus(["a a", "b b b b b b b b b b b b b b b b b"], {
+                    truncation: true,
+                    max_length: 10,
+                    padding: model.pad_token !== undefined
+                });
+
+                if (update_data) {
+                    model.batch_encode.input_ids = res1.input_ids;
+                    model.batch_encode.attention_mask = res1.attention_mask;
+                }
+
+                assert.deepEqual(res1.input_ids, model.batch_encode.input_ids);
+                assert.deepEqual(res1.attention_mask, model.batch_encode.attention_mask);
             });
 
-            if (update_data) {
-                model.batch_encode.input_ids = res1.input_ids;
-                model.batch_encode.attention_mask = res1.attention_mask;
-            }
+            it("pair_encode", () => {
+                var res1 = tokenizer.encode_plus("a a", "b b b b");
 
-            assert.deepEqual(model.batch_encode.input_ids, res1.input_ids);
-            assert.deepEqual(model.batch_encode.attention_mask, res1.attention_mask);
+                if (update_data) {
+                    model.pair_encode.input_ids = res1.input_ids;
+                    if (model.pair_encode.token_type_ids)
+                        model.pair_encode.token_type_ids = res1.token_type_ids;
+                }
+
+                assert.deepEqual(res1.input_ids, model.pair_encode.input_ids);
+                if (model.pair_encode.token_type_ids)
+                    assert.deepEqual(res1.token_type_ids, model.pair_encode.token_type_ids);
+            });
         });
 
         function test_one(test) {

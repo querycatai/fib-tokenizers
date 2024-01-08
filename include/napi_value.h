@@ -194,6 +194,10 @@ namespace Napi {
 
 class Config {
 public:
+    Config()
+    {
+    }
+
     Config(Value opt)
     {
         if (opt.Type() != napi_undefined)
