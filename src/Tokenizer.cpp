@@ -167,7 +167,9 @@ Napi::Value Tokenizer::encode(const Napi::CallbackInfo& info)
 Napi::Value Tokenizer::batch_encode(const Napi::CallbackInfo& info)
 {
     std::vector<std::vector<int32_t>> ids;
+    std::vector<std::vector<int32_t>> types;
     std::vector<std::vector<int32_t>> masks;
+    std::vector<std::vector<int32_t>> positions;
 
     std::vector<std::string> texts = to_array<std::string>(info[0]);
 
@@ -180,42 +182,68 @@ Napi::Value Tokenizer::batch_encode(const Napi::CallbackInfo& info)
     for (auto& text : texts) {
         std::vector<int32_t> ids_;
         std::vector<int32_t> masks_;
+        std::vector<int32_t> positions_;
 
         encode(text, ids_, max_length);
         if (ids_.size() > max_line_length)
             max_line_length = ids_.size();
 
-        for (int32_t i = 0; i < ids_.size(); i++)
+        for (int32_t i = 0; i < ids_.size(); i++) {
             masks_.emplace_back(1);
+            positions_.emplace_back(i);
+        }
 
         ids.emplace_back(std::move(ids_));
         masks.emplace_back(std::move(masks_));
+        positions.emplace_back(std::move(positions_));
     }
 
     if (padding) {
         for (int32_t i = 0; i < ids.size(); i++) {
             std::vector<int32_t>& ids_ = ids[i];
             std::vector<int32_t>& masks_ = masks[i];
+            std::vector<int32_t>& positions_ = positions[i];
 
             if (ids_.size() < max_line_length) {
                 if (padding_left) {
                     for (int32_t j = ids_.size(); j < max_line_length; j++) {
                         ids_.emplace(ids_.begin(), pad_id);
                         masks_.emplace(masks_.begin(), 0);
+                        positions_.emplace(positions_.begin(), 0);
                     }
                 } else {
                     for (int32_t j = ids_.size(); j < max_line_length; j++) {
                         ids_.emplace_back(pad_id);
                         masks_.emplace_back(0);
+                        positions_.emplace_back(0);
                     }
                 }
             }
         }
     }
 
+    for (int32_t i = 0; i < ids.size(); i++) {
+        std::vector<int32_t>& ids_ = ids[i];
+
+        if (token_type_ids) {
+            std::vector<int32_t> types_;
+
+            for (int32_t j = 0; j < ids_.size(); j++)
+                types_.emplace_back(0);
+
+            types.emplace_back(std::move(types_));
+        }
+    }
+
     Napi::Object result = Napi::Object::New(info.Env());
+
     result.Set("input_ids", to_value(info.Env(), ids));
-    result.Set("attention_mask", to_value(info.Env(), masks));
+    if (token_type_ids)
+        result.Set("token_type_ids", to_value(info.Env(), types));
+    if (attention_mask)
+        result.Set("attention_mask", to_value(info.Env(), masks));
+    if (position_ids)
+        result.Set("position_ids", to_value(info.Env(), positions));
 
     return result;
 }
@@ -225,6 +253,7 @@ Napi::Value Tokenizer::pair_encode(const Napi::CallbackInfo& info)
     std::vector<int32_t> ids;
     std::vector<int32_t> types;
     std::vector<int32_t> masks;
+    std::vector<int32_t> positions;
 
     std::vector<std::string> texts;
     Napi::Config opt;
@@ -268,10 +297,18 @@ Napi::Value Tokenizer::pair_encode(const Napi::CallbackInfo& info)
             masks.emplace_back(1);
         }
 
+    for (int32_t i = 0; i < ids.size(); i++)
+        positions.emplace_back(i);
+
     Napi::Object result = Napi::Object::New(info.Env());
+
     result.Set("input_ids", to_value(info.Env(), ids));
-    result.Set("token_type_ids", to_value(info.Env(), types));
-    result.Set("attention_mask", to_value(info.Env(), masks));
+    if (token_type_ids)
+        result.Set("token_type_ids", to_value(info.Env(), types));
+    if (attention_mask)
+        result.Set("attention_mask", to_value(info.Env(), masks));
+    if (position_ids)
+        result.Set("position_ids", to_value(info.Env(), positions));
 
     return result;
 }

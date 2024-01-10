@@ -163,27 +163,19 @@ function test_model(model) {
                     padding: model.pad_token !== undefined
                 });
 
-                if (update_data) {
-                    model.batch_encode.input_ids = res1.input_ids;
-                    model.batch_encode.attention_mask = res1.attention_mask;
-                }
+                if (update_data)
+                    model.batch_encode = res1;
 
-                assert.deepEqual(res1.input_ids, model.batch_encode.input_ids);
-                assert.deepEqual(res1.attention_mask, model.batch_encode.attention_mask);
+                assert.deepEqual(res1, model.batch_encode);
             });
 
             it("pair_encode", () => {
                 var res1 = tokenizer.encode_plus("a a", "b b b b");
 
-                if (update_data) {
-                    model.pair_encode.input_ids = res1.input_ids;
-                    if (model.pair_encode.token_type_ids)
-                        model.pair_encode.token_type_ids = res1.token_type_ids;
-                }
+                if (update_data)
+                    model.pair_encode = res1;
 
-                assert.deepEqual(res1.input_ids, model.pair_encode.input_ids);
-                if (model.pair_encode.token_type_ids)
-                    assert.deepEqual(res1.token_type_ids, model.pair_encode.token_type_ids);
+                assert.deepEqual(res1, model.pair_encode);
             });
         });
 

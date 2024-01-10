@@ -31,6 +31,7 @@
 #include <utility>
 #include <variant>
 #include <vector>
+#include <version>
 
 #if __has_include(<cxxabi.h>)
 #include <cxxabi.h>

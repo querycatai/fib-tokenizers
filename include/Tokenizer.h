@@ -113,6 +113,7 @@ private:
     void config_prefix_suffix(const Napi::Config& opt);
     void config_post_processor(const Napi::Config& opt);
     void config_pattern(const Napi::Config& opt);
+    void config_model_input_names(const Napi::Config& opt);
 
 private:
     std::shared_ptr<TokenizerCore> tokenizer;
@@ -125,8 +126,16 @@ private:
     bool add_prefix_space = false;
     bool add_eos_if_not_present = false;
     bool add_basic_tokens = false;
+
+private:
     bool padding_left = false;
     int32_t model_max_length = 1024;
+
+private:
+    // model_input_names
+    bool token_type_ids = false;
+    bool attention_mask = true;
+    bool position_ids = false;
 
 private:
     int32_t vocab_size = 0;

@@ -300,6 +300,21 @@ void Tokenizer::config_pattern(const Napi::Config& opt)
     }
 }
 
+void Tokenizer::config_model_input_names(const Napi::Config& opt)
+{
+    std::vector<std::string> model_input_names;
+    model_input_names = opt.Get("model_input_names", model_input_names);
+
+    for (auto& name : model_input_names) {
+        if (name == "token_type_ids")
+            token_type_ids = true;
+        else if (name == "attention_mask")
+            attention_mask = true;
+        else if (name == "position_ids")
+            position_ids = true;
+    }
+}
+
 void Tokenizer::init(std::shared_ptr<TokenizerCore> Tokenizer_, Napi::Config opt, bool add_basic_tokens_)
 {
     tokenizer = Tokenizer_;
@@ -329,4 +344,5 @@ void Tokenizer::init(std::shared_ptr<TokenizerCore> Tokenizer_, Napi::Config opt
     config_prefix_suffix(opt);
     config_post_processor(opt);
     config_pattern(opt);
+    config_model_input_names(opt);
 }
