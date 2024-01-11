@@ -93,8 +93,6 @@ jobs:
           set -ev
           bash build -j2 ${BUILD_ARCH} ${BUILD_TARGET} ${BUILD_TYPE}
           if [[ "$BUILD_TAG" != "" ]]; then
-            mkdir addon
-            cp bin/${BUILD_OS}_${BUILD_ARCH}_${BUILD_TYPE}/${BUILD_NAME}.node addon/
             tar -zcf ${BUILD_NAME}-${BUILD_TARGET}-${BUILD_ARCH}-${BUILD_TYPE}.tar.gz addon/${BUILD_NAME}.node
           fi
 
