@@ -1,6 +1,6 @@
 {
   "name": "fib-tokenizers",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "cpp tokenizer module for fibjs.",
   "main": "index.js",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/xicilion/fib-tokenizers.git"
+    "url": "git+https://github.com/querycatai/fib-tokenizers.git"
   },
   "keywords": [
     "tokenizers",
@@ -16,13 +16,13 @@
   ],
   "author": "lion",
   "license": "MIT",
-  "homepage": "https://github.com/xicilion/fib-tokenizers",
+  "homepage": "https://github.com/querycatai/fib-tokenizers",
   "binary": {
     "module_name": "fib-tokenizers",
     "module_path": "./addon",
     "remote_path": "{version}",
     "package_name": "{module_name}-{platform}-{arch}-release.tar.gz",
-    "host": "https://github.com/xicilion/fib-tokenizers/releases/download/"
+    "host": "https://github.com/querycatai/fib-tokenizers/releases/download/"
   },
   "dependencies": {
     "@mapbox/node-pre-gyp": "^1.0.11"
