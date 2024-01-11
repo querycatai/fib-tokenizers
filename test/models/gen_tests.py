@@ -76,15 +76,14 @@ def resolve_model(model):
     else:
         return model_home
 
-def generate_one(model, likes, update=False):
+def generate_one(model, likes):
     from transformers import AutoTokenizer
 
     model_file = "models--" + model.replace("/", "--") + ".json"
-    if not update and os.path.exists(model_file):
-        return
 
     try:
-        if not update:
+        model_home = resolve_model(model)
+        if not os.path.exists(model_home):
             print(f"{Fore.YELLOW}Downloading for {model}{Fore.RESET}")
             tokenizer = AutoTokenizer.from_pretrained(model, trust_remote_code=True, use_fast=False)
 
@@ -92,15 +91,19 @@ def generate_one(model, likes, update=False):
 
         tokenizer = AutoTokenizer.from_pretrained(model, trust_remote_code=True, use_fast=False, local_files_only=True)
         tokenizer_class = tokenizer.__class__.__name__
-        model_home = resolve_model(model)
 
         if not tokenizer_class.endswith("Fast"):
             tokenizer_json = os.path.join(model_home, "tokenizer.json")
-            if os.path.isfile(tokenizer_json) and glob.glob(os.path.join(model_home, "*.model")):
+            if os.path.isfile(tokenizer_json):
                 os.remove(tokenizer_json)
                 tokenizer = AutoTokenizer.from_pretrained(model, trust_remote_code=True, use_fast=False, local_files_only=True)
 
         special_tokens=tokenizer.all_special_tokens
+        special_ids=tokenizer.convert_tokens_to_ids(special_tokens)
+
+        special_tokens_map={}
+        for i, token in enumerate(special_tokens):
+            special_tokens_map[token] = special_ids[i]
 
         datasets = []
         shared_texts = TEST_DATA["shared"].copy()
@@ -132,7 +135,7 @@ def generate_one(model, likes, update=False):
             model=model,
             tokenizer_class=tokenizer_class,
             likes=likes,
-            special_tokens=special_tokens,
+            special_tokens=special_tokens_map,
             datasets=datasets,
         )
 
@@ -145,7 +148,7 @@ def generate_one(model, likes, update=False):
             data['batch_encode'] = dict(tokenizer(["a a", "b b b b b b b b b b b b b b b b b"], max_length=10, truncation=True))
 
         with open(model_file, "w", encoding="utf-8", errors='ignore') as fp:
-            json.dump(data, fp, indent=4)
+            json.dump(data, fp, ensure_ascii=False, indent=4)
 
     except Exception as e:
         cache_dir = os.path.join(os.path.expanduser("~"), ".cache", "huggingface", "hub", "models--" + model.replace("/", "--"))
@@ -182,7 +185,7 @@ def do_renew():
     for model in local_models:
         with open(model, 'r') as file:
             data = json.load(file)
-        generate_one(re.search(r'models--(.*).json', model)[1].replace('--', '/'), data['likes'], True)
+        generate_one(re.search(r'models--(.*).json', model)[1].replace('--', '/'), data['likes'])
 
 def do_update():
     import requests

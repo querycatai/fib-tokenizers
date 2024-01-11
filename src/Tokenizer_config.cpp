@@ -29,17 +29,17 @@ void Tokenizer::add_token(SpecialToken& token, bool is_unk)
 
     if (token.content.length() > 0) {
         if (token.id == -1) {
-            auto it = special_tokens.find(token.content);
-            if (it != special_tokens.end())
+            auto it = special_token_to_id.find(token.content);
+            if (it != special_token_to_id.end())
                 token.id = it->second.id;
             else {
-                token.id = model_token_to_id(token.content);
+                token.id = tokenizer->model_token_to_id(token.content);
 
                 if (token.id == model_unk_id && !is_unk && token.content != "<unk>") {
                     if (add_basic_tokens) {
                         do {
                             token.id = special_token_offset++ + offset;
-                        } while (id_to_token.find(token.id) != id_to_token.end());
+                        } while (special_id_to_token.find(token.id) != special_id_to_token.end());
                     } else
                         token.id = 0;
                 } else {
@@ -49,8 +49,9 @@ void Tokenizer::add_token(SpecialToken& token, bool is_unk)
         }
 
         // printf("add_token to: %s[%d]\n", token.content.c_str(), token.id);
-        auto it = id_to_token.emplace(token.id, token.content);
-        special_tokens.emplace(it.first->second, token);
+        auto it = special_tokens.emplace(token.content);
+        special_token_to_id.emplace(*(it.first), token);
+        special_id_to_token.insert_or_assign(token.id, token.content);
     }
 }
 
@@ -235,12 +236,12 @@ void Tokenizer::config_pattern(const Napi::Config& opt)
         "\v"
     };
 
-    if (special_tokens.size() > 0) {
+    if (special_token_to_id.size() > 0) {
         std::string pattern_str;
         std::vector<std::string> keys;
         std::vector<char16_t> chars;
 
-        for (auto& [key, value] : special_tokens)
+        for (auto& [key, value] : special_token_to_id)
             keys.emplace_back(key);
 
         std::set<std::string> res;
@@ -288,7 +289,7 @@ void Tokenizer::config_pattern(const Napi::Config& opt)
 
         std::string space_str;
         for (auto& token : space_tokens) {
-            if (special_tokens.find(token) == special_tokens.end()) {
+            if (special_token_to_id.find(token) == special_token_to_id.end()) {
                 if (space_str.length() > 0)
                     space_str += "|";
                 space_str += escapeRegex(std::string(token));

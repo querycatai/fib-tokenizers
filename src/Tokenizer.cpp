@@ -6,7 +6,7 @@ Napi::Value Tokenizer::get_all_special_tokens(const Napi::CallbackInfo& info)
 {
     std::vector<std::string> tokens;
 
-    for (auto& token : special_tokens)
+    for (auto& token : special_token_to_id)
         tokens.emplace_back(token.second);
 
     return to_value(info.Env(), tokens);
@@ -14,11 +14,11 @@ Napi::Value Tokenizer::get_all_special_tokens(const Napi::CallbackInfo& info)
 
 int32_t Tokenizer::convert_token_to_id(std::string_view token)
 {
-    auto it = special_tokens.find(token);
-    if (it != special_tokens.end())
+    auto it = special_token_to_id.find(token);
+    if (it != special_token_to_id.end())
         return it->second.id;
 
-    return model_token_to_id(token);
+    return tokenizer->model_token_to_id(token);
 }
 
 void Tokenizer::put_token(int32_t token, const std::function<void(int32_t)>& push_back)
@@ -64,7 +64,7 @@ void Tokenizer::legacy_encode(std::string_view text, std::vector<T>* ids, int32_
         start = 1;
     }
 
-    encode(text, [&](const T& token, int32_t index) {
+    tokenizer->encode(text, [&](const T& token, int32_t index) {
         if (index >= start) {
             put_token(token, [&](const T& token) {
                 if (ids->size() < max_length)
@@ -88,8 +88,8 @@ void Tokenizer::special_encode(std::string& text, std::vector<T>* ids, int32_t m
         std::string::const_iterator searchStart(text.cbegin());
 
         while (boost::regex_search(searchStart, text.cend(), m, pattern)) {
-            auto it = special_tokens.find(std::string_view(&*m[2].first, m[2].length()));
-            if (it == special_tokens.end()) {
+            auto it = special_token_to_id.find(std::string_view(&*m[2].first, m[2].length()));
+            if (it == special_token_to_id.end()) {
                 searchStart = m[2].first + 1;
                 continue;
             }
@@ -331,12 +331,23 @@ Napi::Value Tokenizer::decode(const Napi::CallbackInfo& info)
         int32_t id = ids[i];
 
         if (id != unk_id && id >= offset && id < vocab_size + offset
-            && id_to_token.find(id) == id_to_token.end())
+            && special_id_to_token.find(id) == special_id_to_token.end())
             ids[pos++] = id - offset;
     }
     ids.resize(pos);
 
-    decode(ids, text);
+    tokenizer->decode(ids, text);
 
     return to_value(info.Env(), text);
+}
+
+Napi::Value Tokenizer::convert_tokens_to_ids(const Napi::CallbackInfo& info)
+{
+    std::vector<std::string> tokens = to_array<std::string>(info[0]);
+    std::vector<int32_t> ids;
+
+    for (auto& token : tokens)
+        ids.emplace_back(convert_token_to_id(token));
+
+    return to_value(info.Env(), ids);
 }

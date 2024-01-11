@@ -8,38 +8,43 @@
 #include "napi_value.h"
 #include "SpecialToken.h"
 
-#define DECLARE_CLASS(class_name)                                                                 \
-public:                                                                                           \
-    static Napi::Function Init(Napi::Env env)                                                     \
-    {                                                                                             \
-        return DefineClass(env, #class_name,                                                      \
-            { InstanceAccessor<&class_name::get_all_special_tokens>("all_special_tokens"),        \
-                InstanceMethod("tokenize", &class_name::tokenize, napi_default_jsproperty),       \
-                InstanceMethod("encode", &class_name::encode, napi_default_jsproperty),           \
-                InstanceMethod("encode_plus", &class_name::encode_plus, napi_default_jsproperty), \
-                InstanceMethod("decode", &class_name::decode, napi_default_jsproperty) });        \
-    }                                                                                             \
-                                                                                                  \
-private:                                                                                          \
-    Napi::Value get_all_special_tokens(const Napi::CallbackInfo& info)                            \
-    {                                                                                             \
-        return Tokenizer::get_all_special_tokens(info);                                           \
-    }                                                                                             \
-    Napi::Value tokenize(const Napi::CallbackInfo& info)                                          \
-    {                                                                                             \
-        return Tokenizer::tokenize(info);                                                         \
-    }                                                                                             \
-    Napi::Value encode(const Napi::CallbackInfo& info)                                            \
-    {                                                                                             \
-        return Tokenizer::encode(info);                                                           \
-    }                                                                                             \
-    Napi::Value encode_plus(const Napi::CallbackInfo& info)                                       \
-    {                                                                                             \
-        return Tokenizer::encode_plus(info);                                                      \
-    }                                                                                             \
-    Napi::Value decode(const Napi::CallbackInfo& info)                                            \
-    {                                                                                             \
-        return Tokenizer::decode(info);                                                           \
+#define DECLARE_CLASS(class_name)                                                                                        \
+public:                                                                                                                  \
+    static Napi::Function Init(Napi::Env env)                                                                            \
+    {                                                                                                                    \
+        return DefineClass(env, #class_name,                                                                             \
+            { InstanceAccessor<&class_name::get_all_special_tokens>("all_special_tokens"),                               \
+                InstanceMethod("tokenize", &class_name::tokenize, napi_default_jsproperty),                              \
+                InstanceMethod("encode", &class_name::encode, napi_default_jsproperty),                                  \
+                InstanceMethod("encode_plus", &class_name::encode_plus, napi_default_jsproperty),                        \
+                InstanceMethod("decode", &class_name::decode, napi_default_jsproperty),                                  \
+                InstanceMethod("convert_tokens_to_ids", &class_name::convert_tokens_to_ids, napi_default_jsproperty) }); \
+    }                                                                                                                    \
+                                                                                                                         \
+private:                                                                                                                 \
+    Napi::Value get_all_special_tokens(const Napi::CallbackInfo& info)                                                   \
+    {                                                                                                                    \
+        return Tokenizer::get_all_special_tokens(info);                                                                  \
+    }                                                                                                                    \
+    Napi::Value tokenize(const Napi::CallbackInfo& info)                                                                 \
+    {                                                                                                                    \
+        return Tokenizer::tokenize(info);                                                                                \
+    }                                                                                                                    \
+    Napi::Value encode(const Napi::CallbackInfo& info)                                                                   \
+    {                                                                                                                    \
+        return Tokenizer::encode(info);                                                                                  \
+    }                                                                                                                    \
+    Napi::Value encode_plus(const Napi::CallbackInfo& info)                                                              \
+    {                                                                                                                    \
+        return Tokenizer::encode_plus(info);                                                                             \
+    }                                                                                                                    \
+    Napi::Value decode(const Napi::CallbackInfo& info)                                                                   \
+    {                                                                                                                    \
+        return Tokenizer::decode(info);                                                                                  \
+    }                                                                                                                    \
+    Napi::Value convert_tokens_to_ids(const Napi::CallbackInfo& info)                                                    \
+    {                                                                                                                    \
+        return Tokenizer::convert_tokens_to_ids(info);                                                                   \
     }
 
 class TokenizerCore {
@@ -62,31 +67,11 @@ public:
     Napi::Value encode(const Napi::CallbackInfo& info);
     Napi::Value encode_plus(const Napi::CallbackInfo& info);
     Napi::Value decode(const Napi::CallbackInfo& info);
+    Napi::Value convert_tokens_to_ids(const Napi::CallbackInfo& info);
 
 private:
     Napi::Value batch_encode(const Napi::CallbackInfo& info);
     Napi::Value pair_encode(const Napi::CallbackInfo& info);
-
-private:
-    int32_t model_token_to_id(std::string_view token)
-    {
-        return tokenizer->model_token_to_id(token);
-    }
-
-    void encode(std::string_view text, const std::function<void(int32_t, int32_t)>& push_back)
-    {
-        tokenizer->encode(text, push_back);
-    }
-
-    void encode(std::string_view text, const std::function<void(const std::string&, int32_t)>& push_back)
-    {
-        tokenizer->encode(text, push_back);
-    }
-
-    void decode(const std::vector<int32_t>& ids, std::string& text)
-    {
-        tokenizer->decode(ids, text);
-    }
 
 protected:
     int32_t convert_token_to_id(std::string_view token);
@@ -157,8 +142,10 @@ private:
     std::vector<int32_t> pair_suffix_tokens;
 
 private:
-    std::unordered_map<std::string_view, SpecialToken> special_tokens;
-    std::unordered_map<int32_t, std::string> id_to_token;
+    std::set<std::string> special_tokens;
+    std::unordered_map<std::string, int32_t> token_to_id;
+    std::unordered_map<std::string_view, SpecialToken> special_token_to_id;
+    std::unordered_map<int32_t, std::string> special_id_to_token;
 
 private:
     jinja2::Template chat_template;
