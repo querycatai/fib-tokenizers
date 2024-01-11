@@ -2,13 +2,13 @@
     "model": "oliverguhr/german-sentiment-bert",
     "tokenizer_class": "BertTokenizer",
     "likes": 42,
-    "special_tokens": [
-        "[UNK]",
-        "[SEP]",
-        "[PAD]",
-        "[CLS]",
-        "[MASK]"
-    ],
+    "special_tokens": {
+        "[UNK]": 2,
+        "[SEP]": 4,
+        "[PAD]": 0,
+        "[CLS]": 3,
+        "[MASK]": 5
+    },
     "datasets": [
         {
             "input": "hello world",

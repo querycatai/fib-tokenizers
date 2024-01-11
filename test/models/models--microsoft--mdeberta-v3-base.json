@@ -2,13 +2,13 @@
     "model": "microsoft/mdeberta-v3-base",
     "tokenizer_class": "DebertaV2Tokenizer",
     "likes": 100,
-    "special_tokens": [
-        "[CLS]",
-        "[SEP]",
-        "[UNK]",
-        "[PAD]",
-        "[MASK]"
-    ],
+    "special_tokens": {
+        "[CLS]": 1,
+        "[SEP]": 2,
+        "[UNK]": 3,
+        "[PAD]": 0,
+        "[MASK]": 250101
+    },
     "datasets": [
         {
             "input": "hello world",

@@ -2,12 +2,12 @@
     "model": "NousResearch/GPT4-x-Vicuna-13b-4bit",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 53,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>",
-        "[PAD]"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 0,
+        "[PAD]": 32000
+    },
     "datasets": [
         {
             "input": "hello world",

@@ -2,11 +2,11 @@
     "model": "jbochi/madlad400-3b-mt",
     "tokenizer_class": "T5Tokenizer",
     "likes": 71,
-    "special_tokens": [
-        "</s>",
-        "<unk>",
-        "<s>"
-    ],
+    "special_tokens": {
+        "</s>": 2,
+        "<unk>": 0,
+        "<s>": 1
+    },
     "datasets": [
         {
             "input": "hello world",

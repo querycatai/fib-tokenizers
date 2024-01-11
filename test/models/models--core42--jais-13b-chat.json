@@ -2,9 +2,9 @@
     "model": "core42/jais-13b-chat",
     "tokenizer_class": "PreTrainedTokenizerFast",
     "likes": 100,
-    "special_tokens": [
-        "<|endoftext|>"
-    ],
+    "special_tokens": {
+        "<|endoftext|>": 0
+    },
     "datasets": [
         {
             "input": "hello world",

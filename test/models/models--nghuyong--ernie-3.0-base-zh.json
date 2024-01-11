@@ -2,13 +2,13 @@
     "model": "nghuyong/ernie-3.0-base-zh",
     "tokenizer_class": "BertTokenizer",
     "likes": 67,
-    "special_tokens": [
-        "[UNK]",
-        "[SEP]",
-        "[PAD]",
-        "[CLS]",
-        "[MASK]"
-    ],
+    "special_tokens": {
+        "[UNK]": 39979,
+        "[SEP]": 2,
+        "[PAD]": 0,
+        "[CLS]": 1,
+        "[MASK]": 3
+    },
     "datasets": [
         {
             "input": "hello world",

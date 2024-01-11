@@ -2,11 +2,11 @@
     "model": "DiscoResearch/mixtral-7b-8expert",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 254,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 0
+    },
     "datasets": [
         {
             "input": "hello world",

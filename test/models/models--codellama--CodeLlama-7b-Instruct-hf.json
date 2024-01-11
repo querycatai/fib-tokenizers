@@ -2,15 +2,15 @@
     "model": "codellama/CodeLlama-7b-Instruct-hf",
     "tokenizer_class": "CodeLlamaTokenizer",
     "likes": 118,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>",
-        "▁<PRE>",
-        "▁<MID>",
-        "▁<SUF>",
-        "▁<EOT>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 0,
+        "▁<PRE>": 32007,
+        "▁<MID>": 32009,
+        "▁<SUF>": 32008,
+        "▁<EOT>": 32010
+    },
     "datasets": [
         {
             "input": "hello world",
@@ -1661,7 +1661,7 @@
                 "▁<SUF>",
                 "▁<EOT>"
             ],
-            "decoded": "<pad> <PRE> <MID> <SUF> <EOT>"
+            "decoded": "<pad>"
         }
     ],
     "pair_encode": {

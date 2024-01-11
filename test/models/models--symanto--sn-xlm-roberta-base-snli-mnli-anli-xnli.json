@@ -2,13 +2,13 @@
     "model": "symanto/sn-xlm-roberta-base-snli-mnli-anli-xnli",
     "tokenizer_class": "XLMRobertaTokenizer",
     "likes": 58,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>",
-        "<pad>",
-        "<mask>"
-    ],
+    "special_tokens": {
+        "<s>": 0,
+        "</s>": 2,
+        "<unk>": 3,
+        "<pad>": 1,
+        "<mask>": 250001
+    },
     "datasets": [
         {
             "input": "hello world",

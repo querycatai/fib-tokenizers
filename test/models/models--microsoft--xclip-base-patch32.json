@@ -2,10 +2,10 @@
     "model": "microsoft/xclip-base-patch32",
     "tokenizer_class": "CLIPTokenizer",
     "likes": 37,
-    "special_tokens": [
-        "<|startoftext|>",
-        "<|endoftext|>"
-    ],
+    "special_tokens": {
+        "<|startoftext|>": 49406,
+        "<|endoftext|>": 49407
+    },
     "datasets": [
         {
             "input": "hello world",

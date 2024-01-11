@@ -2,14 +2,14 @@
     "model": "fnlp/bart-large-chinese",
     "tokenizer_class": "BertTokenizer",
     "likes": 44,
-    "special_tokens": [
-        "[CLS]",
-        "[EOS]",
-        "[UNK]",
-        "[SEP]",
-        "[PAD]",
-        "[MASK]"
-    ],
+    "special_tokens": {
+        "[CLS]": 101,
+        "[EOS]": 104,
+        "[UNK]": 100,
+        "[SEP]": 102,
+        "[PAD]": 0,
+        "[MASK]": 103
+    },
     "datasets": [
         {
             "input": "hello world",

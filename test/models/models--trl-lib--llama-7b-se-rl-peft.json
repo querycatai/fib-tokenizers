@@ -2,10 +2,10 @@
     "model": "trl-lib/llama-7b-se-rl-peft",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 99,
-    "special_tokens": [
-        "</s>",
-        "[PAD]"
-    ],
+    "special_tokens": {
+        "</s>": 2,
+        "[PAD]": 32000
+    },
     "datasets": [
         {
             "input": "hello world",

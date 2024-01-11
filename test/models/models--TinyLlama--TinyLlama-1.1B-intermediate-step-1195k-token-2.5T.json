@@ -2,11 +2,11 @@
     "model": "TinyLlama/TinyLlama-1.1B-intermediate-step-1195k-token-2.5T",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 38,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 0
+    },
     "datasets": [
         {
             "input": "hello world",

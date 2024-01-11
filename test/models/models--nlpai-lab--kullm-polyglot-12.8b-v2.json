@@ -2,13 +2,13 @@
     "model": "nlpai-lab/kullm-polyglot-12.8b-v2",
     "tokenizer_class": "PreTrainedTokenizerFast",
     "likes": 44,
-    "special_tokens": [
-        "<|endoftext|>",
-        "<|sep|>",
-        "<|acc|>",
-        "<|tel|>",
-        "<|rrn|>"
-    ],
+    "special_tokens": {
+        "<|endoftext|>": 2,
+        "<|sep|>": 3,
+        "<|acc|>": 30000,
+        "<|tel|>": 30001,
+        "<|rrn|>": 30002
+    },
     "datasets": [
         {
             "input": "hello world",
@@ -677,18 +677,14 @@
         {
             "input": "<s>\n",
             "ids": [
-                31,
-                86,
-                33,
+                0,
                 202
             ],
             "tokens": [
-                "<",
-                "s",
-                ">",
+                "<s>",
                 "Ċ"
             ],
-            "decoded": "<s>\n"
+            "decoded": "\n"
         },
         {
             "input": " </s> test </s> ",
@@ -2471,9 +2467,7 @@
         {
             "input": "<s></s><unk><pad><|endoftext|><|sep|><|acc|><|tel|><|rrn|>",
             "ids": [
-                31,
-                86,
-                33,
+                0,
                 31,
                 18,
                 86,
@@ -2493,9 +2487,7 @@
                 30002
             ],
             "tokens": [
-                "<",
-                "s",
-                ">",
+                "<s>",
                 "<",
                 "/",
                 "s",
@@ -2514,7 +2506,7 @@
                 "<|tel|>",
                 "<|rrn|>"
             ],
-            "decoded": "<s></s><unk><pad>"
+            "decoded": "</s><unk><pad>"
         }
     ],
     "pair_encode": {

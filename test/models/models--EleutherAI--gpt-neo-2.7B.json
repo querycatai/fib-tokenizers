@@ -2,9 +2,9 @@
     "model": "EleutherAI/gpt-neo-2.7B",
     "tokenizer_class": "GPT2Tokenizer",
     "likes": 368,
-    "special_tokens": [
-        "<|endoftext|>"
-    ],
+    "special_tokens": {
+        "<|endoftext|>": 50256
+    },
     "datasets": [
         {
             "input": "hello world",

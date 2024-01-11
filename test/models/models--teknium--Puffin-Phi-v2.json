@@ -2,9 +2,9 @@
     "model": "teknium/Puffin-Phi-v2",
     "tokenizer_class": "CodeGenTokenizer",
     "likes": 38,
-    "special_tokens": [
-        "<|endoftext|>"
-    ],
+    "special_tokens": {
+        "<|endoftext|>": 50256
+    },
     "datasets": [
         {
             "input": "hello world",

@@ -2,13 +2,13 @@
     "model": "yiyanghkust/finbert-tone",
     "tokenizer_class": "BertTokenizer",
     "likes": 114,
-    "special_tokens": [
-        "[UNK]",
-        "[SEP]",
-        "[PAD]",
-        "[CLS]",
-        "[MASK]"
-    ],
+    "special_tokens": {
+        "[UNK]": 2,
+        "[SEP]": 4,
+        "[PAD]": 0,
+        "[CLS]": 3,
+        "[MASK]": 5
+    },
     "datasets": [
         {
             "input": "hello world",

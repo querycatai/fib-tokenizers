@@ -2,11 +2,11 @@
     "model": "HuggingFaceH4/zephyr-7b-beta",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 1126,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 0
+    },
     "datasets": [
         {
             "input": "hello world",

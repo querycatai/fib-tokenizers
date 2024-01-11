@@ -2,15 +2,15 @@
     "model": "rinna/japanese-gpt-neox-3.6b",
     "tokenizer_class": "T5Tokenizer",
     "likes": 84,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "[UNK]",
-        "[SEP]",
-        "[PAD]",
-        "[CLS]",
-        "[MASK]"
-    ],
+    "special_tokens": {
+        "<s>": 2,
+        "</s>": 3,
+        "[UNK]": 1,
+        "[SEP]": 5,
+        "[PAD]": 0,
+        "[CLS]": 4,
+        "[MASK]": 6
+    },
     "datasets": [
         {
             "input": "hello world",

@@ -2,13 +2,13 @@
     "model": "HuggingFaceM4/idefics-80b",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 49,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>",
-        "<fake_token_around_image>",
-        "<image>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 0,
+        "<fake_token_around_image>": 32000,
+        "<image>": 32001
+    },
     "datasets": [
         {
             "input": "hello world",

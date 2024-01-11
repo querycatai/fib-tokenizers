@@ -2,11 +2,11 @@
     "model": "FlagAlpha/Llama2-Chinese-13b-Chat-4bit",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 58,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 0
+    },
     "datasets": [
         {
             "input": "hello world",

@@ -2,13 +2,13 @@
     "model": "jhgan/ko-sroberta-multitask",
     "tokenizer_class": "BertTokenizer",
     "likes": 45,
-    "special_tokens": [
-        "[CLS]",
-        "[SEP]",
-        "[UNK]",
-        "[PAD]",
-        "[MASK]"
-    ],
+    "special_tokens": {
+        "[CLS]": 0,
+        "[SEP]": 2,
+        "[UNK]": 3,
+        "[PAD]": 1,
+        "[MASK]": 4
+    },
     "datasets": [
         {
             "input": "hello world",

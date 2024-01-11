@@ -2,11 +2,11 @@
     "model": "OpenBuddy/openbuddy-zephyr-7b-v14.1",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 45,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 0
+    },
     "datasets": [
         {
             "input": "hello world",

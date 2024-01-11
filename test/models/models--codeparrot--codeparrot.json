@@ -2,9 +2,9 @@
     "model": "codeparrot/codeparrot",
     "tokenizer_class": "GPT2Tokenizer",
     "likes": 92,
-    "special_tokens": [
-        "<|endoftext|>"
-    ],
+    "special_tokens": {
+        "<|endoftext|>": 0
+    },
     "datasets": [
         {
             "input": "hello world",

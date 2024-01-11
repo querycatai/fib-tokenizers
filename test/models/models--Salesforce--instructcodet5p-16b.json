@@ -2,9 +2,9 @@
     "model": "Salesforce/instructcodet5p-16b",
     "tokenizer_class": "CodeGenTokenizer",
     "likes": 53,
-    "special_tokens": [
-        "<|endoftext|>"
-    ],
+    "special_tokens": {
+        "<|endoftext|>": 50256
+    },
     "datasets": [
         {
             "input": "hello world",

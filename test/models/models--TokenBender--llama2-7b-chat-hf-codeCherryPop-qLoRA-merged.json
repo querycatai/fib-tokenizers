@@ -2,11 +2,11 @@
     "model": "TokenBender/llama2-7b-chat-hf-codeCherryPop-qLoRA-merged",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 66,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 0
+    },
     "datasets": [
         {
             "input": "hello world",

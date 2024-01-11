@@ -2,9 +2,9 @@
     "model": "SkunkworksAI/phi-2",
     "tokenizer_class": "CodeGenTokenizer",
     "likes": 130,
-    "special_tokens": [
-        "<|endoftext|>"
-    ],
+    "special_tokens": {
+        "<|endoftext|>": 50256
+    },
     "datasets": [
         {
             "input": "hello world",

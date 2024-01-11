@@ -2,11 +2,11 @@
     "model": "fblgit/una-xaberius-34b-v1beta",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 80,
-    "special_tokens": [
-        "<|startoftext|>",
-        "<|endoftext|>",
-        "<unk>"
-    ],
+    "special_tokens": {
+        "<|startoftext|>": 1,
+        "<|endoftext|>": 2,
+        "<unk>": 0
+    },
     "datasets": [
         {
             "input": "hello world",

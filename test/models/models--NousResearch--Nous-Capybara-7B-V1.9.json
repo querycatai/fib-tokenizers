@@ -2,11 +2,11 @@
     "model": "NousResearch/Nous-Capybara-7B-V1.9",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 43,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 0
+    },
     "datasets": [
         {
             "input": "hello world",

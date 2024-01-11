@@ -2,13 +2,13 @@
     "model": "ahmedrachid/FinancialBERT-Sentiment-Analysis",
     "tokenizer_class": "BertTokenizer",
     "likes": 48,
-    "special_tokens": [
-        "[UNK]",
-        "[SEP]",
-        "[PAD]",
-        "[CLS]",
-        "[MASK]"
-    ],
+    "special_tokens": {
+        "[UNK]": 2,
+        "[SEP]": 4,
+        "[PAD]": 0,
+        "[CLS]": 3,
+        "[MASK]": 5
+    },
     "datasets": [
         {
             "input": "hello world",

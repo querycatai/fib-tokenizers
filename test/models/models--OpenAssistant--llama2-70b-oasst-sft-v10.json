@@ -2,15 +2,15 @@
     "model": "OpenAssistant/llama2-70b-oasst-sft-v10",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 67,
-    "special_tokens": [
-        "<|im_start|>",
-        "<unk>",
-        "<SEP>",
-        "<PAD>",
-        "<CLS>",
-        "<MASK>",
-        "<|im_end|>"
-    ],
+    "special_tokens": {
+        "<|im_start|>": 32005,
+        "<unk>": 0,
+        "<SEP>": 32001,
+        "<PAD>": 32004,
+        "<CLS>": 32000,
+        "<MASK>": 32003,
+        "<|im_end|>": 32006
+    },
     "datasets": [
         {
             "input": "hello world",

@@ -2,13 +2,13 @@
     "model": "CofeAI/FLM-101B",
     "tokenizer_class": "FLMTokenizer",
     "likes": 86,
-    "special_tokens": [
-        "<|endoftext|>",
-        "[sep]",
-        "[pad]",
-        "[cls]",
-        "[tsk]"
-    ],
+    "special_tokens": {
+        "<|endoftext|>": 100256,
+        "[sep]": 100260,
+        "[pad]": 100258,
+        "[cls]": 100259,
+        "[tsk]": 100257
+    },
     "datasets": [
         {
             "input": "hello world",

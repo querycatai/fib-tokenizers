@@ -2,23 +2,23 @@
     "model": "lightonai/alfred-40b-1023",
     "tokenizer_class": "PreTrainedTokenizerFast",
     "likes": 40,
-    "special_tokens": [
-        "<end_message>",
-        ">>TITLE<<",
-        ">>ABSTRACT<<",
-        ">>INTRODUCTION<<",
-        ">>SUMMARY<<",
-        ">>COMMENT<<",
-        ">>ANSWER<<",
-        ">>QUESTION<<",
-        ">>DOMAIN<<",
-        ">>PREFIX<<",
-        ">>SUFFIX<<",
-        ">>MIDDLE<<",
-        "<start_system>",
-        "<start_user>",
-        "<start_assistant>"
-    ],
+    "special_tokens": {
+        "<end_message>": 65020,
+        ">>TITLE<<": 0,
+        ">>ABSTRACT<<": 1,
+        ">>INTRODUCTION<<": 2,
+        ">>SUMMARY<<": 3,
+        ">>COMMENT<<": 4,
+        ">>ANSWER<<": 5,
+        ">>QUESTION<<": 6,
+        ">>DOMAIN<<": 7,
+        ">>PREFIX<<": 8,
+        ">>SUFFIX<<": 9,
+        ">>MIDDLE<<": 10,
+        "<start_system>": 65023,
+        "<start_user>": 65022,
+        "<start_assistant>": 65021
+    },
     "datasets": [
         {
             "input": "hello world",
@@ -509,18 +509,14 @@
         {
             "input": "<s>\n",
             "ids": [
-                39,
-                94,
-                41,
+                0,
                 193
             ],
             "tokens": [
-                "<",
-                "s",
-                ">",
+                "<s>",
                 "Ċ"
             ],
-            "decoded": "<s>\n"
+            "decoded": "\n"
         },
         {
             "input": " </s> test </s> ",
@@ -1507,15 +1503,13 @@
         {
             "input": "<s></s><unk><pad><end_message>>>TITLE<<>>ABSTRACT<<>>INTRODUCTION<<>>SUMMARY<<>>COMMENT<<>>ANSWER<<>>QUESTION<<>>DOMAIN<<>>PREFIX<<>>SUFFIX<<>>MIDDLE<<<start_system><start_user><start_assistant>",
             "ids": [
-                39,
-                94,
-                7378,
+                0,
+                1686,
                 94,
                 4836,
                 3379,
-                4836,
-                11741,
                 41,
+                0,
                 65020,
                 0,
                 1,
@@ -1533,15 +1527,13 @@
                 65021
             ],
             "tokens": [
-                "<",
-                "s",
-                "></",
+                "<s>",
+                "</",
                 "s",
                 "><",
                 "unk",
-                "><",
-                "pad",
                 ">",
+                "<pad>",
                 "<end_message>",
                 ">>TITLE<<",
                 ">>ABSTRACT<<",
@@ -1558,7 +1550,7 @@
                 "<start_user>",
                 "<start_assistant>"
             ],
-            "decoded": "<s></s><unk><pad>"
+            "decoded": "</s><unk>"
         }
     ],
     "pair_encode": {

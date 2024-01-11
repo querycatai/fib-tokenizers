@@ -2,13 +2,13 @@
     "model": "sentence-transformers/multi-qa-mpnet-base-dot-v1",
     "tokenizer_class": "MPNetTokenizer",
     "likes": 121,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "[UNK]",
-        "<pad>",
-        "<mask>"
-    ],
+    "special_tokens": {
+        "<s>": 0,
+        "</s>": 2,
+        "[UNK]": 104,
+        "<pad>": 1,
+        "<mask>": 30526
+    },
     "datasets": [
         {
             "input": "hello world",

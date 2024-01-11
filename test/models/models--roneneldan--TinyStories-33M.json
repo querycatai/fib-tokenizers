@@ -2,9 +2,9 @@
     "model": "roneneldan/TinyStories-33M",
     "tokenizer_class": "GPT2Tokenizer",
     "likes": 73,
-    "special_tokens": [
-        "<|endoftext|>"
-    ],
+    "special_tokens": {
+        "<|endoftext|>": 50256
+    },
     "datasets": [
         {
             "input": "hello world",

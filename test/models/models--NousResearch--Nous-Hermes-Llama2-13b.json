@@ -2,11 +2,11 @@
     "model": "NousResearch/Nous-Hermes-Llama2-13b",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 257,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 0
+    },
     "datasets": [
         {
             "input": "hello world",

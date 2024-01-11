@@ -2,10 +2,10 @@
     "model": "TheBloke/WizardLM-Uncensored-SuperCOT-StoryTelling-30B-GPTQ",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 76,
-    "special_tokens": [
-        "</s>",
-        "[PAD]"
-    ],
+    "special_tokens": {
+        "</s>": 2,
+        "[PAD]": 32000
+    },
     "datasets": [
         {
             "input": "hello world",

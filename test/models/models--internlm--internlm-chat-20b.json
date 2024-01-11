@@ -2,11 +2,11 @@
     "model": "internlm/internlm-chat-20b",
     "tokenizer_class": "InternLMTokenizer",
     "likes": 131,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 0
+    },
     "datasets": [
         {
             "input": "hello world",

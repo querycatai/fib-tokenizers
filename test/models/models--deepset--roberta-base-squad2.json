@@ -2,13 +2,13 @@
     "model": "deepset/roberta-base-squad2",
     "tokenizer_class": "RobertaTokenizer",
     "likes": 524,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>",
-        "<pad>",
-        "<mask>"
-    ],
+    "special_tokens": {
+        "<s>": 0,
+        "</s>": 2,
+        "<unk>": 3,
+        "<pad>": 1,
+        "<mask>": 50264
+    },
     "datasets": [
         {
             "input": "hello world",

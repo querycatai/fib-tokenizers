@@ -2,14 +2,14 @@
     "model": "ibm/knowgl-large",
     "tokenizer_class": "BartTokenizer",
     "likes": 51,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>",
-        "<pad>",
-        "<mask>",
-        "<>"
-    ],
+    "special_tokens": {
+        "<s>": 0,
+        "</s>": 2,
+        "<unk>": 3,
+        "<pad>": 1,
+        "<mask>": 50264,
+        "<>": 50265
+    },
     "datasets": [
         {
             "input": "hello world",

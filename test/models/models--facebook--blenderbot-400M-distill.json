@@ -2,13 +2,13 @@
     "model": "facebook/blenderbot-400M-distill",
     "tokenizer_class": "BlenderbotTokenizer",
     "likes": 312,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>",
-        "<pad>",
-        "<mask>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 3,
+        "<pad>": 0,
+        "<mask>": 8008
+    },
     "datasets": [
         {
             "input": "hello world",

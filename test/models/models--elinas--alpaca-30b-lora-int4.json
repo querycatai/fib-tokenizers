@@ -2,9 +2,9 @@
     "model": "elinas/alpaca-30b-lora-int4",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 69,
-    "special_tokens": [
-        ""
-    ],
+    "special_tokens": {
+        "": 0
+    },
     "datasets": [
         {
             "input": "hello world",

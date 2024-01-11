@@ -2,7 +2,7 @@
     "model": "facebook/galactica-120b",
     "tokenizer_class": "PreTrainedTokenizerFast",
     "likes": 142,
-    "special_tokens": [],
+    "special_tokens": {},
     "datasets": [
         {
             "input": "hello world",

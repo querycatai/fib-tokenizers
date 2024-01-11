@@ -2,15 +2,15 @@
     "model": "jinhybr/OCR-Donut-CORD",
     "tokenizer_class": "XLMRobertaTokenizer",
     "likes": 60,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>",
-        "<pad>",
-        "<mask>",
-        "<s_iitcdip>",
-        "<s_synthdog>"
-    ],
+    "special_tokens": {
+        "<s>": 0,
+        "</s>": 2,
+        "<unk>": 3,
+        "<pad>": 1,
+        "<mask>": 57521,
+        "<s_iitcdip>": 57523,
+        "<s_synthdog>": 57524
+    },
     "datasets": [
         {
             "input": "hello world",

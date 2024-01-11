@@ -2,9 +2,9 @@
     "model": "openai-gpt",
     "tokenizer_class": "OpenAIGPTTokenizer",
     "likes": 196,
-    "special_tokens": [
-        "<unk>"
-    ],
+    "special_tokens": {
+        "<unk>": 0
+    },
     "datasets": [
         {
             "input": "hello world",

@@ -2,9 +2,9 @@
     "model": "nferruz/ProtGPT2",
     "tokenizer_class": "GPT2Tokenizer",
     "likes": 70,
-    "special_tokens": [
-        "<|endoftext|>"
-    ],
+    "special_tokens": {
+        "<|endoftext|>": 0
+    },
     "datasets": [
         {
             "input": "hello world",

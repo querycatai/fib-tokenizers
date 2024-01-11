@@ -2,15 +2,15 @@
     "model": "OpenAssistant/codellama-13b-oasst-sft-v10",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 56,
-    "special_tokens": [
-        "<|im_start|>",
-        "<unk>",
-        "<SEP>",
-        "<PAD>",
-        "<CLS>",
-        "<MASK>",
-        "<|im_end|>"
-    ],
+    "special_tokens": {
+        "<|im_start|>": 32021,
+        "<unk>": 0,
+        "<SEP>": 32017,
+        "<PAD>": 32020,
+        "<CLS>": 32016,
+        "<MASK>": 32019,
+        "<|im_end|>": 32022
+    },
     "datasets": [
         {
             "input": "hello world",

@@ -2,9 +2,9 @@
     "model": "nomic-ai/gpt4all-j",
     "tokenizer_class": "GPT2Tokenizer",
     "likes": 271,
-    "special_tokens": [
-        "<|endoftext|>"
-    ],
+    "special_tokens": {
+        "<|endoftext|>": 50256
+    },
     "datasets": [
         {
             "input": "hello world",

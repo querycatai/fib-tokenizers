@@ -2,9 +2,9 @@
     "model": "Salesforce/codegen-350M-mono",
     "tokenizer_class": "CodeGenTokenizer",
     "likes": 66,
-    "special_tokens": [
-        "<|endoftext|>"
-    ],
+    "special_tokens": {
+        "<|endoftext|>": 50256
+    },
     "datasets": [
         {
             "input": "hello world",

@@ -2,22 +2,22 @@
     "model": "naver-clova-ix/donut-base-finetuned-docvqa",
     "tokenizer_class": "XLMRobertaTokenizer",
     "likes": 87,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>",
-        "<pad>",
-        "<mask>",
-        "</s_answer>",
-        "</s_question>",
-        "<no/>",
-        "<s_answer>",
-        "<s_docvqa>",
-        "<s_iitcdip>",
-        "<s_question>",
-        "<s_synthdog>",
-        "<yes/>"
-    ],
+    "special_tokens": {
+        "<s>": 0,
+        "</s>": 2,
+        "<unk>": 3,
+        "<pad>": 1,
+        "<mask>": 57521,
+        "</s_answer>": 57523,
+        "</s_question>": 57524,
+        "<no/>": 57525,
+        "<s_answer>": 57526,
+        "<s_docvqa>": 57527,
+        "<s_iitcdip>": 57528,
+        "<s_question>": 57529,
+        "<s_synthdog>": 57530,
+        "<yes/>": 57531
+    },
     "datasets": [
         {
             "input": "hello world",

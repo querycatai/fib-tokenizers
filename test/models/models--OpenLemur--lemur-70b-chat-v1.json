@@ -2,16 +2,16 @@
     "model": "OpenLemur/lemur-70b-chat-v1",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 67,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>",
-        "<pad>",
-        "<|im_start|>",
-        "<|im_end|>",
-        "<|im_sep|>",
-        "<|diff_marker|>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 0,
+        "<pad>": 32000,
+        "<|im_start|>": 32001,
+        "<|im_end|>": 32002,
+        "<|im_sep|>": 32003,
+        "<|diff_marker|>": 32004
+    },
     "datasets": [
         {
             "input": "hello world",

@@ -2,9 +2,9 @@
     "model": "philschmid/instruct-igel-001",
     "tokenizer_class": "GPT2Tokenizer",
     "likes": 43,
-    "special_tokens": [
-        "<|endoftext|>"
-    ],
+    "special_tokens": {
+        "<|endoftext|>": 0
+    },
     "datasets": [
         {
             "input": "hello world",

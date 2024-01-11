@@ -2,12 +2,12 @@
     "model": "DiscoResearch/DiscoLM-mixtral-8x7b-v2",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 117,
-    "special_tokens": [
-        "<s>",
-        "<|im_end|>",
-        "<unk>",
-        "</s>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "<|im_end|>": 32000,
+        "<unk>": 0,
+        "</s>": 2
+    },
     "datasets": [
         {
             "input": "hello world",

@@ -2,10 +2,10 @@
     "model": "adept/persimmon-8b-chat",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 39,
-    "special_tokens": [
-        "|ENDOFTEXT|",
-        "<unk>"
-    ],
+    "special_tokens": {
+        "|ENDOFTEXT|": 71013,
+        "<unk>": 0
+    },
     "datasets": [
         {
             "input": "hello world",

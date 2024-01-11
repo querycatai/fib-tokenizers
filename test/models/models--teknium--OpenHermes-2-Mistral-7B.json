@@ -2,12 +2,12 @@
     "model": "teknium/OpenHermes-2-Mistral-7B",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 221,
-    "special_tokens": [
-        "<s>",
-        "<|im_end|>",
-        "<unk>",
-        "</s>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "<|im_end|>": 32000,
+        "<unk>": 0,
+        "</s>": 2
+    },
     "datasets": [
         {
             "input": "hello world",

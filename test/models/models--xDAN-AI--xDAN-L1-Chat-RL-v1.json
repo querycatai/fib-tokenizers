@@ -2,11 +2,11 @@
     "model": "xDAN-AI/xDAN-L1-Chat-RL-v1",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 40,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 0
+    },
     "datasets": [
         {
             "input": "hello world",

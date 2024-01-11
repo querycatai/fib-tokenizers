@@ -2,9 +2,9 @@
     "model": "stanford-crfm/BioMedLM",
     "tokenizer_class": "GPT2Tokenizer",
     "likes": 263,
-    "special_tokens": [
-        "<|endoftext|>"
-    ],
+    "special_tokens": {
+        "<|endoftext|>": 0
+    },
     "datasets": [
         {
             "input": "hello world",

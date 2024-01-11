@@ -2,14 +2,14 @@
     "model": "naver-clova-ix/donut-base-finetuned-cord-v2",
     "tokenizer_class": "XLMRobertaTokenizer",
     "likes": 55,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>",
-        "<pad>",
-        "<mask>",
-        "<s_cord-v2>"
-    ],
+    "special_tokens": {
+        "<s>": 0,
+        "</s>": 2,
+        "<unk>": 3,
+        "<pad>": 1,
+        "<mask>": 57521,
+        "<s_cord-v2>": 57579
+    },
     "datasets": [
         {
             "input": "hello world",

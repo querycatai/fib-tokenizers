@@ -2,12 +2,12 @@
     "model": "TheBloke/dolphin-2.5-mixtral-8x7b-GPTQ",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 57,
-    "special_tokens": [
-        "<s>",
-        "<|im_end|>",
-        "<unk>",
-        "</s>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "<|im_end|>": 32000,
+        "<unk>": 0,
+        "</s>": 2
+    },
     "datasets": [
         {
             "input": "hello world",

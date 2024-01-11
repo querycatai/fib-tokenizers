@@ -2,12 +2,12 @@
     "model": "bigscience/bloomz-7b1",
     "tokenizer_class": "BloomTokenizerFast",
     "likes": 116,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>",
-        "<pad>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 0,
+        "<pad>": 3
+    },
     "datasets": [
         {
             "input": "hello world",

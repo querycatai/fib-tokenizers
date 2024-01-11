@@ -2,20 +2,20 @@
     "model": "Babelscape/rebel-large",
     "tokenizer_class": "BartTokenizer",
     "likes": 154,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>",
-        "<pad>",
-        "<mask>",
-        "<obj>",
-        "<subj>",
-        "<triplet>",
-        "<head>",
-        "</head>",
-        "<tail>",
-        "</tail>"
-    ],
+    "special_tokens": {
+        "<s>": 0,
+        "</s>": 2,
+        "<unk>": 3,
+        "<pad>": 1,
+        "<mask>": 50264,
+        "<obj>": 50265,
+        "<subj>": 50266,
+        "<triplet>": 50267,
+        "<head>": 50268,
+        "</head>": 50269,
+        "<tail>": 50270,
+        "</tail>": 50271
+    },
     "datasets": [
         {
             "input": "hello world",

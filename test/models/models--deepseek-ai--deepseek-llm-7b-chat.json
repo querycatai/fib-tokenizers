@@ -2,10 +2,10 @@
     "model": "deepseek-ai/deepseek-llm-7b-chat",
     "tokenizer_class": "LlamaTokenizerFast",
     "likes": 43,
-    "special_tokens": [
-        "<｜begin▁of▁sentence｜>",
-        "<｜end▁of▁sentence｜>"
-    ],
+    "special_tokens": {
+        "<｜begin▁of▁sentence｜>": 100000,
+        "<｜end▁of▁sentence｜>": 100001
+    },
     "datasets": [
         {
             "input": "hello world",

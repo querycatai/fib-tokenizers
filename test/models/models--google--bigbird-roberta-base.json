@@ -2,15 +2,15 @@
     "model": "google/bigbird-roberta-base",
     "tokenizer_class": "BigBirdTokenizer",
     "likes": 40,
-    "special_tokens": [
-        "</s>",
-        "<s>",
-        "<unk>",
-        "[SEP]",
-        "<pad>",
-        "[CLS]",
-        "[MASK]"
-    ],
+    "special_tokens": {
+        "</s>": 1,
+        "<s>": 2,
+        "<unk>": 100,
+        "[SEP]": 66,
+        "<pad>": 0,
+        "[CLS]": 65,
+        "[MASK]": 67
+    },
     "datasets": [
         {
             "input": "hello world",

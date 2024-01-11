@@ -2,13 +2,13 @@
     "model": "MoritzLaurer/DeBERTa-v3-base-mnli-fever-anli",
     "tokenizer_class": "DebertaV2Tokenizer",
     "likes": 129,
-    "special_tokens": [
-        "[CLS]",
-        "[SEP]",
-        "[UNK]",
-        "[PAD]",
-        "[MASK]"
-    ],
+    "special_tokens": {
+        "[CLS]": 1,
+        "[SEP]": 2,
+        "[UNK]": 3,
+        "[PAD]": 0,
+        "[MASK]": 128000
+    },
     "datasets": [
         {
             "input": "hello world",

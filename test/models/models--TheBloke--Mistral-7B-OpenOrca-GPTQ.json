@@ -2,11 +2,11 @@
     "model": "TheBloke/Mistral-7B-OpenOrca-GPTQ",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 93,
-    "special_tokens": [
-        "<s>",
-        "<|im_end|>",
-        "<unk>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "<|im_end|>": 32000,
+        "<unk>": 0
+    },
     "datasets": [
         {
             "input": "hello world",

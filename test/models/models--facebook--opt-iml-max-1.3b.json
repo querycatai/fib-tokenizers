@@ -2,10 +2,10 @@
     "model": "facebook/opt-iml-max-1.3b",
     "tokenizer_class": "GPT2Tokenizer",
     "likes": 40,
-    "special_tokens": [
-        "</s>",
-        "<pad>"
-    ],
+    "special_tokens": {
+        "</s>": 2,
+        "<pad>": 1
+    },
     "datasets": [
         {
             "input": "hello world",

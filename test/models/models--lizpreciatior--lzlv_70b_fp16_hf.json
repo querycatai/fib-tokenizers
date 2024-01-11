@@ -2,11 +2,11 @@
     "model": "lizpreciatior/lzlv_70b_fp16_hf",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 38,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 0
+    },
     "datasets": [
         {
             "input": "hello world",

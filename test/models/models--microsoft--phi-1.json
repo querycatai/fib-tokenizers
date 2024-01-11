@@ -2,9 +2,9 @@
     "model": "microsoft/phi-1",
     "tokenizer_class": "CodeGenTokenizer",
     "likes": 163,
-    "special_tokens": [
-        "<|endoftext|>"
-    ],
+    "special_tokens": {
+        "<|endoftext|>": 50256
+    },
     "datasets": [
         {
             "input": "hello world",

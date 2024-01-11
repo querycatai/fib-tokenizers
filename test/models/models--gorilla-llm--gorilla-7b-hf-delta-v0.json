@@ -2,11 +2,11 @@
     "model": "gorilla-llm/gorilla-7b-hf-delta-v0",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 52,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 0
+    },
     "datasets": [
         {
             "input": "hello world",

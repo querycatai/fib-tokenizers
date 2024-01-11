@@ -2,19 +2,19 @@
     "model": "facebook/xglm-7.5B",
     "tokenizer_class": "XGLMTokenizer",
     "likes": 50,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>",
-        "<pad>",
-        "<madeupword0>",
-        "<madeupword1>",
-        "<madeupword2>",
-        "<madeupword3>",
-        "<madeupword4>",
-        "<madeupword5>",
-        "<madeupword6>"
-    ],
+    "special_tokens": {
+        "<s>": 0,
+        "</s>": 2,
+        "<unk>": 3,
+        "<pad>": 1,
+        "<madeupword0>": 256001,
+        "<madeupword1>": 256002,
+        "<madeupword2>": 256003,
+        "<madeupword3>": 256004,
+        "<madeupword4>": 256005,
+        "<madeupword5>": 256006,
+        "<madeupword6>": 256007
+    },
     "datasets": [
         {
             "input": "hello world",

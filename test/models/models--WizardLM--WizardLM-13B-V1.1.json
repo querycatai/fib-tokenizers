@@ -2,12 +2,12 @@
     "model": "WizardLM/WizardLM-13B-V1.1",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 71,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>",
-        "[PAD]"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 0,
+        "[PAD]": 32000
+    },
     "datasets": [
         {
             "input": "hello world",

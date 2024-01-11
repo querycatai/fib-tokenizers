@@ -2,16 +2,16 @@
     "model": "OpenAssistant/llama2-13b-orca-8k-3319",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 122,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>",
-        "<|assistant|>",
-        "<|prefix_end|>",
-        "<|system|>",
-        "<|prefix_begin|>",
-        "<|prompter|>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 0,
+        "<|assistant|>": 32001,
+        "<|prefix_end|>": 32002,
+        "<|system|>": 32003,
+        "<|prefix_begin|>": 32004,
+        "<|prompter|>": 32005
+    },
     "datasets": [
         {
             "input": "hello world",

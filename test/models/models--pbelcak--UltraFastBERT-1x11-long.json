@@ -2,15 +2,15 @@
     "model": "pbelcak/UltraFastBERT-1x11-long",
     "tokenizer_class": "PreTrainedTokenizerFast",
     "likes": 66,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>",
-        "<sep>",
-        "<pad>",
-        "<cls>",
-        "<mask>"
-    ],
+    "special_tokens": {
+        "<s>": 2,
+        "</s>": 3,
+        "<unk>": 0,
+        "<sep>": 5,
+        "<pad>": 6,
+        "<cls>": 1,
+        "<mask>": 4
+    },
     "datasets": [
         {
             "input": "hello world",

@@ -2,13 +2,13 @@
     "model": "berkeley-nest/Starling-LM-7B-alpha",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 391,
-    "special_tokens": [
-        "<s>",
-        "<|end_of_turn|>",
-        "<unk>",
-        "<sep>",
-        "<|pad_0|>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "<|end_of_turn|>": 32000,
+        "<unk>": 0,
+        "<sep>": 32002,
+        "<|pad_0|>": 32001
+    },
     "datasets": [
         {
             "input": "hello world",

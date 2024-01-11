@@ -2,16 +2,16 @@
     "model": "jordiclive/gpt4all-alpaca-oa-codealpaca-lora-7b",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 40,
-    "special_tokens": [
-        "",
-        "</s>",
-        "<s>",
-        "<|prefix_begin|>",
-        "<|prefix_end|>",
-        "<|prompter|>",
-        "<|system|>",
-        "<|assistant|>"
-    ],
+    "special_tokens": {
+        "": 0,
+        "</s>": 2,
+        "<s>": 1,
+        "<|prefix_begin|>": 32000,
+        "<|prefix_end|>": 32001,
+        "<|prompter|>": 32002,
+        "<|system|>": 32003,
+        "<|assistant|>": 32004
+    },
     "datasets": [
         {
             "input": "hello world",

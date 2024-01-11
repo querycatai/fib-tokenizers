@@ -2,10 +2,10 @@
     "model": "matsuo-lab/weblab-10b-instruction-sft",
     "tokenizer_class": "PreTrainedTokenizerFast",
     "likes": 70,
-    "special_tokens": [
-        "<|endoftext|>",
-        "<|padding|>"
-    ],
+    "special_tokens": {
+        "<|endoftext|>": 0,
+        "<|padding|>": 1
+    },
     "datasets": [
         {
             "input": "hello world",

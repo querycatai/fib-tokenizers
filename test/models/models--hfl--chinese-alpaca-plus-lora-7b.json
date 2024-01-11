@@ -2,12 +2,12 @@
     "model": "hfl/chinese-alpaca-plus-lora-7b",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 38,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>",
-        "[PAD]"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 0,
+        "[PAD]": 49953
+    },
     "datasets": [
         {
             "input": "hello world",

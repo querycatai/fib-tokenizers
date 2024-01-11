@@ -2,11 +2,11 @@
     "model": "cognitivecomputations/Samantha-1.11-CodeLlama-34b",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 44,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 0
+    },
     "datasets": [
         {
             "input": "hello world",

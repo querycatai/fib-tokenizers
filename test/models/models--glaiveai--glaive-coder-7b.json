@@ -2,20 +2,16 @@
     "model": "glaiveai/glaive-coder-7b",
     "tokenizer_class": "CodeLlamaTokenizer",
     "likes": 50,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>",
-        "<|pad|>",
-        "▁<PRE>",
-        "▁<MID>",
-        "▁<SUF>",
-        "▁<EOT>",
-        "▁<PRE>",
-        "▁<MID>",
-        "▁<SUF>",
-        "▁<EOT>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 0,
+        "<|pad|>": 32016,
+        "▁<PRE>": 32007,
+        "▁<MID>": 32009,
+        "▁<SUF>": 32008,
+        "▁<EOT>": 32010
+    },
     "datasets": [
         {
             "input": "hello world",

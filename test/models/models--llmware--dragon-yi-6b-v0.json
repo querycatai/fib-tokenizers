@@ -2,11 +2,11 @@
     "model": "llmware/dragon-yi-6b-v0",
     "tokenizer_class": "YiTokenizer",
     "likes": 51,
-    "special_tokens": [
-        "<|startoftext|>",
-        "<|endoftext|>",
-        "<unk>"
-    ],
+    "special_tokens": {
+        "<|startoftext|>": 1,
+        "<|endoftext|>": 2,
+        "<unk>": 0
+    },
     "datasets": [
         {
             "input": "hello world",

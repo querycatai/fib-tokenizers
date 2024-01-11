@@ -2,13 +2,13 @@
     "model": "allenai/scibert_scivocab_uncased",
     "tokenizer_class": "BertTokenizer",
     "likes": 86,
-    "special_tokens": [
-        "[UNK]",
-        "[SEP]",
-        "[PAD]",
-        "[CLS]",
-        "[MASK]"
-    ],
+    "special_tokens": {
+        "[UNK]": 101,
+        "[SEP]": 103,
+        "[PAD]": 0,
+        "[CLS]": 102,
+        "[MASK]": 104
+    },
     "datasets": [
         {
             "input": "hello world",

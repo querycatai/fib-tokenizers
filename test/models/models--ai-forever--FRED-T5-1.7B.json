@@ -2,13 +2,13 @@
     "model": "ai-forever/FRED-T5-1.7B",
     "tokenizer_class": "GPT2Tokenizer",
     "likes": 60,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>",
-        "<pad>",
-        "<mask>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 3,
+        "<pad>": 0,
+        "<mask>": 4
+    },
     "datasets": [
         {
             "input": "hello world",

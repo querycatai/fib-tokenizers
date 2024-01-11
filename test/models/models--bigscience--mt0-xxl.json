@@ -2,11 +2,11 @@
     "model": "bigscience/mt0-xxl",
     "tokenizer_class": "T5Tokenizer",
     "likes": 48,
-    "special_tokens": [
-        "</s>",
-        "<unk>",
-        "<pad>"
-    ],
+    "special_tokens": {
+        "</s>": 1,
+        "<unk>": 2,
+        "<pad>": 0
+    },
     "datasets": [
         {
             "input": "hello world",

@@ -2,13 +2,13 @@
     "model": "yikuan8/Clinical-Longformer",
     "tokenizer_class": "LongformerTokenizer",
     "likes": 40,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>",
-        "<pad>",
-        "<mask>"
-    ],
+    "special_tokens": {
+        "<s>": 0,
+        "</s>": 2,
+        "<unk>": 3,
+        "<pad>": 1,
+        "<mask>": 50264
+    },
     "datasets": [
         {
             "input": "hello world",

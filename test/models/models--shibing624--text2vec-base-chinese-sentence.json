@@ -2,13 +2,13 @@
     "model": "shibing624/text2vec-base-chinese-sentence",
     "tokenizer_class": "BertTokenizer",
     "likes": 44,
-    "special_tokens": [
-        "[UNK]",
-        "[SEP]",
-        "[PAD]",
-        "[CLS]",
-        "[MASK]"
-    ],
+    "special_tokens": {
+        "[UNK]": 39978,
+        "[SEP]": 2,
+        "[PAD]": 0,
+        "[CLS]": 1,
+        "[MASK]": 3
+    },
     "datasets": [
         {
             "input": "hello world",

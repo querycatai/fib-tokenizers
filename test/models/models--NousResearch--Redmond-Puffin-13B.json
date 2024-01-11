@@ -2,11 +2,11 @@
     "model": "NousResearch/Redmond-Puffin-13B",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 109,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 0
+    },
     "datasets": [
         {
             "input": "hello world",

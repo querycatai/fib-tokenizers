@@ -2,11 +2,11 @@
     "model": "Open-Orca/LlongOrca-7B-16k",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 40,
-    "special_tokens": [
-        "<s>",
-        "<|im_end|>",
-        "<unk>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "<|im_end|>": 32002,
+        "<unk>": 0
+    },
     "datasets": [
         {
             "input": "hello world",

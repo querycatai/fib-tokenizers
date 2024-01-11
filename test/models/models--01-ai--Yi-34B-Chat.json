@@ -2,14 +2,14 @@
     "model": "01-ai/Yi-34B-Chat",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 179,
-    "special_tokens": [
-        "<|startoftext|>",
-        "<|endoftext|>",
-        "<unk>",
-        "<|im_start|>",
-        "<|im_end|>",
-        "<|im_sep|>"
-    ],
+    "special_tokens": {
+        "<|startoftext|>": 1,
+        "<|endoftext|>": 2,
+        "<unk>": 0,
+        "<|im_start|>": 6,
+        "<|im_end|>": 7,
+        "<|im_sep|>": 8
+    },
     "datasets": [
         {
             "input": "hello world",

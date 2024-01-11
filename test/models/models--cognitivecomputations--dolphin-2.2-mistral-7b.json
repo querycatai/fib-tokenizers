@@ -2,12 +2,12 @@
     "model": "cognitivecomputations/dolphin-2.2-mistral-7b",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 58,
-    "special_tokens": [
-        "<s>",
-        "<|im_end|>",
-        "<unk>",
-        "</s>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "<|im_end|>": 32000,
+        "<unk>": 0,
+        "</s>": 2
+    },
     "datasets": [
         {
             "input": "hello world",

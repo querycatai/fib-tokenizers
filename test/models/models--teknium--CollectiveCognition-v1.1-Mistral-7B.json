@@ -2,11 +2,11 @@
     "model": "teknium/CollectiveCognition-v1.1-Mistral-7B",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 68,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 0
+    },
     "datasets": [
         {
             "input": "hello world",

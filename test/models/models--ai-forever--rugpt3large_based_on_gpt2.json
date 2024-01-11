@@ -2,13 +2,13 @@
     "model": "ai-forever/rugpt3large_based_on_gpt2",
     "tokenizer_class": "GPT2Tokenizer",
     "likes": 61,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>",
-        "<pad>",
-        "<mask>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 3,
+        "<pad>": 0,
+        "<mask>": 4
+    },
     "datasets": [
         {
             "input": "hello world",

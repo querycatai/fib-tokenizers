@@ -2,10 +2,10 @@
     "model": "Salesforce/blip2-opt-6.7b",
     "tokenizer_class": "GPT2Tokenizer",
     "likes": 54,
-    "special_tokens": [
-        "</s>",
-        "<pad>"
-    ],
+    "special_tokens": {
+        "</s>": 2,
+        "<pad>": 1
+    },
     "datasets": [
         {
             "input": "hello world",

@@ -2,15 +2,15 @@
     "model": "codellama/CodeLlama-34b-hf",
     "tokenizer_class": "CodeLlamaTokenizer",
     "likes": 142,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>",
-        "▁<PRE>",
-        "▁<MID>",
-        "▁<SUF>",
-        "▁<EOT>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 0,
+        "▁<PRE>": 32000,
+        "▁<MID>": 32001,
+        "▁<SUF>": 32002,
+        "▁<EOT>": 32003
+    },
     "datasets": [
         {
             "input": "hello world",
@@ -1641,21 +1641,10 @@
                 1,
                 2,
                 0,
-                529,
-                15094,
-                29958,
-                529,
-                29924,
-                1367,
-                29958,
-                529,
-                14605,
-                29943,
-                29958,
-                529,
-                29923,
-                2891,
-                29958
+                32000,
+                32001,
+                32002,
+                32003
             ],
             "tokens": [
                 "<s>",
@@ -1667,23 +1656,12 @@
                 "<s>",
                 "</s>",
                 "<unk>",
-                "▁<",
-                "PRE",
-                ">",
-                "▁<",
-                "M",
-                "ID",
-                ">",
-                "▁<",
-                "SU",
-                "F",
-                ">",
-                "▁<",
-                "E",
-                "OT",
-                ">"
+                "▁<PRE>",
+                "▁<MID>",
+                "▁<SUF>",
+                "▁<EOT>"
             ],
-            "decoded": "<pad> <PRE> <MID> <SUF> <EOT>"
+            "decoded": "<pad>"
         }
     ],
     "pair_encode": {

@@ -2,10 +2,10 @@
     "model": "adept/fuyu-8b",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 793,
-    "special_tokens": [
-        "|ENDOFTEXT|",
-        "<unk>"
-    ],
+    "special_tokens": {
+        "|ENDOFTEXT|": 71013,
+        "<unk>": 0
+    },
     "datasets": [
         {
             "input": "hello world",

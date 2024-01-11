@@ -2,11 +2,11 @@
     "model": "google/owlvit-base-patch32",
     "tokenizer_class": "CLIPTokenizer",
     "likes": 62,
-    "special_tokens": [
-        "<|startoftext|>",
-        "<|endoftext|>",
-        "!"
-    ],
+    "special_tokens": {
+        "<|startoftext|>": 49406,
+        "<|endoftext|>": 49407,
+        "!": 0
+    },
     "datasets": [
         {
             "input": "hello world",

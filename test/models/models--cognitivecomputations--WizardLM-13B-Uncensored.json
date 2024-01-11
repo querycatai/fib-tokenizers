@@ -2,10 +2,10 @@
     "model": "cognitivecomputations/WizardLM-13B-Uncensored",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 474,
-    "special_tokens": [
-        "</s>",
-        "[PAD]"
-    ],
+    "special_tokens": {
+        "</s>": 2,
+        "[PAD]": 32000
+    },
     "datasets": [
         {
             "input": "hello world",

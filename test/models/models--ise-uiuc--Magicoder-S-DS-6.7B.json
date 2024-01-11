@@ -2,10 +2,10 @@
     "model": "ise-uiuc/Magicoder-S-DS-6.7B",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 123,
-    "special_tokens": [
-        "<｜begin▁of▁sentence｜>",
-        "<｜end▁of▁sentence｜>"
-    ],
+    "special_tokens": {
+        "<｜begin▁of▁sentence｜>": 32013,
+        "<｜end▁of▁sentence｜>": 32014
+    },
     "datasets": [
         {
             "input": "hello world",

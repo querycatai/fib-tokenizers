@@ -2,14 +2,14 @@
     "model": "ai-forever/mGPT",
     "tokenizer_class": "GPT2Tokenizer",
     "likes": 194,
-    "special_tokens": [
-        "<s>",
-        "<|endoftext|>",
-        "<unk>",
-        "</s>",
-        "<pad>",
-        "<mask>"
-    ],
+    "special_tokens": {
+        "<s>": 0,
+        "<|endoftext|>": 5,
+        "<unk>": 3,
+        "</s>": 2,
+        "<pad>": 1,
+        "<mask>": 4
+    },
     "datasets": [
         {
             "input": "hello world",

@@ -2,11 +2,11 @@
     "model": "sakuraumi/Sakura-13B-Galgame",
     "tokenizer_class": "BaichuanTokenizer",
     "likes": 54,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 0
+    },
     "datasets": [
         {
             "input": "hello world",

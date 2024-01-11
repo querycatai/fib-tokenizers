@@ -2,10 +2,10 @@
     "model": "WizardLM/WizardCoder-Python-13B-V1.0",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 92,
-    "special_tokens": [
-        "</s>",
-        "[PAD]"
-    ],
+    "special_tokens": {
+        "</s>": 2,
+        "[PAD]": 32000
+    },
     "datasets": [
         {
             "input": "hello world",

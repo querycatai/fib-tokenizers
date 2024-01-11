@@ -2,10 +2,10 @@
     "model": "laion/CLIP-ViT-B-32-laion2B-s34B-b79K",
     "tokenizer_class": "CLIPTokenizer",
     "likes": 50,
-    "special_tokens": [
-        "<|startoftext|>",
-        "<|endoftext|>"
-    ],
+    "special_tokens": {
+        "<|startoftext|>": 49406,
+        "<|endoftext|>": 49407
+    },
     "datasets": [
         {
             "input": "hello world",

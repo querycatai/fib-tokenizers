@@ -2,12 +2,12 @@
     "model": "ckip-joint/bloom-1b1-zh",
     "tokenizer_class": "BloomTokenizerFast",
     "likes": 108,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>",
-        "<pad>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 0,
+        "<pad>": 3
+    },
     "datasets": [
         {
             "input": "hello world",

@@ -2,16 +2,16 @@
     "model": "MetaIX/OpenAssistant-Llama-30b-4bit",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 70,
-    "special_tokens": [
-        "",
-        "</s>",
-        "<s>",
-        "<|system|>",
-        "<|assistant|>",
-        "<|prompter|>",
-        "<|prefix_end|>",
-        "<|prefix_begin|>"
-    ],
+    "special_tokens": {
+        "": 0,
+        "</s>": 2,
+        "<s>": 1,
+        "<|system|>": 32001,
+        "<|assistant|>": 32004,
+        "<|prompter|>": 32002,
+        "<|prefix_end|>": 32003,
+        "<|prefix_begin|>": 32000
+    },
     "datasets": [
         {
             "input": "hello world",

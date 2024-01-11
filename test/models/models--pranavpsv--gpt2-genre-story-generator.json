@@ -2,18 +2,18 @@
     "model": "pranavpsv/gpt2-genre-story-generator",
     "tokenizer_class": "GPT2Tokenizer",
     "likes": 40,
-    "special_tokens": [
-        "<BOS>",
-        "<EOS>",
-        "<|endoftext|>",
-        "<PAD>",
-        "<superhero>",
-        "<action>",
-        "<drama>",
-        "<thriller>",
-        "<horror>",
-        "<sci_fi>"
-    ],
+    "special_tokens": {
+        "<BOS>": 50257,
+        "<EOS>": 50258,
+        "<|endoftext|>": 50256,
+        "<PAD>": 50259,
+        "<superhero>": 50260,
+        "<action>": 50261,
+        "<drama>": 50262,
+        "<thriller>": 50263,
+        "<horror>": 50264,
+        "<sci_fi>": 50265
+    },
     "datasets": [
         {
             "input": "hello world",

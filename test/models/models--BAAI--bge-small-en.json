@@ -2,13 +2,13 @@
     "model": "BAAI/bge-small-en",
     "tokenizer_class": "BertTokenizer",
     "likes": 55,
-    "special_tokens": [
-        "[UNK]",
-        "[SEP]",
-        "[PAD]",
-        "[CLS]",
-        "[MASK]"
-    ],
+    "special_tokens": {
+        "[UNK]": 100,
+        "[SEP]": 102,
+        "[PAD]": 0,
+        "[CLS]": 101,
+        "[MASK]": 103
+    },
     "datasets": [
         {
             "input": "hello world",

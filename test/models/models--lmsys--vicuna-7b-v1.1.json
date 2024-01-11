@@ -2,11 +2,11 @@
     "model": "lmsys/vicuna-7b-v1.1",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 72,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 0
+    },
     "datasets": [
         {
             "input": "hello world",

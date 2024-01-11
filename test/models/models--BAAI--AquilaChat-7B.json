@@ -2,9 +2,9 @@
     "model": "BAAI/AquilaChat-7B",
     "tokenizer_class": "GPT2Tokenizer",
     "likes": 48,
-    "special_tokens": [
-        "<|endoftext|>"
-    ],
+    "special_tokens": {
+        "<|endoftext|>": 0
+    },
     "datasets": [
         {
             "input": "hello world",

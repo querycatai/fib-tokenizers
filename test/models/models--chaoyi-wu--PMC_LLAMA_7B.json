@@ -2,9 +2,9 @@
     "model": "chaoyi-wu/PMC_LLAMA_7B",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 50,
-    "special_tokens": [
-        ""
-    ],
+    "special_tokens": {
+        "": 0
+    },
     "datasets": [
         {
             "input": "hello world",

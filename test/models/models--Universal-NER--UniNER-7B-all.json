@@ -2,11 +2,11 @@
     "model": "Universal-NER/UniNER-7B-all",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 57,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 0
+    },
     "datasets": [
         {
             "input": "hello world",

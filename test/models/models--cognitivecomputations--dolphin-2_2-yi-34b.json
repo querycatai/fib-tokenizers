@@ -2,11 +2,11 @@
     "model": "cognitivecomputations/dolphin-2_2-yi-34b",
     "tokenizer_class": "YiTokenizer",
     "likes": 83,
-    "special_tokens": [
-        "<|startoftext|>",
-        "<|im_end|>",
-        "<unk>"
-    ],
+    "special_tokens": {
+        "<|startoftext|>": 1,
+        "<|im_end|>": 7,
+        "<unk>": 0
+    },
     "datasets": [
         {
             "input": "hello world",

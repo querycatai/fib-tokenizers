@@ -2,13 +2,13 @@
     "model": "bigcode/santacoder",
     "tokenizer_class": "GPT2TokenizerFast",
     "likes": 312,
-    "special_tokens": [
-        "<|endoftext|>",
-        "<fim-prefix>",
-        "<fim-middle>",
-        "<fim-suffix>",
-        "<fim-pad>"
-    ],
+    "special_tokens": {
+        "<|endoftext|>": 49152,
+        "<fim-prefix>": 49153,
+        "<fim-middle>": 49154,
+        "<fim-suffix>": 49155,
+        "<fim-pad>": 49156
+    },
     "datasets": [
         {
             "input": "hello world",

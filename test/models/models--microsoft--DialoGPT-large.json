@@ -2,9 +2,9 @@
     "model": "microsoft/DialoGPT-large",
     "tokenizer_class": "GPT2Tokenizer",
     "likes": 231,
-    "special_tokens": [
-        "<|endoftext|>"
-    ],
+    "special_tokens": {
+        "<|endoftext|>": 50256
+    },
     "datasets": [
         {
             "input": "hello world",

@@ -2,11 +2,11 @@
     "model": "CausalLM/72B-preview-llamafied-qwen-llamafy",
     "tokenizer_class": "GPT2Tokenizer",
     "likes": 71,
-    "special_tokens": [
-        "<|endoftext|>",
-        "<|im_start|>",
-        "<|im_end|>"
-    ],
+    "special_tokens": {
+        "<|endoftext|>": 151643,
+        "<|im_start|>": 151644,
+        "<|im_end|>": 151645
+    },
     "datasets": [
         {
             "input": "hello world",

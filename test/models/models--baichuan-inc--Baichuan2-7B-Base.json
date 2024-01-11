@@ -2,11 +2,11 @@
     "model": "baichuan-inc/Baichuan2-7B-Base",
     "tokenizer_class": "BaichuanTokenizer",
     "likes": 59,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 0
+    },
     "datasets": [
         {
             "input": "hello world",

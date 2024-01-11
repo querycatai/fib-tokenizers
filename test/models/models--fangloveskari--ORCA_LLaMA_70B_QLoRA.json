@@ -2,11 +2,11 @@
     "model": "fangloveskari/ORCA_LLaMA_70B_QLoRA",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 52,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 0
+    },
     "datasets": [
         {
             "input": "hello world",

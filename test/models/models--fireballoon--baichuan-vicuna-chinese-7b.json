@@ -2,12 +2,12 @@
     "model": "fireballoon/baichuan-vicuna-chinese-7b",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 61,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>",
-        "<pad>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 0,
+        "<pad>": 64000
+    },
     "datasets": [
         {
             "input": "hello world",

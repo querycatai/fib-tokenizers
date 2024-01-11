@@ -2,10 +2,10 @@
     "model": "IDEA-CCNL/Ziya-LLaMA-7B-Reward",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 64,
-    "special_tokens": [
-        "</s>",
-        "[PAD]"
-    ],
+    "special_tokens": {
+        "</s>": 2,
+        "[PAD]": 32000
+    },
     "datasets": [
         {
             "input": "hello world",

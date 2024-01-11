@@ -2,12 +2,12 @@
     "model": "AdaptLLM/finance-LLM",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 38,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>",
-        "<pad>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 0,
+        "<pad>": 32000
+    },
     "datasets": [
         {
             "input": "hello world",

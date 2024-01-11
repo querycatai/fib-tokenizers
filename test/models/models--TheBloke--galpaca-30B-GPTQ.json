@@ -2,12 +2,12 @@
     "model": "TheBloke/galpaca-30B-GPTQ",
     "tokenizer_class": "PreTrainedTokenizerFast",
     "likes": 48,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>",
-        "<pad>"
-    ],
+    "special_tokens": {
+        "<s>": 0,
+        "</s>": 2,
+        "<unk>": 3,
+        "<pad>": 1
+    },
     "datasets": [
         {
             "input": "hello world",

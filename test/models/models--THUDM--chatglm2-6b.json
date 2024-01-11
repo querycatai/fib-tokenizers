@@ -2,7 +2,7 @@
     "model": "THUDM/chatglm2-6b",
     "tokenizer_class": "ChatGLMTokenizer",
     "likes": 1931,
-    "special_tokens": [],
+    "special_tokens": {},
     "datasets": [
         {
             "input": "hello world",

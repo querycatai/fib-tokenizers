@@ -2,13 +2,13 @@
     "model": "IDEA-CCNL/Ziya-LLaMA-13B-v1.1",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 45,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>",
-        "<human>",
-        "<bot>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 0,
+        "<human>": 39408,
+        "<bot>": 39409
+    },
     "datasets": [
         {
             "input": "hello world",

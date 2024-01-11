@@ -2,9 +2,9 @@
     "model": "codefuse-ai/CodeFuse-13B",
     "tokenizer_class": "PreTrainedTokenizerFast",
     "likes": 48,
-    "special_tokens": [
-        "<|endoftext|>"
-    ],
+    "special_tokens": {
+        "<|endoftext|>": 100256
+    },
     "datasets": [
         {
             "input": "hello world",

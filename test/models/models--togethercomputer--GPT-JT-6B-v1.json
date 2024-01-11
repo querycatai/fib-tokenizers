@@ -2,9 +2,9 @@
     "model": "togethercomputer/GPT-JT-6B-v1",
     "tokenizer_class": "GPT2Tokenizer",
     "likes": 303,
-    "special_tokens": [
-        "<|endoftext|>"
-    ],
+    "special_tokens": {
+        "<|endoftext|>": 50256
+    },
     "datasets": [
         {
             "input": "hello world",

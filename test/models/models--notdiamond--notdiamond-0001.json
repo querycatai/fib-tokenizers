@@ -2,13 +2,13 @@
     "model": "notdiamond/notdiamond-0001",
     "tokenizer_class": "BertTokenizer",
     "likes": 97,
-    "special_tokens": [
-        "[UNK]",
-        "[SEP]",
-        "[PAD]",
-        "[CLS]",
-        "[MASK]"
-    ],
+    "special_tokens": {
+        "[UNK]": 100,
+        "[SEP]": 102,
+        "[PAD]": 0,
+        "[CLS]": 101,
+        "[MASK]": 103
+    },
     "datasets": [
         {
             "input": "hello world",

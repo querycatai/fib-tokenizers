@@ -2,13 +2,13 @@
     "model": "microsoft/kosmos-2-patch14-224",
     "tokenizer_class": "XLMRobertaTokenizer",
     "likes": 79,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>",
-        "<pad>",
-        "<mask>"
-    ],
+    "special_tokens": {
+        "<s>": 0,
+        "</s>": 2,
+        "<unk>": 3,
+        "<pad>": 1,
+        "<mask>": 64001
+    },
     "datasets": [
         {
             "input": "hello world",

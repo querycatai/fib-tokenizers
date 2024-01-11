@@ -2,13 +2,13 @@
     "model": "luhua/chinese_pretrain_mrc_roberta_wwm_ext_large",
     "tokenizer_class": "BertTokenizer",
     "likes": 72,
-    "special_tokens": [
-        "[UNK]",
-        "[SEP]",
-        "[PAD]",
-        "[CLS]",
-        "[MASK]"
-    ],
+    "special_tokens": {
+        "[UNK]": 100,
+        "[SEP]": 102,
+        "[PAD]": 0,
+        "[CLS]": 101,
+        "[MASK]": 103
+    },
     "datasets": [
         {
             "input": "hello world",

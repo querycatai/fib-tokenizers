@@ -2,11 +2,11 @@
     "model": "deepseek-ai/deepseek-coder-33b-instruct",
     "tokenizer_class": "LlamaTokenizerFast",
     "likes": 193,
-    "special_tokens": [
-        "<｜begin▁of▁sentence｜>",
-        "<|EOT|>",
-        "<｜end▁of▁sentence｜>"
-    ],
+    "special_tokens": {
+        "<｜begin▁of▁sentence｜>": 32013,
+        "<|EOT|>": 32021,
+        "<｜end▁of▁sentence｜>": 32014
+    },
     "datasets": [
         {
             "input": "hello world",

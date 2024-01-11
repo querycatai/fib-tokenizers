@@ -2,9 +2,9 @@
     "model": "mayaeary/pygmalion-6b_dev-4bit-128g",
     "tokenizer_class": "GPT2Tokenizer",
     "likes": 121,
-    "special_tokens": [
-        "<|endoftext|>"
-    ],
+    "special_tokens": {
+        "<|endoftext|>": 50256
+    },
     "datasets": [
         {
             "input": "hello world",

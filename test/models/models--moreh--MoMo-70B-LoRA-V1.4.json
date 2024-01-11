@@ -2,9 +2,9 @@
     "model": "moreh/MoMo-70B-LoRA-V1.4",
     "tokenizer_class": "GPT2Tokenizer",
     "likes": 51,
-    "special_tokens": [
-        "<|endoftext|>"
-    ],
+    "special_tokens": {
+        "<|endoftext|>": 151643
+    },
     "datasets": [
         {
             "input": "hello world",

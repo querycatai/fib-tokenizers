@@ -2,7 +2,7 @@
     "model": "Qwen/Qwen-1_8B",
     "tokenizer_class": "QWenTokenizer",
     "likes": 44,
-    "special_tokens": [],
+    "special_tokens": {},
     "datasets": [
         {
             "input": "hello world",

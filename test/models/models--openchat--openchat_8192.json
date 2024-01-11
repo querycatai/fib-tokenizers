@@ -2,12 +2,12 @@
     "model": "openchat/openchat_8192",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 220,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>",
-        "<|end_of_turn|>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 0,
+        "<|end_of_turn|>": 32000
+    },
     "datasets": [
         {
             "input": "hello world",

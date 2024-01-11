@@ -2,7 +2,7 @@
     "model": "Qwen/Qwen-7B-Chat",
     "tokenizer_class": "QWenTokenizer",
     "likes": 687,
-    "special_tokens": [],
+    "special_tokens": {},
     "datasets": [
         {
             "input": "hello world",

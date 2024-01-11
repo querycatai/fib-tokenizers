@@ -2,17 +2,17 @@
     "model": "xlnet-base-cased",
     "tokenizer_class": "XLNetTokenizer",
     "likes": 49,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>",
-        "<sep>",
-        "<pad>",
-        "<cls>",
-        "<mask>",
-        "<eop>",
-        "<eod>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 0,
+        "<sep>": 4,
+        "<pad>": 5,
+        "<cls>": 3,
+        "<mask>": 6,
+        "<eop>": 8,
+        "<eod>": 7
+    },
     "datasets": [
         {
             "input": "hello world",

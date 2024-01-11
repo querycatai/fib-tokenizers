@@ -2,13 +2,13 @@
     "model": "microsoft/BiomedNLP-BiomedBERT-base-uncased-abstract-fulltext",
     "tokenizer_class": "BertTokenizer",
     "likes": 140,
-    "special_tokens": [
-        "[UNK]",
-        "[SEP]",
-        "[PAD]",
-        "[CLS]",
-        "[MASK]"
-    ],
+    "special_tokens": {
+        "[UNK]": 1,
+        "[SEP]": 3,
+        "[PAD]": 0,
+        "[CLS]": 2,
+        "[MASK]": 4
+    },
     "datasets": [
         {
             "input": "hello world",

@@ -2,11 +2,11 @@
     "model": "Trelis/Llama-2-7b-chat-hf-function-calling-v2",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 79,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 0
+    },
     "datasets": [
         {
             "input": "hello world",

@@ -2,15 +2,15 @@
     "model": "pfnet/plamo-13b",
     "tokenizer_class": "PlamoTokenizer",
     "likes": 74,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>",
-        "<sep>",
-        "<pad>",
-        "<cls>",
-        "<mask>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 0,
+        "<sep>": 5,
+        "<pad>": 3,
+        "<cls>": 4,
+        "<mask>": 6
+    },
     "datasets": [
         {
             "input": "hello world",

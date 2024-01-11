@@ -2,12 +2,12 @@
     "model": "databricks/dolly-v1-6b",
     "tokenizer_class": "GPT2Tokenizer",
     "likes": 306,
-    "special_tokens": [
-        "<|endoftext|>",
-        "### End",
-        "### Instruction:",
-        "### Response:"
-    ],
+    "special_tokens": {
+        "<|endoftext|>": 50256,
+        "### End": 50400,
+        "### Instruction:": 50401,
+        "### Response:": 50402
+    },
     "datasets": [
         {
             "input": "hello world",

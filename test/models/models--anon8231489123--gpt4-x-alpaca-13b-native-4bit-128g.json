@@ -2,10 +2,10 @@
     "model": "anon8231489123/gpt4-x-alpaca-13b-native-4bit-128g",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 721,
-    "special_tokens": [
-        "</s>",
-        "[PAD]"
-    ],
+    "special_tokens": {
+        "</s>": 2,
+        "[PAD]": 32000
+    },
     "datasets": [
         {
             "input": "hello world",

@@ -2,13 +2,13 @@
     "model": "facebook/blenderbot-3B",
     "tokenizer_class": "BlenderbotTokenizer",
     "likes": 126,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>",
-        "<pad>",
-        "<mask>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 3,
+        "<pad>": 0,
+        "<mask>": 0
+    },
     "datasets": [
         {
             "input": "hello world",
@@ -1802,10 +1802,7 @@
                 2,
                 3,
                 0,
-                35,
-                84,
-                3280,
-                37,
+                0,
                 2
             ],
             "tokens": [
@@ -1818,12 +1815,9 @@
                 "</s>",
                 "<unk>",
                 "<pad>",
-                "<",
-                "m",
-                "ask",
-                ">"
+                "<mask>"
             ],
-            "decoded": " <mask>"
+            "decoded": " "
         }
     ],
     "pair_encode": {

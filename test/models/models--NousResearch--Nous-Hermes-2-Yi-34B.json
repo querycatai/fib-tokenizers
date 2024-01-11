@@ -2,11 +2,11 @@
     "model": "NousResearch/Nous-Hermes-2-Yi-34B",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 105,
-    "special_tokens": [
-        "<|startoftext|>",
-        "<|im_end|>",
-        "<unk>"
-    ],
+    "special_tokens": {
+        "<|startoftext|>": 1,
+        "<|im_end|>": 7,
+        "<unk>": 0
+    },
     "datasets": [
         {
             "input": "hello world",

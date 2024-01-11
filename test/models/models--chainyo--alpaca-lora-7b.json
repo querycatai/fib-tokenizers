@@ -2,9 +2,9 @@
     "model": "chainyo/alpaca-lora-7b",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 67,
-    "special_tokens": [
-        ""
-    ],
+    "special_tokens": {
+        "": 0
+    },
     "datasets": [
         {
             "input": "hello world",

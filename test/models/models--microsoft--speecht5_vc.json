@@ -2,13 +2,13 @@
     "model": "microsoft/speecht5_vc",
     "tokenizer_class": "SpeechT5Tokenizer",
     "likes": 44,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>",
-        "<pad>",
-        "<mask>"
-    ],
+    "special_tokens": {
+        "<s>": 0,
+        "</s>": 2,
+        "<unk>": 3,
+        "<pad>": 1,
+        "<mask>": 79
+    },
     "datasets": [
         {
             "input": "hello world",

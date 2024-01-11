@@ -2,10 +2,10 @@
     "model": "KoboldAI/OPT-30B-Erebus",
     "tokenizer_class": "GPT2Tokenizer",
     "likes": 47,
-    "special_tokens": [
-        "</s>",
-        "<pad>"
-    ],
+    "special_tokens": {
+        "</s>": 2,
+        "<pad>": 1
+    },
     "datasets": [
         {
             "input": "hello world",

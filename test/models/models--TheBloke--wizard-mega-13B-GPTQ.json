@@ -2,11 +2,11 @@
     "model": "TheBloke/wizard-mega-13B-GPTQ",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 103,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 0
+    },
     "datasets": [
         {
             "input": "hello world",

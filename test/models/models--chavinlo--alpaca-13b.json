@@ -2,10 +2,10 @@
     "model": "chavinlo/alpaca-13b",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 106,
-    "special_tokens": [
-        "</s>",
-        "[PAD]"
-    ],
+    "special_tokens": {
+        "</s>": 2,
+        "[PAD]": 32000
+    },
     "datasets": [
         {
             "input": "hello world",

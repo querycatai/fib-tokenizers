@@ -2,14 +2,14 @@
     "model": "amazon/MistralLite",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 367,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>",
-        "[PAD]",
-        "<|assistant|>",
-        "<|prompter|>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 0,
+        "[PAD]": 32000,
+        "<|assistant|>": 32001,
+        "<|prompter|>": 32002
+    },
     "datasets": [
         {
             "input": "hello world",

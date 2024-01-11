@@ -2,13 +2,13 @@
     "model": "bhadresh-savani/distilbert-base-uncased-emotion",
     "tokenizer_class": "DistilBertTokenizer",
     "likes": 88,
-    "special_tokens": [
-        "[UNK]",
-        "[SEP]",
-        "[PAD]",
-        "[CLS]",
-        "[MASK]"
-    ],
+    "special_tokens": {
+        "[UNK]": 100,
+        "[SEP]": 102,
+        "[PAD]": 0,
+        "[CLS]": 101,
+        "[MASK]": 103
+    },
     "datasets": [
         {
             "input": "hello world",

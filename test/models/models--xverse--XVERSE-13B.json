@@ -2,11 +2,11 @@
     "model": "xverse/XVERSE-13B",
     "tokenizer_class": "PreTrainedTokenizerFast",
     "likes": 119,
-    "special_tokens": [
-        "<|startoftext|>",
-        "<|endoftext|>",
-        "<pad>"
-    ],
+    "special_tokens": {
+        "<|startoftext|>": 2,
+        "<|endoftext|>": 3,
+        "<pad>": 1
+    },
     "datasets": [
         {
             "input": "hello world",

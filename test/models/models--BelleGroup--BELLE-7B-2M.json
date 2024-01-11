@@ -2,12 +2,12 @@
     "model": "BelleGroup/BELLE-7B-2M",
     "tokenizer_class": "BloomTokenizerFast",
     "likes": 183,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>",
-        "<pad>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 0,
+        "<pad>": 3
+    },
     "datasets": [
         {
             "input": "hello world",

@@ -2,9 +2,9 @@
     "model": "Gustavosta/MagicPrompt-Stable-Diffusion",
     "tokenizer_class": "GPT2Tokenizer",
     "likes": 588,
-    "special_tokens": [
-        "<|endoftext|>"
-    ],
+    "special_tokens": {
+        "<|endoftext|>": 50256
+    },
     "datasets": [
         {
             "input": "hello world",

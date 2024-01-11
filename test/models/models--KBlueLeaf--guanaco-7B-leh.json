@@ -2,9 +2,9 @@
     "model": "KBlueLeaf/guanaco-7B-leh",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 38,
-    "special_tokens": [
-        ""
-    ],
+    "special_tokens": {
+        "": 0
+    },
     "datasets": [
         {
             "input": "hello world",

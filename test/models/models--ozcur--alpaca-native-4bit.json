@@ -2,10 +2,10 @@
     "model": "ozcur/alpaca-native-4bit",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 58,
-    "special_tokens": [
-        "</s>",
-        "[PAD]"
-    ],
+    "special_tokens": {
+        "</s>": 2,
+        "[PAD]": 32000
+    },
     "datasets": [
         {
             "input": "hello world",

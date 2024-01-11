@@ -2,13 +2,13 @@
     "model": "microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224",
     "tokenizer_class": "BertTokenizer",
     "likes": 109,
-    "special_tokens": [
-        "[UNK]",
-        "[SEP]",
-        "[PAD]",
-        "[CLS]",
-        "[MASK]"
-    ],
+    "special_tokens": {
+        "[UNK]": 1,
+        "[SEP]": 3,
+        "[PAD]": 0,
+        "[CLS]": 2,
+        "[MASK]": 4
+    },
     "datasets": [
         {
             "input": "hello world",

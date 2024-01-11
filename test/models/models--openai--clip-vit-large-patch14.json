@@ -2,10 +2,10 @@
     "model": "openai/clip-vit-large-patch14",
     "tokenizer_class": "CLIPTokenizer",
     "likes": 816,
-    "special_tokens": [
-        "<|startoftext|>",
-        "<|endoftext|>"
-    ],
+    "special_tokens": {
+        "<|startoftext|>": 49406,
+        "<|endoftext|>": 49407
+    },
     "datasets": [
         {
             "input": "hello world",

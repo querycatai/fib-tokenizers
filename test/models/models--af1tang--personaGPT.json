@@ -2,15 +2,15 @@
     "model": "af1tang/personaGPT",
     "tokenizer_class": "GPT2Tokenizer",
     "likes": 112,
-    "special_tokens": [
-        "<|endoftext|>",
-        "<|sep|>",
-        "<|cls|>",
-        "<|start|>",
-        "<|p1|>",
-        "<|p2|>",
-        "<|act|>"
-    ],
+    "special_tokens": {
+        "<|endoftext|>": 50256,
+        "<|sep|>": 50257,
+        "<|cls|>": 50258,
+        "<|start|>": 50259,
+        "<|p1|>": 50260,
+        "<|p2|>": 50261,
+        "<|act|>": 50262
+    },
     "datasets": [
         {
             "input": "hello world",

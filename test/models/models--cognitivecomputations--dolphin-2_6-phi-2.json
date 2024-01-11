@@ -2,10 +2,10 @@
     "model": "cognitivecomputations/dolphin-2_6-phi-2",
     "tokenizer_class": "CodeGenTokenizer",
     "likes": 90,
-    "special_tokens": [
-        "<|endoftext|>",
-        "<|im_end|>"
-    ],
+    "special_tokens": {
+        "<|endoftext|>": 50256,
+        "<|im_end|>": 50295
+    },
     "datasets": [
         {
             "input": "hello world",

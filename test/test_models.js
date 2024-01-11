@@ -134,12 +134,6 @@ function test_model(model) {
             // console.log(model.tokenizer_class);
         });
 
-        // it("special tokens", () => {
-        //     const special_tokens = tokenizer.all_special_tokens;
-        //     if (special_tokens)
-        //         assert.deepEqual(special_tokens.sort(), model.special_tokens.sort());
-        // });
-
         it("encode", () => {
             var res1 = tokenizer.encode("a b c d e f g h i j k l m n o p");
             var res2 = tokenizer.encode("a b c d e f g h i j k l m n o p", {
@@ -178,6 +172,21 @@ function test_model(model) {
                 assert.deepEqual(res1, model.pair_encode);
             });
         });
+
+        if (Object.keys(model.special_tokens).length > 0)
+            describe("special tokens", () => {
+                function special_token(token) {
+                    it(JSON.stringify(token), () => {
+                        if (update_data)
+                            model.special_tokens[token] = tokenizer.convert_tokens_to_ids([token])[0];
+                        assert.equal(tokenizer.convert_tokens_to_ids([token])[0], model.special_tokens[token]);
+                    });
+                }
+
+                const special_tokens = model.special_tokens;
+                for (var token in special_tokens)
+                    special_token(token);
+            });
 
         function test_one(test) {
             it(`tokenize - ${JSON.stringify(test.input.substr(0, 64))}`, () => {

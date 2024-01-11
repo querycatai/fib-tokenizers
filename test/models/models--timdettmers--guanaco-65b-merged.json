@@ -2,10 +2,10 @@
     "model": "timdettmers/guanaco-65b-merged",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 56,
-    "special_tokens": [
-        "<s>",
-        ""
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "": 0
+    },
     "datasets": [
         {
             "input": "hello world",

@@ -2,10 +2,10 @@
     "model": "AlekseyKorshuk/vicuna-7b",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 110,
-    "special_tokens": [
-        "</s>",
-        "[PAD]"
-    ],
+    "special_tokens": {
+        "</s>": 2,
+        "[PAD]": 32000
+    },
     "datasets": [
         {
             "input": "hello world",

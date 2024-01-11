@@ -2,11 +2,11 @@
     "model": "chargoddard/llama2-22b",
     "tokenizer_class": "LlamaTokenizer",
     "likes": 41,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>"
-    ],
+    "special_tokens": {
+        "<s>": 1,
+        "</s>": 2,
+        "<unk>": 0
+    },
     "datasets": [
         {
             "input": "hello world",

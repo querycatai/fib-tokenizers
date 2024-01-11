@@ -2,11 +2,11 @@
     "model": "BAAI/AquilaChat2-34B",
     "tokenizer_class": "GPT2Tokenizer",
     "likes": 43,
-    "special_tokens": [
-        "[CLS]",
-        "</s>",
-        "<|endoftext|>"
-    ],
+    "special_tokens": {
+        "[CLS]": 100006,
+        "</s>": 100007,
+        "<|endoftext|>": 0
+    },
     "datasets": [
         {
             "input": "hello world",

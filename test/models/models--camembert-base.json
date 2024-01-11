@@ -2,16 +2,16 @@
     "model": "camembert-base",
     "tokenizer_class": "CamembertTokenizer",
     "likes": 46,
-    "special_tokens": [
-        "<s>",
-        "</s>",
-        "<unk>",
-        "<pad>",
-        "<mask>",
-        "<s>NOTUSED",
-        "</s>NOTUSED",
-        "<unk>NOTUSED"
-    ],
+    "special_tokens": {
+        "<s>": 5,
+        "</s>": 6,
+        "<unk>": 3,
+        "<pad>": 1,
+        "<mask>": 32004,
+        "<s>NOTUSED": 0,
+        "</s>NOTUSED": 2,
+        "<unk>NOTUSED": 4
+    },
     "datasets": [
         {
             "input": "hello world",
