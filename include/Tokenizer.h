@@ -87,7 +87,8 @@ private:
     template <typename T>
     void legacy_encode(std::string_view text, std::vector<T>* ids, int32_t max_length, int32_t prefix_count);
 
-    void encode(std::string& text, std::vector<int32_t>& ids, int32_t max_length);
+    void encode_one(std::string& text, std::vector<int32_t>& ids, std::vector<int32_t>& types, int32_t max_length);
+    void encode_pair(std::vector<std::string>& texts, std::vector<int32_t>& ids, std::vector<int32_t>& types, int32_t max_length);
 
 private:
     void config_tokens_decoder(const Napi::Config& opt);

@@ -171,6 +171,19 @@ function test_model(model) {
 
                 assert.deepEqual(res1, model.pair_encode);
             });
+
+            it("batch_pair_encode", () => {
+                var res1 = tokenizer.encode_plus([["a a", "b"], ["a a", "b b b b b b b b b b b b b b b b b"]], {
+                    truncation: true,
+                    max_length: 10,
+                    padding: model.pad_token !== undefined
+                });
+
+                if (update_data)
+                    model.batch_pair_encode = res1;
+
+                assert.deepEqual(res1, model.batch_pair_encode);
+            });
         });
 
         if (Object.keys(model.special_tokens).length > 0)
