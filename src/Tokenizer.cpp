@@ -196,31 +196,6 @@ Napi::Value Tokenizer::encode(const Napi::CallbackInfo& info)
     return to_value(info.Env(), ids);
 }
 
-Napi::Value Tokenizer::encode_tensor(const Napi::CallbackInfo& info, std::vector<std::vector<int32_t>>& array)
-{
-    Napi::Object result = Napi::Object::New(info.Env());
-
-    Napi::Array dims = Napi::Array::New(info.Env(), 2);
-    dims.Set(0u, array.size());
-    dims.Set(1u, array[0].size());
-    result.Set("dims", dims);
-
-    result.Set("type", "int64");
-
-    int32_t size = array.size() * array[0].size();
-    Napi::BigInt64Array data = Napi::BigInt64Array::New(info.Env(), size);
-    int64_t* data_ = data.Data();
-
-    for (int32_t i = 0; i < array.size(); i++)
-        for (int32_t j = 0; j < array[i].size(); j++)
-            data_[i * array[i].size() + j] = array[i][j];
-
-    result.Set("data", to_value(info.Env(), data));
-    result.Set("size", size);
-
-    return result;
-}
-
 Napi::Value Tokenizer::batch_encode(const Napi::CallbackInfo& info)
 {
     std::vector<std::vector<int32_t>> ids;
@@ -234,12 +209,6 @@ Napi::Value Tokenizer::batch_encode(const Napi::CallbackInfo& info)
     bool padding = opt.Get("padding", false);
     bool truncation = opt.Get("truncation", false);
     int32_t max_length = truncation ? opt.Get("max_length", model_max_length) : std::numeric_limits<int32_t>::max();
-
-    std::string return_tensors = opt.Get("return_tensors", std::string(""));
-    bool return_tensor = return_tensors == "pt" || return_tensors == "tf";
-
-    if (return_tensor && (!padding || !truncation))
-        throw Napi::Error::New(opt.GetEnv(), "return_tensors='pt' or 'tf' requires to set padding=true and truncation=true");
 
     int32_t max_line_length = 0;
     for (auto& item : items) {
@@ -299,23 +268,13 @@ Napi::Value Tokenizer::batch_encode(const Napi::CallbackInfo& info)
 
     Napi::Object result = Napi::Object::New(info.Env());
 
-    if (return_tensor) {
-        result.Set("input_ids", encode_tensor(info, ids));
-        if (token_type_ids)
-            result.Set("token_type_ids", encode_tensor(info, types));
-        if (attention_mask)
-            result.Set("attention_mask", encode_tensor(info, masks));
-        if (position_ids)
-            result.Set("position_ids", encode_tensor(info, positions));
-    } else {
-        result.Set("input_ids", to_value(info.Env(), ids));
-        if (token_type_ids)
-            result.Set("token_type_ids", to_value(info.Env(), types));
-        if (attention_mask)
-            result.Set("attention_mask", to_value(info.Env(), masks));
-        if (position_ids)
-            result.Set("position_ids", to_value(info.Env(), positions));
-    }
+    result.Set("input_ids", to_value(info.Env(), ids));
+    if (token_type_ids)
+        result.Set("token_type_ids", to_value(info.Env(), types));
+    if (attention_mask)
+        result.Set("attention_mask", to_value(info.Env(), masks));
+    if (position_ids)
+        result.Set("position_ids", to_value(info.Env(), positions));
 
     return result;
 }

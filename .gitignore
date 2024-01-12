@@ -1,5 +1,6 @@
 /out
 /bin
 /addon
+/node_modules
 /temp/*
 /.vscode/launch.json

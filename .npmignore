@@ -8,6 +8,7 @@
 fib-addon
 include
 src
+node_modules
 build*
 CMakeLists.txt
 tools

@@ -90,8 +90,6 @@ private:
     void encode_one(std::string& text, std::vector<int32_t>& ids, std::vector<int32_t>& types, int32_t max_length);
     void encode_pair(std::vector<std::string>& texts, std::vector<int32_t>& ids, std::vector<int32_t>& types, int32_t max_length);
 
-    Napi::Value encode_tensor(const Napi::CallbackInfo& info, std::vector<std::vector<int32_t>>& array);
-
 private:
     void config_tokens_decoder(const Napi::Config& opt);
     void config_unk_tokens(const Napi::Config& opt);
