@@ -1,6 +1,6 @@
 {
   "name": "fib-tokenizers",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "cpp tokenizer module for fibjs.",
   "main": "index.js",
   "scripts": {
