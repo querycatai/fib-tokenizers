@@ -63,14 +63,14 @@ jobs:
             arch: ia32
           - os: windows-2022
             arch: arm64
-          - os: macos-13
+          - os: macos-14
             arch: x64
-          - os: macos-13
+          - os: macos-14
             arch: arm64
-          - os: macos-13
+          - os: macos-14
             target: iphone
             arch: arm64
-          - os: macos-13
+          - os: macos-14
             target: iphone
             arch: x64
 
@@ -93,7 +93,6 @@ jobs:
           set -ev
           bash build -j2 ${BUILD_ARCH} ${BUILD_TARGET} ${BUILD_TYPE}
           if [[ "$BUILD_TAG" != "" ]]; then
-            cp bin/${BUILD_OS}_${BUILD_ARCH}_${BUILD_TYPE}/${BUILD_NAME}.node addon/
             tar -zcf ${BUILD_NAME}-${BUILD_TARGET}-${BUILD_ARCH}-${BUILD_TYPE}.tar.gz addon/${BUILD_NAME}.node
           fi
 
